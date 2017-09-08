@@ -25,6 +25,8 @@ public class News extends DataSupport {
     private String content;
     private TreeMap<String, Double> keywords;
     private Vector<String> entries;
+    private Date lastVisitTime;
+    private Date lastFavoriteTime;
 
     public String getClassTag() {
         return classTag;
@@ -128,5 +130,21 @@ public class News extends DataSupport {
 
     public void setEntries(Vector<String> entries) {
         this.entries = entries;
+    }
+
+    public Date getLastVisitTime() {
+        return lastVisitTime;
+    }
+
+    public void setLastVisitTime(Date lastVisitTime) {
+        this.lastVisitTime = lastVisitTime;
+    }
+
+    public Date getLastFavoriteTime() {
+        return lastFavoriteTime;
+    }
+
+    public void setLastFavoriteTime(Date lastFavoriteTime) {
+        this.lastFavoriteTime = lastFavoriteTime;
     }
 }
