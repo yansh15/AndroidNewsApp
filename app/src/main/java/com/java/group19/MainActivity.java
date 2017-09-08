@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+<<<<<<< HEAD
 
         //set toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -126,5 +127,8 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return true;
+=======
+        //Test test = new Test(); 测试 HttpHelper 功能
+>>>>>>> f0edab012df7c73ad28095f008d79df59445cfcb
     }
 }
