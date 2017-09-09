@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_favorite"
+            android:icon="@drawable/ic_favorite_border_black"
+            android:title="收藏夹" />
+        <item
+            android:id="@+id/nav_shield"
+            android:icon="@drawable/ic_pause_circle_outline_black"
+            android:title="屏蔽设置" />
+        <item
+            android:id="@+id/nav_history"
+            android:icon="@drawable/ic_history_black"
+            android:title="浏览记录" />
+        <item
+            android:id="@+id/nav_theme"
+            android:icon="@drawable/ic_wb_sunny_black"
+            android:title="夜间模式"
+            app:actionLayout="@layout/theme_switch" />
+        <item
+            android:id="@+id/text_mode"
+            android:icon="@drawable/ic_image_black"
+            android:title="文本模式"
+            app:actionLayout="@layout/text_mode_switch" />
+
+    </group>
+
+</menu>
