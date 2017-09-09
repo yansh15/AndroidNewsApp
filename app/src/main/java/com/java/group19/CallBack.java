@@ -1,5 +1,7 @@
 package com.java.group19;
 
+import android.graphics.Bitmap;
+
 import java.util.List;
 
 /**
@@ -7,7 +9,7 @@ import java.util.List;
  */
 
 public interface CallBack {
-    public void onFinish(List<News> newsList);
-    public void onFinish();
+    public void onFinishNewsList(List<News> newsList);
+    public void onFinishDetail(List<Bitmap> bitmaps);
     public void onError(Exception e);
 }
