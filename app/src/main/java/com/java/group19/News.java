@@ -1,8 +1,12 @@
 package com.java.group19;
 
+import android.util.Pair;
+
+import org.litepal.annotation.Column;
 import org.litepal.crud.DataSupport;
 
 import java.net.URL;
+import java.security.Key;
 import java.util.Date;
 import java.util.TreeMap;
 import java.util.Vector;
@@ -12,21 +16,30 @@ import java.util.Vector;
  */
 
 public class News extends DataSupport {
+    @Column(nullable = false, unique = true)
+    private String uniqueId;
     private String classTag;
     private String author;
-    private String id;
     private Vector<String> pictures;
     private String source;
     private Date time;
     private String title;
-    private URL url;
+    private String url;
     private String intro;
     private String journal;
     private String content;
-    private TreeMap<String, Double> keywords;
+    private Vector<Keyword> keywords;
     private Vector<String> entries;
     private Date lastVisitTime;
     private Date lastFavoriteTime;
+
+    public String getUniqueId() {
+        return uniqueId;
+    }
+
+    public void setUniqueId(String uniqueId) {
+        this.uniqueId = uniqueId;
+    }
 
     public String getClassTag() {
         return classTag;
@@ -42,14 +55,6 @@ public class News extends DataSupport {
 
     public void setAuthor(String author) {
         this.author = author;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public Vector<String> getPictures() {
@@ -84,11 +89,11 @@ public class News extends DataSupport {
         this.title = title;
     }
 
-    public URL getUrl() {
+    public String getUrl() {
         return url;
     }
 
-    public void setUrl(URL url) {
+    public void setUrl(String url) {
         this.url = url;
     }
 
@@ -116,11 +121,11 @@ public class News extends DataSupport {
         this.content = content;
     }
 
-    public TreeMap<String, Double> getKeywords() {
+    public Vector<Keyword> getKeywords() {
         return keywords;
     }
 
-    public void setKeywords(TreeMap<String, Double> keywords) {
+    public void setKeywords(Vector<Keyword> keywords) {
         this.keywords = keywords;
     }
 

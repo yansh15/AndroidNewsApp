@@ -18,6 +18,8 @@ import android.widget.CompoundButton;
 
 import java.util.Vector;
 
+import org.litepal.tablemanager.Connector;
+
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
@@ -29,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Connector.getDatabase();
 
         //set toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

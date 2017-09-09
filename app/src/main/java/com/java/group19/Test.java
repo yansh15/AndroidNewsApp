@@ -1,5 +1,7 @@
 package com.java.group19;
 
+import android.graphics.Bitmap;
+
 import java.util.List;
 
 /**
@@ -9,15 +11,14 @@ import java.util.List;
 public class Test implements CallBack {
 
     @Override
-    public void onFinish(List<News> newsList) {
+    public void onFinishNewsList(List<News> newsList) {
         // 测试查询新闻内容
         if (!newsList.isEmpty())
             for (News news : newsList)
                 HttpHelper.askDetailNews(news, this);
     }
 
-    @Override
-    public void onFinish() {
+    public void onFinishDetail(List<Bitmap> bitmaps) {
 
     }
 

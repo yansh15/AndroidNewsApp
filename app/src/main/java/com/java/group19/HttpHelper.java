@@ -1,15 +1,14 @@
 package com.java.group19;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Locale;
-import java.util.TreeMap;
 import java.util.Vector;
 
 import okhttp3.OkHttpClient;
@@ -21,10 +20,23 @@ import okhttp3.Response;
  */
 
 public class HttpHelper {
-    final static int keji = 0;
     private static OkHttpClient client;
     private static String rootURL = "http://166.111.68.66:2042/news/action/query/";
     private static final String TAG = "HttpHelper";
+
+    public static final int SCIENCE = 1;
+    public static final int EDUCATION = 2;
+    public static final int MILITARY = 3;
+    public static final int NATIONAL = 4;
+    public static final int SOCIETY = 5;
+    public static final int CULTURE = 6;
+    public static final int TRANSPORT = 7;
+    public static final int INTERNATIONAL = 8;
+    public static final int SPORTS = 9;
+    public static final int COMMERCIAL = 10;
+    public static final int HEALTH = 11;
+    public static final int ENTERTAINMENT = 12;
+
     public static void askLatestNews(final int pageNo, final int pageSize, final  int category, final CallBack callback) {
         new Thread(new Runnable() {
             @Override
@@ -39,7 +51,7 @@ public class HttpHelper {
                             .build();
                     Response response = client.newCall(request).execute();
                     String responseData = response.body().string();
-                    callback.onFinish(parseJSONForNewsVector(responseData, callback));
+                    callback.onFinishNewsList(parseJSONForNewsVector(responseData, callback));
                 }catch (Exception e) {
                     e.printStackTrace();
                     callback.onError(e);
@@ -70,7 +82,7 @@ public class HttpHelper {
                             .build();
                     Response response = client.newCall(request).execute();
                     String responseData = response.body().string();
-                    callback.onFinish(parseJSONForNewsVector(responseData, callback));
+                    callback.onFinishNewsList(parseJSONForNewsVector(responseData, callback));
                 }catch (Exception e) {
                     e.printStackTrace();
                     callback.onError(e);
@@ -92,7 +104,7 @@ public class HttpHelper {
             @Override
             public void run() {
                 try {
-                    String url = rootURL+"detail?newsId="+news.getId();
+                    String url = rootURL+"detail?newsId="+news.getUniqueId();
                     client = new OkHttpClient();
                     Request request = new Request.Builder()
                             .url(url)
@@ -101,7 +113,8 @@ public class HttpHelper {
                     String responseData = response.body().string();
                     parseJSONForSingleNews(responseData, news, callback);
                     //printNews(news);
-                    callback.onFinish();
+                    Vector<Bitmap> bitmaps = new Vector<Bitmap>();
+                    callback.onFinishDetail(bitmaps);
                 }catch (Exception e) {
                     e.printStackTrace();
                     callback.onError(e);
@@ -118,12 +131,16 @@ public class HttpHelper {
             news.setContent(jsonObject.getString("news_Content"));
             //Keywords
             JSONArray jsonArray = jsonObject.getJSONArray("Keywords");
-            TreeMap<String, Double> keywordMap = new TreeMap<String, Double>();
+            Vector<Keyword> keywordVector = new Vector<Keyword>();
             for (int i = 0; i < jsonArray.length(); ++i) {
                 JSONObject jsonKeywordObject = jsonArray.getJSONObject(i);
-                keywordMap.put(jsonKeywordObject.getString("word"), jsonKeywordObject.getDouble("score"));
+                Keyword keyword = new Keyword();
+                keyword.setNews(news);
+                keyword.setWord(jsonKeywordObject.getString("word"));
+                keyword.setScore(jsonKeywordObject.getDouble("score"));
+                keywordVector.add(keyword);
             }
-            news.setKeywords(keywordMap);
+            news.setKeywords(keywordVector);
             //Entries
             Vector<String> entries = new Vector<String>();
             jsonArray = jsonObject.getJSONArray("locations");
@@ -148,12 +165,12 @@ public class HttpHelper {
                 News news = new News();
                 news.setClassTag(jsonObject.getString("newsClassTag"));
                 news.setAuthor(jsonObject.getString("news_Author"));
-                news.setId(jsonObject.getString("news_ID"));
+                news.setUniqueId(jsonObject.getString("news_ID"));
                 news.setPictures(new Vector<String>(Arrays.asList(jsonObject.getString("news_Pictures").split(";"))));
                 news.setSource(jsonObject.getString("news_Source"));
                 news.setTime(new SimpleDateFormat("yyyyMMdd", Locale.CHINA).parse(jsonObject.getString("news_Time")));
                 news.setTitle(jsonObject.getString("news_Title"));
-                news.setUrl(new URL(jsonObject.getString("news_URL")));
+                news.setUrl(jsonObject.getString("news_URL"));
                 news.setIntro(jsonObject.getString("news_Intro"));
                 newsVector.add(news);
             }
@@ -164,20 +181,22 @@ public class HttpHelper {
         return newsVector;
     }
 
+
+
     public static void printNews(News news) {
-        String output = "\nnewsClassTag: "+news.getClassTag()+"\nnews_Author: "+news.getAuthor()+"\nnews_ID: "+news.getId() + "\nnews_Pictures: ";
+        String output = "\nnewsClassTag: "+news.getClassTag()+"\nnews_Author: "+news.getAuthor()+"\nnews_ID: "+news.getUniqueId() + "\nnews_Pictures: ";
         if (!news.getPictures().isEmpty())
             for (String s : news.getPictures())
                 output += "\n   "+s;
         output += "\nnews_Source: "+news.getSource();
         output += "\nnews_Time: "+news.getTime().toString();
         output += "\nnews_Title: "+news.getTitle();
-        output += "\nnews_URL: "+news.getUrl().toString();
+        output += "\nnews_URL: "+news.getUrl();
         output += "\nnews_Intro: "+news.getIntro()+"\n";
         output += "news_journal: "+news.getJournal() + "\nnews_content: "+news.getContent() + "\nKeywords: ";
-        if (!news.getKeywords().isEmpty())
+        /*if (!news.getKeywords().isEmpty())
             for (String s : news.getKeywords().keySet())
-                output += "\n   word: " + s + ", score: " + news.getKeywords().get(s);
+                output += "\n   word: " + s + ", score: " + news.getKeywords().get(s);*/
         output += "\nnews_Entries:\n";
         if (!news.getEntries().isEmpty())
             for (String s : news.getEntries())
