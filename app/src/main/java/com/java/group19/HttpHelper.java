@@ -1,15 +1,14 @@
 package com.java.group19;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Locale;
-import java.util.TreeMap;
 import java.util.Vector;
 
 import okhttp3.OkHttpClient;
@@ -53,7 +52,7 @@ public class HttpHelper {
                             .build();
                     Response response = client.newCall(request).execute();
                     String responseData = response.body().string();
-                    callback.onFinish(parseJSONForNewsVector(responseData, callback));
+                    callback.onFinishNewsList(parseJSONForNewsVector(responseData, callback));
                 }catch (Exception e) {
                     e.printStackTrace();
                     callback.onError(e);
@@ -84,7 +83,7 @@ public class HttpHelper {
                             .build();
                     Response response = client.newCall(request).execute();
                     String responseData = response.body().string();
-                    callback.onFinish(parseJSONForNewsVector(responseData, callback));
+                    callback.onFinishNewsList(parseJSONForNewsVector(responseData, callback));
                 }catch (Exception e) {
                     e.printStackTrace();
                     callback.onError(e);
@@ -115,7 +114,8 @@ public class HttpHelper {
                     String responseData = response.body().string();
                     parseJSONForSingleNews(responseData, news, callback);
                     //printNews(news);
-                    callback.onFinish();
+                    Vector<Bitmap> bitmaps = new Vector<Bitmap>();
+                    callback.onFinishDetail(bitmaps);
                 }catch (Exception e) {
                     e.printStackTrace();
                     callback.onError(e);
@@ -181,6 +181,8 @@ public class HttpHelper {
         }
         return newsVector;
     }
+
+
 
     public static void printNews(News news) {
         String output = "\nnewsClassTag: "+news.getClassTag()+"\nnews_Author: "+news.getAuthor()+"\nnews_ID: "+news.getUniqueId() + "\nnews_Pictures: ";
