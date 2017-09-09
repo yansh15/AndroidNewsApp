@@ -21,6 +21,7 @@ import okhttp3.Response;
  */
 
 public class HttpHelper {
+    final static int keji = 0;
     private static OkHttpClient client;
     private static String rootURL = "http://166.111.68.66:2042/news/action/query/";
     private static final String TAG = "HttpHelper";
