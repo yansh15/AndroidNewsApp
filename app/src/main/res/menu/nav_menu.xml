@@ -22,7 +22,7 @@
             android:title="夜间模式"
             app:actionLayout="@layout/theme_switch" />
         <item
-            android:id="@+id/text_mode"
+            android:id="@+id/nav_text_mode"
             android:icon="@drawable/ic_image_black"
             android:title="文本模式"
             app:actionLayout="@layout/text_mode_switch" />

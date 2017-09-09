@@ -11,6 +11,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -112,5 +115,28 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     @Override
     public int getItemCount() {
         return mNewsList.size();
+    }
+
+    public boolean isTextMode() {
+        return textMode;
+    }
+
+    public void setTextMode(boolean textMode) {
+        this.textMode = textMode;
+    }
+
+    public void addNewsList(List<News> newsList) {
+        for (News news : newsList)
+            mNewsList.add(news);
+        Collections.sort(mNewsList, new Comparator<News>() {
+            @Override
+            public int compare(News news, News t1) {
+                long diff = news.getTime().getTime() - t1.getTime().getTime();
+                if (diff < 0) return -1;
+                if (diff == 0) return 0;
+                return 1;
+            }
+        });
+        notifyDataSetChanged();
     }
 }
