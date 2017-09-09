@@ -21,9 +21,24 @@ import okhttp3.Response;
  */
 
 public class HttpHelper {
+
     private static OkHttpClient client;
     private static String rootURL = "http://166.111.68.66:2042/news/action/query/";
     private static final String TAG = "HttpHelper";
+
+    public static final int SCIENCE = 1;
+    public static final int EDUCATION = 2;
+    public static final int MILITARY = 3;
+    public static final int NATIONAL = 4;
+    public static final int SOCIETY = 5;
+    public static final int CULTURE = 6;
+    public static final int TRANSPORT = 7;
+    public static final int INTERNATIONAL = 8;
+    public static final int SPORTS = 9;
+    public static final int COMMERCIAL = 10;
+    public static final int HEALTH = 11;
+    public static final int ENTERTAINMENT = 12;
+
     public static void askLatestNews(final int pageNo, final int pageSize, final  int category, final CallBack callback) {
         new Thread(new Runnable() {
             @Override
