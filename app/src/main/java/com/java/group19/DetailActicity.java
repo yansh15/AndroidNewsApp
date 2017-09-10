@@ -94,7 +94,7 @@ public class DetailActicity extends AppCompatActivity implements View.OnClickLis
                 //// TODO: 17/9/10  snackbar
                 break;
             case R.id.detail_source:
-                //// TODO: 17/9/10 Uri 
+                //// TODO: 17/9/10 Uri
                 break;
             default:
                 break;
