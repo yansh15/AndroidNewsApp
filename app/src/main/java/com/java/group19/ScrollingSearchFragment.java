@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.v4.database.DatabaseUtilsCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -101,6 +102,7 @@ public class ScrollingSearchFragment extends BaseSearchFragment implements AppBa
             @Override
             public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
                 lastQuery = searchSuggestion.getBody();
+                DatabaseHelper.addSearchRecord(lastQuery);
                 Intent intent = new Intent(getActivity(), SearchActivity.class);
                 intent.putExtra("query", lastQuery);
                 startActivity(intent);
@@ -109,6 +111,7 @@ public class ScrollingSearchFragment extends BaseSearchFragment implements AppBa
             @Override
             public void onSearchAction(String currentQuery) {
                 lastQuery = currentQuery;
+                DatabaseHelper.addSearchRecord(lastQuery);
                 Intent intent = new Intent(getActivity(), SearchActivity.class);
                 intent.putExtra("query", lastQuery);
                 startActivity(intent);

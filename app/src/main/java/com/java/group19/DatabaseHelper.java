@@ -55,11 +55,14 @@ public class DatabaseHelper {
         config.save();
     }
 
+    public static void addSearchRecord(String record) {
+        config.getSearchRecords().add(record);
+        config.save();
+    }
+
     public static Vector<String> getLatestSearchRecords(String prefix, int count) {
         Vector<String> records = config.getSearchRecords();
         Vector<String> result = new Vector<>();
-        if (records == null)
-            return result;
         for (int i = 0, j = 0; j < count && i < records.size(); ++i) {
             String record = records.elementAt(records.size() - 1 - i);
             if (record.startsWith(prefix)) {
