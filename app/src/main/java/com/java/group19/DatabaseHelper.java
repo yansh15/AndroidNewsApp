@@ -4,7 +4,6 @@ import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;
 
 import java.util.Collections;
-import java.util.Random;
 import java.util.Vector;
 
 /**
@@ -21,6 +20,8 @@ public class DatabaseHelper {
         config = DataSupport.findFirst(Config.class);
         if (config == null) {
             config = new Config();
+            config.setForbiddenWords(new Vector<String>());
+            config.setSearchRecords(new Vector<String>());
             config.save();
         }
     }
