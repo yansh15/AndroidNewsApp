@@ -10,6 +10,9 @@ import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
+import com.java.group19.Listener.OnGetDetailListener;
+import com.java.group19.Listener.OnGetImagesListener;
+import com.java.group19.Listener.OnGetNewsListener;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -53,7 +56,7 @@ public class HttpHelper {
     public static final int HEALTH = 11;
     public static final int ENTERTAINMENT = 12;
 
-    public static void askLatestNews(final int pageNo, final int pageSize, final  int category, final CallBack callback) {
+    public static void askLatestNews(final int pageNo, final int pageSize, final  int category, final OnGetNewsListener listener) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -67,24 +70,24 @@ public class HttpHelper {
                             .build();
                     Response response = client.newCall(request).execute();
                     String responseData = response.body().string();
-                    callback.onFinishNewsList(parseJSONForNewsList(responseData, callback));
+                    listener.onFinish(parseJSONForNewsList(responseData, listener));
                 }catch (Exception e) {
                     e.printStackTrace();
-                    callback.onError(e);
+                    listener.onError(e);
                 }
             }
         }).start();
     }
 
-    public static void askLatestNews(final int pageNo, final int category, final CallBack callback) {
-        askLatestNews(pageNo, 20, category, callback);
+    public static void askLatestNews(final int pageNo, final int category, final OnGetNewsListener listener) {
+        askLatestNews(pageNo, 20, category, listener);
     }
 
-    public static void askLatestNews(final int pageNo, final CallBack callback) {
-        askLatestNews(pageNo, 0, callback);
+    public static void askLatestNews(final int pageNo, final OnGetNewsListener listener) {
+        askLatestNews(pageNo, 0, listener);
     }
 
-    public static void askKeywordNews(final String keyword, final int category, final int pageNo, final int pageSize, final CallBack callback) {
+    public static void askKeywordNews(final String keyword, final int category, final int pageNo, final int pageSize, final OnGetNewsListener listener) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -98,24 +101,24 @@ public class HttpHelper {
                             .build();
                     Response response = client.newCall(request).execute();
                     String responseData = response.body().string();
-                    callback.onFinishNewsList(parseJSONForNewsList(responseData, callback));
+                    listener.onFinish(parseJSONForNewsList(responseData, listener));
                 }catch (Exception e) {
                     e.printStackTrace();
-                    callback.onError(e);
+                    listener.onError(e);
                 }
             }
         }).start();
     }
 
-    public static void askKeywordNews(final String keyword, final int category, final int pageNo, final CallBack callback) {
-        askKeywordNews(keyword, category, pageNo, 20, callback);
+    public static void askKeywordNews(final String keyword, final int category, final int pageNo, final OnGetNewsListener listener) {
+        askKeywordNews(keyword, category, pageNo, 20, listener);
     }
 
-    public static void askKeywordNews(final String keyword, final int pageNo, final CallBack callback) {
-        askKeywordNews(keyword, 0, pageNo, 20, callback);
+    public static void askKeywordNews(final String keyword, final int pageNo, final OnGetNewsListener listener) {
+        askKeywordNews(keyword, 0, pageNo, 20, listener);
     }
 
-    public static void askDetailNews(final Context context, final News news, final CallBack callback) {
+    public static void askDetailNews(final News news, final OnGetDetailListener listener) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -127,21 +130,71 @@ public class HttpHelper {
                             .build();
                     Response response = client.newCall(request).execute();
                     String responseData = response.body().string();
-                    parseJSONForSingleNews(responseData, news, callback);
-                    //printNews(news);
-                    //ArrayList<Bitmap> bitmaps = new ArrayList<>();
-                    downloadImage(context, news, callback);
-                    callback.onFinishDetail();
+                    parseJSONForSingleNews(responseData, news, listener);
+                    listener.onFinish();
                 }catch (Exception e) {
                     e.printStackTrace();
-                    callback.onError(e);
+                    listener.onError(e);
                 }
             }
         }).start();
 
     }
 
-    private static void parseJSONForSingleNews(final String jsonData, final News news, final CallBack callback) {
+    private static void downloadImage(final Context context, final News news, final OnGetImagesListener listener) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final ArrayList<String> pictures = news.getPictures();
+                for (String s : pictures) {
+                    if (!s.contains("."))
+                        continue;
+                    /*try {
+
+                    }*/
+                }
+            }
+        }).start();
+        /*for (final String s : pictures) {
+            if (!s.contains("."))
+                continue;
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Bitmap bitmap = Glide.with(context)
+                                .load(s)
+                                .asBitmap()
+                                .into(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                                .get();
+                        if (bitmap != null) {
+                            saveImageToDevice(context, s, bitmap, listener);
+                            pictureVector.add(s);
+                        }
+                    }catch (ExecutionException e) {
+                        Log.e(TAG, "run: "+s);
+                        e.printStackTrace();
+                    }catch (Exception e) {
+                        e.printStackTrace();
+                        listener.onError(e);
+                    }
+                }
+            });
+            threads.add(thread);
+            thread.start();
+        }
+        for (Thread thread : threads) {
+            try {
+                thread.join();
+            }catch (Exception e) {
+                e.printStackTrace();
+                listener.onError(e);
+            }
+        }
+        news.setPictures(new ArrayList<String>(pictureVector));*/
+    }
+
+    private static void parseJSONForSingleNews(final String jsonData, final News news, final OnGetDetailListener listener) {
         try {
             JSONObject jsonObject = new JSONObject(jsonData);
             news.setJournal(jsonObject.getString("news_Journal"));
@@ -169,11 +222,11 @@ public class HttpHelper {
             news.setEntries(entries);
         }catch (Exception e) {
             e.printStackTrace();
-            callback.onError(e);
+            listener.onError(e);
         }
     }
 
-    private static ArrayList<News> parseJSONForNewsList(String jsonData, final CallBack callback) {
+    private static ArrayList<News> parseJSONForNewsList(String jsonData, final OnGetNewsListener listener) {
         ArrayList<News> newsList = new ArrayList<>();
         try {
             JSONArray jsonArray = new JSONObject(jsonData).getJSONArray("list");
@@ -195,57 +248,12 @@ public class HttpHelper {
             }
         }catch (Exception e) {
             e.printStackTrace();
-            callback.onError(e);
+            listener.onError(e);
         }
         return newsList;
     }
 
-    private static void downloadImage(final Context context, final News news, final CallBack callBack) {
-        //final Vector<Bitmap> bitmaps = new Vector<Bitmap>();
-        Vector<Thread> threads = new Vector<Thread>();
-        final Vector<String> pictureVector = new Vector<String>();
-        for (final String s : news.getPictures()) {
-            if (!s.contains("."))
-                continue;
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Bitmap bitmap = Glide.with(context)
-                                .load(s)
-                                .asBitmap()
-                                .into(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
-                                .get();
-                        if (bitmap != null) {
-                            saveImageToDevice(context, s, bitmap, callBack);
-                            pictureVector.add(s);
-                        }
-                    }catch (ExecutionException e) {
-                        Log.e(TAG, "run: "+s);
-                        e.printStackTrace();
-                    }catch (Exception e) {
-                        e.printStackTrace();
-                        callBack.onError(e);
-                    }
-                }
-            });
-            threads.add(thread);
-            thread.start();
-        }
-        for (Thread thread : threads) {
-            try {
-                thread.join();
-            }catch (Exception e) {
-                e.printStackTrace();
-                callBack.onError(e);
-            }
-        }
-        news.setPictures(new ArrayList<String>(pictureVector));
-        //return bitmaps;
-    }
-
-    private synchronized static void saveImageToDevice(final Context context, final String string, final Bitmap bitmap, final CallBack callBack) {
-        // 首先保存图片
+    private synchronized static void saveImageToDevice(final Context context, final String string, final Bitmap bitmap, final OnGetImagesListener listener) {
         File file = Environment.getDataDirectory().getAbsoluteFile();
         file = new File(file, "/data/com.java.group19/");
         String fileName = "newsPicture";
@@ -263,7 +271,7 @@ public class HttpHelper {
             fos.flush();
         } catch (Exception e) {
             e.printStackTrace();
-            callBack.onError(e);
+            listener.onError(e);
         } finally {
             try {
                 if (fos != null) {
@@ -271,20 +279,18 @@ public class HttpHelper {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                callBack.onError(e);
+                listener.onError(e);
             }
         }
 
-        // 其次把文件插入到系统图库
         try {
             MediaStore.Images.Media.insertImage(context.getContentResolver(),
                     currentFile.getAbsolutePath(), fileName, null);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            callBack.onError(e);
+            listener.onError(e);
         }
 
-        // 最后通知图库更新
         context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                 Uri.fromFile(new File(currentFile.getPath()))));
     }
