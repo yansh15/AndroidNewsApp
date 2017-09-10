@@ -34,12 +34,6 @@
             android:clipToPadding="false"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <!--TextView
-                android:clipToPadding="false"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/random_text"
-                android:textSize="18sp"/-->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">

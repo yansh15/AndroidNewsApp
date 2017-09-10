@@ -26,6 +26,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
 
     private Context mContext;
     private List<News> mNewsList;
+    private Comparator<News> comparator;
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         NewsCardView newsCardView;
@@ -36,8 +37,9 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
         }
     }
 
-    public NewsAdapter() {
+    public NewsAdapter(Comparator<News> comparator) {
         mNewsList = new Vector<>();
+        this.comparator = comparator;
     }
 
     @Override
@@ -70,15 +72,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     public void addNewsListRondom(List<News> newsList) {
         for (News news : newsList)
             mNewsList.add(news);
-        Collections.sort(mNewsList, new Comparator<News>() {
-            @Override
-            public int compare(News news, News t1) {
-                long diff = news.getTime().getTime() - t1.getTime().getTime();
-                if (diff < 0) return -1;
-                if (diff == 0) return 0;
-                return 1;
-            }
-        });
+        Collections.sort(mNewsList, comparator);
         notifyDataSetChanged();
     }
 }

@@ -2,6 +2,7 @@ package com.java.group19;
 
 import android.graphics.Bitmap;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -16,6 +17,7 @@ import com.arlib.floatingsearchview.FloatingSearchView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -34,42 +36,17 @@ public class DetailActicity extends AppCompatActivity implements View.OnClickLis
         //set toolber
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
+        setupToolbar();
+
         //set fab
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.detail_fab);
         fab.setOnClickListener(this);
 
         //set Visibility
-        imageOne = (ImageView) findViewById(R.id.detail_image);
-        imageOne.setVisibility(View.GONE);
-        imageLayout = (LinearLayout) findViewById(R.id.detail_image_layout);
-        imageLayout.setVisibility(View.GONE);
-        classTagLayout = (LinearLayout) findViewById(R.id.detail_classtag_layout);
-        classTagLayout.setVisibility(View.GONE);
+        setupLayoutVisibility();
 
         //set news
-        final News news = (News) getIntent().getSerializableExtra("news");
-        detailNews = DatabaseHelper.getNews(news.getUniqueId());
-        if (detailNews == null) {
-            HttpHelper.askDetailNews(news, new CallBack() {
-                @Override
-                public void onFinishNewsList(List<News> newsList) {
-
-                }
-
-                @Override
-                public void onFinishDetail() {
-                    detailNews = news;
-                    setupNews();
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    e.printStackTrace();
-                }
-            });
-        } else {
-            setupNews();
-        }
+        getDetailNews();
     }
 
     @Override
@@ -81,6 +58,9 @@ public class DetailActicity extends AppCompatActivity implements View.OnClickLis
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
             default:
                 break;
         }
@@ -98,6 +78,52 @@ public class DetailActicity extends AppCompatActivity implements View.OnClickLis
                 break;
             default:
                 break;
+        }
+    }
+
+    private void setupToolbar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_black);
+        }
+    }
+
+    private void setupLayoutVisibility() {
+        imageOne = (ImageView) findViewById(R.id.detail_image);
+        imageOne.setVisibility(View.GONE);
+        imageLayout = (LinearLayout) findViewById(R.id.detail_image_layout);
+        imageLayout.setVisibility(View.GONE);
+        classTagLayout = (LinearLayout) findViewById(R.id.detail_classtag_layout);
+        classTagLayout.setVisibility(View.GONE);
+    }
+
+    private void getDetailNews() {
+        final News news = (News) getIntent().getSerializableExtra("news");
+        detailNews = DatabaseHelper.getNews(news.getUniqueId());
+        if (detailNews == null) {
+            HttpHelper.askDetailNews(news, new CallBack() {
+                @Override
+                public void onFinishNewsList(List<News> newsList) {
+
+                }
+
+                @Override
+                public void onFinishDetail() {
+                    detailNews = news;
+                    DatabaseHelper.saveNews(detailNews);
+                    setupNews();
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        } else {
+            detailNews.setLastVisitTime(new Date());
+            DatabaseHelper.saveNews(detailNews);
+            setupNews();
         }
     }
 

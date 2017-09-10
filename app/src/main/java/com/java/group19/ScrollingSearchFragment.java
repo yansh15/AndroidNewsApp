@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -169,7 +170,15 @@ public class ScrollingSearchFragment extends BaseSearchFragment implements AppBa
     private void setupRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new NewsAdapter();
+        adapter = new NewsAdapter(new Comparator<News>() {
+            @Override
+            public int compare(News news, News t1) {
+                long diff = news.getTime().getTime() - t1.getTime().getTime();
+                if (diff > 0) return -1;
+                if (diff == 0) return 0;
+                return 1;
+            }
+        });
         recyclerView.setAdapter(adapter);
     }
 
