@@ -1,12 +1,14 @@
 package com.java.group19;
 
+import org.litepal.crud.DataSupport;
+
 import java.io.Serializable;
 
 /**
  * Created by strongoier on 17/9/9.
  */
 
-public class Keyword implements Serializable {
+public class Keyword extends DataSupport implements Serializable {
     private News news;
     private String word;
     private double score;

@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 import java.util.regex.Pattern;
@@ -32,10 +33,6 @@ import java.util.concurrent.ExecutionException;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-
-/**
- * Created by Lzl on 2017/9/8.
- */
 
 public class HttpHelper {
     private static OkHttpClient client;
@@ -141,57 +138,29 @@ public class HttpHelper {
 
     }
 
-    private static void downloadImage(final Context context, final News news, final OnGetImagesListener listener) {
+    public static void downloadImage(final Context context, final List<String> urls, final OnGetImagesListener listener) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final ArrayList<String> pictures = news.getPictures();
-                for (String s : pictures) {
+                ArrayList<String> results = new ArrayList<String>();
+                for (String s : urls) {
                     if (!s.contains("."))
                         continue;
-                    /*try {
-
-                    }*/
-                }
-            }
-        }).start();
-        /*for (final String s : pictures) {
-            if (!s.contains("."))
-                continue;
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
                     try {
-                        Bitmap bitmap = Glide.with(context)
-                                .load(s)
-                                .asBitmap()
-                                .into(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
-                                .get();
+                        Bitmap bitmap = Glide.with(context).load(s).asBitmap()
+                                .into(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).get();
                         if (bitmap != null) {
                             saveImageToDevice(context, s, bitmap, listener);
-                            pictureVector.add(s);
+                            results.add(s);
                         }
-                    }catch (ExecutionException e) {
-                        Log.e(TAG, "run: "+s);
-                        e.printStackTrace();
-                    }catch (Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                         listener.onError(e);
                     }
                 }
-            });
-            threads.add(thread);
-            thread.start();
-        }
-        for (Thread thread : threads) {
-            try {
-                thread.join();
-            }catch (Exception e) {
-                e.printStackTrace();
-                listener.onError(e);
+                listener.onFinish(results);
             }
-        }
-        news.setPictures(new ArrayList<String>(pictureVector));*/
+        }).start();
     }
 
     private static void parseJSONForSingleNews(final String jsonData, final News news, final OnGetDetailListener listener) {
@@ -236,7 +205,7 @@ public class HttpHelper {
                 news.setClassTag(jsonObject.getString("newsClassTag"));
                 news.setAuthor(jsonObject.getString("news_Author"));
                 news.setUniqueId(jsonObject.getString("news_ID"));
-                news.setPictures(new ArrayList<String>(Arrays.asList(jsonObject.getString("news_Pictures").split("//s|;"))));
+                news.setPictures(new ArrayList<>(Arrays.asList(jsonObject.getString("news_Pictures").split("//s|;"))));
                 news.setSource(jsonObject.getString("news_Source"));
                 news.setTime(new SimpleDateFormat("yyyyMMdd", Locale.CHINA).parse(jsonObject.getString("news_Time").substring(0, 8)));
                 news.setTitle(jsonObject.getString("news_Title"));

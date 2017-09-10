@@ -1,6 +1,8 @@
 package com.java.group19;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -9,12 +11,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
+import com.bumptech.glide.Glide;
+import com.java.group19.Listener.OnGetDetailListener;
+import com.java.group19.Listener.OnGetImagesListener;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -102,33 +109,45 @@ public class DetailActicity extends AppCompatActivity implements View.OnClickLis
         final News news = (News) getIntent().getSerializableExtra("news");
         detailNews = DatabaseHelper.getNews(news.getUniqueId());
         if (detailNews == null) {
-            HttpHelper.askDetailNews(this, news, new CallBack() {
+            HttpHelper.askDetailNews(news, new OnGetDetailListener() {
                 @Override
-                public void onFinishNewsList(List<News> newsList) {
-
-                }
-
-                @Override
-                public void onFinishDetail() {
+                public void onFinish() {
                     detailNews = news;
-                    DatabaseHelper.saveNews(detailNews);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             setupNews();
                         }
                     });
+                    List<String> urls = detailNews.getPictures();
+                    final ArrayList<String> files = new ArrayList<>();
+                    HttpHelper.downloadImage(DetailActicity.this, urls, new OnGetImagesListener() {
+                        @Override
+                        public void onFinish(ArrayList<String> urls) {
+                            detailNews.setPictures(urls);
+                            detailNews.setLastVisitTime(new Date());
+                            DatabaseHelper.saveNews(detailNews);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    loadImages();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onError(Exception e) {}
+                    });
                 }
 
                 @Override
-                public void onError(Exception e) {
-                    e.printStackTrace();
-                }
+                public void onError(Exception e) {}
             });
         } else {
             detailNews.setLastVisitTime(new Date());
             DatabaseHelper.saveNews(detailNews);
             setupNews();
+            loadImages();
         }
     }
 
@@ -140,17 +159,26 @@ public class DetailActicity extends AppCompatActivity implements View.OnClickLis
         TextView source = (TextView) findViewById(R.id.detail_source);
         source.setText(detailNews.getSource());
         source.setOnClickListener(this);
+    }
 
-        List<String> urls = detailNews.getPictures();
-        List<String> files = new ArrayList<>();
-        for (int i = 0; i < urls.size(); ++i) {
-            files.add(urls.get(i).replaceAll("[^A-Za-z0-9.]", ""));
+    private void loadImages() {
+        File path = new File(Environment.getDataDirectory().getAbsoluteFile(), "/data/com.java.group19/newsPicture");
+        if (!detailNews.getPictures().isEmpty()) {
+            String name = detailNews.getPictures().get(0).replaceAll("[^A-Za-z0-9.]", "");
+            File pic = new File(path, name);
+            Glide.with(this).load(pic).into(imageOne);
+            imageOne.setVisibility(View.VISIBLE);
         }
-        if (!files.isEmpty()) {
-            //// TODO: 17/9/10
-        }
-        if (files.size() > 1) {
-            //// TODO: 17/9/10
+        if (detailNews.getPictures().size() > 1) {
+            imageLayout.setVisibility(View.VISIBLE);
+            for (int i = 1; i < detailNews.getPictures().size(); ++i) {
+                String name = detailNews.getPictures().get(i).replaceAll("[^A-Za-z0-9.]", "");
+                ImageView view = new ImageView(this);
+                view.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                File pic = new File(path, name);
+                Glide.with(this).load(pic).into(view);
+                imageLayout.addView(view);
+            }
         }
     }
 }

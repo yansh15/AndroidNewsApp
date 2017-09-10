@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.java.group19.Listener.OnGetNewsListener;
 
 import java.util.Comparator;
 import java.util.List;
@@ -183,9 +184,9 @@ public class ScrollingSearchFragment extends BaseSearchFragment implements AppBa
     }
 
     private void updateLatestNewsList() {
-        HttpHelper.askLatestNews(pageNo, new CallBack() {
+        HttpHelper.askLatestNews(pageNo, new OnGetNewsListener() {
             @Override
-            public void onFinishNewsList(final List<News> newsList) {
+            public void onFinish(final List<News> newsList) {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -195,14 +196,7 @@ public class ScrollingSearchFragment extends BaseSearchFragment implements AppBa
             }
 
             @Override
-            public void onFinishDetail() {
-
-            }
-
-            @Override
-            public void onError(Exception e) {
-                e.printStackTrace();
-            }
+            public void onError(Exception e) {}
         });
     }
 }

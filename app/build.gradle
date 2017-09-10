@@ -35,4 +35,5 @@ dependencies {
     compile 'org.litepal.android:core:1.+'
     testCompile 'junit:junit:4.12'
     compile 'com.github.arimorty:floatingsearchview:2.1.1'
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1+'
 }
