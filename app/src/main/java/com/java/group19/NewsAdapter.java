@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -38,7 +39,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     }
 
     public NewsAdapter(Comparator<News> comparator) {
-        mNewsList = new Vector<>();
+        mNewsList = new ArrayList<>();
         this.comparator = comparator;
     }
 
@@ -74,5 +75,9 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
             mNewsList.add(news);
         Collections.sort(mNewsList, comparator);
         notifyDataSetChanged();
+    }
+
+    public boolean isEmpty() {
+        return mNewsList.isEmpty();
     }
 }

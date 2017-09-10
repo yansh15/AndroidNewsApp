@@ -40,6 +40,7 @@ public class HttpHelper {
     private static final String TAG = "HttpHelper";
     private static Pattern pattern = Pattern.compile("(^　*)|(　*$)");
 
+    public static final int ALL = 0;
     public static final int SCIENCE = 1;
     public static final int EDUCATION = 2;
     public static final int MILITARY = 3;

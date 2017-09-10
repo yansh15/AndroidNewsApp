@@ -1,5 +1,6 @@
 package com.java.group19;
 
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -18,20 +19,28 @@ import android.widget.CompoundButton;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.java.group19.Adapter.CategoryAdapter;
+import com.java.group19.Listener.OnCategoryChangeListener;
+import com.java.group19.Listener.OnGetNewsListener;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 
 import org.litepal.tablemanager.Connector;
 
 public class MainActivity extends AppCompatActivity
-        implements BaseSearchFragment.BaseSearchFragmentCallbacks {
+        implements AppBarLayout.OnOffsetChangedListener {
 
-    private ScrollingSearchFragment fragment;
-
+    private FloatingSearchView searchView;
+    private AppBarLayout appBarLayout;
+    private RecyclerView recyclerView;
+    private RecyclerView categoryRecyclerView;
+    private NewsAdapter[] adapter;
+    private CategoryAdapter categoryAdapter;
+    public static int category = HttpHelper.ALL;
+    private String lastQuery = "";
     private DrawerLayout mDrawerLayout;
-    private Vector<News> newsList = new Vector<>();
-    private NewsAdapter adapter;
 
     private static final String TAG = "MainActivity";
 
@@ -45,36 +54,25 @@ public class MainActivity extends AppCompatActivity
         final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         setNavigationView(navigationView);
 
-        fragment = new ScrollingSearchFragment();
-        showFragment(fragment);
-    }
+        searchView = (FloatingSearchView) findViewById(R.id.floating_search_view);
+        appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        recyclerView = (RecyclerView) findViewById(R.id.news_recycler_view);
+        categoryRecyclerView = (RecyclerView) findViewById(R.id.category_recycle_view);
+        appBarLayout.addOnOffsetChangedListener(this);
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            /*case android.R.id.home:
-                mDrawerLayout.openDrawer(GravityCompat.START);
-                break;*/
-            default:
-                break;
-        }
-        return true;
-    }
-
-    @Override
-    public void onAttachSearchViewToDrawer(FloatingSearchView searchView) {
+        //set
         searchView.attachNavigationDrawerToMenuButton(mDrawerLayout);
+        setupSearchBar();
+        setupSearchBar();
+        setupRecyclerView();
+        updateNewsList();
     }
 
     @Override
-    public void onBackPressed() {
-//        List fragments = getSupportFragmentManager().getFragments();
-//        BaseSearchFragment currentFragement = (BaseSearchFragment) fragments.get(fragments.size() - 1);
-//
-//        if (!currentFragement.onActivityBackPress())
-        super.onBackPressed();
+    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+        searchView.setTranslationY(verticalOffset);
     }
-    
+
     private void setNavigationView(final NavigationView navigationView) {
         navigationView.setCheckedItem(R.id.nav_favorite);
         final SwitchCompat themeSwitch = (SwitchCompat) navigationView.getMenu().getItem(3).getActionView().findViewById(R.id.theme_switch);
@@ -135,8 +133,111 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void showFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
+    private void setupSearchBar() {
+        searchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+            @Override
+            public void onSearchTextChanged(String oldQuery, String newQuery) {
+                searchView.showProgress();
+                SearchHelper.findSuggestions(newQuery, 5, new SearchHelper.OnFindSuggestionsListener() {
+                    @Override
+                    public void onResults(List<SearchRecordSuggestion> results) {
+                        searchView.swapSuggestions(results);
+                        searchView.hideProgress();
+                    }
+                });
+            }
+        });
+        searchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
+            @Override
+            public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
+                searchView.setSearchText(searchSuggestion.getBody());
+            }
+
+            @Override
+            public void onSearchAction(String currentQuery) {
+                lastQuery = currentQuery;
+                DatabaseHelper.addSearchRecord(lastQuery);
+                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+                intent.putExtra("query", lastQuery);
+                startActivity(intent);
+            }
+        });
+        searchView.setOnFocusChangeListener(new FloatingSearchView.OnFocusChangeListener() {
+            @Override
+            public void onFocus() {
+                searchView.showProgress();
+                SearchHelper.findSuggestions("", 5, new SearchHelper.OnFindSuggestionsListener() {
+                    @Override
+                    public void onResults(List<SearchRecordSuggestion> results) {
+                        searchView.swapSuggestions(results);
+                        searchView.hideProgress();
+                    }
+                });
+            }
+
+            @Override
+            public void onFocusCleared() {
+                searchView.setSearchBarTitle("");
+            }
+        });
+        searchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
+            @Override
+            public void onActionMenuItemSelected(MenuItem item) {
+                switch (item.getItemId()) {
+                    //// TODO: 2017/9/10
+                    default:
+                        break;
+                }
+            }
+        });
     }
 
+    private void setupRecyclerView() {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new NewsAdapter[13];
+        for (int i = 0; i < 13; ++i) {
+            adapter[i] = new NewsAdapter(new Comparator<News>() {
+                @Override
+                public int compare(News news, News t1) {
+                    long diff = news.getTime().getTime() - t1.getTime().getTime();
+                    if (diff > 0) return -1;
+                    if (diff == 0) return 0;
+                    return 1;
+                }
+            });
+        }
+        recyclerView.setAdapter(adapter[category]);
+        LinearLayoutManager categoryLayoutManager = new LinearLayoutManager(this);
+        categoryLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        categoryRecyclerView.setLayoutManager(categoryLayoutManager);
+        categoryAdapter = new CategoryAdapter(new OnCategoryChangeListener() {
+            @Override
+            public void onCategoryChange(int cate) {
+                category = cate;
+                recyclerView.setAdapter(adapter[category]);
+                if (adapter[category].isEmpty())
+                    updateNewsList();
+            }
+        });
+        categoryRecyclerView.setAdapter(categoryAdapter);
+    }
+
+    private void updateNewsList() {
+        //// FIXME: 2017/9/11  pageNo
+        HttpHelper.askLatestNews(1, category, new OnGetNewsListener() {
+            @Override
+            public void onFinish(final List<News> newsList) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter[category].addNewsListRondom(newsList);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {}
+        });
+    }
 }
