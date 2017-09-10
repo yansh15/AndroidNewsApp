@@ -37,8 +37,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Connector.getDatabase();
+        DatabaseHelper.init();
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
