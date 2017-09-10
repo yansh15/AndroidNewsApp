@@ -1,18 +1,30 @@
 package com.java.group19;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.Target;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Vector;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.concurrent.ExecutionException;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -103,7 +115,7 @@ public class HttpHelper {
         askKeywordNews(keyword, 0, pageNo, 20, callback);
     }
 
-    public static void askDetailNews(final News news, final CallBack callback) {
+    public static void askDetailNews(final Context context, final News news, final CallBack callback) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -128,7 +140,7 @@ public class HttpHelper {
 
     }
 
-    private static void parseJSONForSingleNews(String jsonData, News news, final CallBack callback) {
+    private static void parseJSONForSingleNews(final String jsonData, final News news, final CallBack callback) {
         try {
             JSONObject jsonObject = new JSONObject(jsonData);
             news.setJournal(jsonObject.getString("news_Journal"));
@@ -187,7 +199,91 @@ public class HttpHelper {
         return newsList;
     }
 
+    private static Vector<Bitmap> downloadImage(final Context context, final News news, final CallBack callBack) {
+        final Vector<Bitmap> bitmaps = new Vector<Bitmap>();
+        Vector<Thread> threads = new Vector<Thread>();
+        for (final String s : news.getPictures()) {
+            if (!s.contains(".")) continue;
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Bitmap bitmap = Glide.with(context)
+                                .load(s)
+                                .asBitmap()
+                                .into(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                                .get();
+                        if (bitmap != null) {
+                            saveImageToDevice(context, s, bitmap, callBack);
+                            bitmaps.add(bitmap);
+                        }
+                    }catch (ExecutionException e) {
+                        Log.e(TAG, "run: "+s);
+                        e.printStackTrace();
+                    }catch (Exception e) {
+                        e.printStackTrace();
+                        callBack.onError(e);
+                    }
+                }
+            });
+            threads.add(thread);
+            thread.start();
+        }
+        for (Thread thread : threads) {
+            try {
+                thread.join();
+            }catch (Exception e) {
+                e.printStackTrace();
+                callBack.onError(e);
+            }
+        }
+        return bitmaps;
+    }
 
+    private synchronized static void saveImageToDevice(final Context context, final String string, final Bitmap bitmap, final CallBack callBack) {
+        // 首先保存图片
+        File file = Environment.getDataDirectory().getAbsoluteFile();
+        file = new File(file, "/data/com.java.group19/");
+        String fileName = "newsPicture";
+        File appDir = new File(file ,fileName);
+        if (!appDir.exists()) {
+            appDir.mkdirs();
+        }
+        fileName = string.replace('/', '-');
+        File currentFile = new File(appDir, fileName);
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(currentFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+            callBack.onError(e);
+        } finally {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                callBack.onError(e);
+            }
+        }
+
+        // 其次把文件插入到系统图库
+        try {
+            MediaStore.Images.Media.insertImage(context.getContentResolver(),
+                    currentFile.getAbsolutePath(), fileName, null);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            callBack.onError(e);
+        }
+
+        // 最后通知图库更新
+        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                Uri.fromFile(new File(currentFile.getPath()))));
+    }
 
     public static void printNews(News news) {
         String output = "\nnewsClassTag: "+news.getClassTag()+"\nnews_Author: "+news.getAuthor()+"\nnews_ID: "+news.getUniqueId() + "\nnews_Pictures: ";
