@@ -27,7 +27,7 @@ public class Test implements CallBack {
         Log.d("Test", "onFinishNewsList: "+cnt);
     }
 
-    public void onFinishDetail(List<Bitmap> bitmaps) {
+    public void onFinishDetail() {
 
     }
 

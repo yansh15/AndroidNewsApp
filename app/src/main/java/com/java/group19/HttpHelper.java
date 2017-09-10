@@ -127,7 +127,7 @@ public class HttpHelper {
                     parseJSONForSingleNews(responseData, news, callback);
                     //printNews(news);
                     Vector<Bitmap> bitmaps = downloadImage(context, news, callback);
-                    callback.onFinishDetail(bitmaps);
+                    callback.onFinishDetail();
                 }catch (Exception e) {
                     e.printStackTrace();
                     callback.onError(e);
@@ -244,7 +244,7 @@ public class HttpHelper {
         if (!appDir.exists()) {
             appDir.mkdirs();
         }
-        fileName = string.replace('/', '-');
+        fileName = string.replaceAll("[^a-zA-Z0-9.]", "");
         File currentFile = new File(appDir, fileName);
 
         FileOutputStream fos = null;

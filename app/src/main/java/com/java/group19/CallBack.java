@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface CallBack {
     public void onFinishNewsList(List<News> newsList);
-    public void onFinishDetail(List<Bitmap> bitmaps);
+    public void onFinishDetail();
     public void onError(Exception e);
 }

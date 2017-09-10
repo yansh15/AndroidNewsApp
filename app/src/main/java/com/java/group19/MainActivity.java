@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity
             }
 
             @Override
-            public void onFinishDetail(List<Bitmap> bitmaps) {
+            public void onFinishDetail() {
 
             }
 
