@@ -44,24 +44,6 @@ public class MainActivity extends AppCompatActivity
         setNavigationView(navigationView);
 
         showFragment(new ScrollingSearchFragment());
-
-        //set RecycleView
-        /*RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-        adapter = new NewsAdapter(newsList, DatabaseHelper.isTextMode());
-        recyclerView.setAdapter(adapter);
-        //getLatestNews();
-
-        //set SwipeRefresh
-        SwipeRefreshLayout mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                //todo refresh
-            }
-        });*/
     }
 
     @Override
@@ -133,7 +115,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 MenuItem menuItem = navigationView.getMenu().getItem(4);
-                adapter.setTextMode(b);
+                //// TODO: 17/9/10  
                 if (b)
                     menuItem.setIcon(R.drawable.ic_title_black);
                 else

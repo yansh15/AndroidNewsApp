@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +30,10 @@ public class ScrollingSearchFragment extends BaseSearchFragment implements AppBa
     private FloatingSearchView searchView;
     
     private AppBarLayout appBarLayout;
+
+    private RecyclerView recyclerView;
+
+    private NewsAdapter adapter;
     
     private boolean isDarkSearchTheme = false;
     
@@ -46,11 +52,37 @@ public class ScrollingSearchFragment extends BaseSearchFragment implements AppBa
         super.onViewCreated(view, savedInstanceState);
         searchView = (FloatingSearchView) view.findViewById(R.id.floating_search_view);
         appBarLayout = (AppBarLayout) view.findViewById(R.id.appbar);
+        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         appBarLayout.addOnOffsetChangedListener(this);
         setupDrawer();
         setupSearchBar();
+        setupRecyclerView();
     }
-    
+
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+        searchView.setTranslationY(verticalOffset);
+    }
+
+    @Override
+    public boolean onActivityBackPress() {
+        if (!searchView.setSearchFocused(false))
+            return false;
+        return true;
+    }
+
+    public NewsAdapter getAdapter() {
+        return adapter;
+    }
+
+    public void setAdapter(NewsAdapter adapter) {
+        this.adapter = adapter;
+    }
+
+    private void setupDrawer() {
+        attachSearchViewActivityDrawer(searchView);
+    }
+
     private void setupSearchBar() {
         searchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
             @Override
@@ -98,7 +130,7 @@ public class ScrollingSearchFragment extends BaseSearchFragment implements AppBa
                 searchView.setSearchBarTitle(lastQuery);
             }
         });
-        
+
         searchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
             @Override
             public void onActionMenuItemSelected(MenuItem item) {
@@ -124,19 +156,10 @@ public class ScrollingSearchFragment extends BaseSearchFragment implements AppBa
         });
     }
 
-    @Override
-    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-        searchView.setTranslationY(verticalOffset);
-    }
-
-    @Override
-    public boolean onActivityBackPress() {
-        if (!searchView.setSearchFocused(false))
-            return false;
-        return true;
-    }
-
-    private void setupDrawer() {
-        attachSearchViewActivityDrawer(searchView);
+    private void setupRecyclerView() {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new NewsAdapter();
+        recyclerView.setAdapter(adapter);
     }
 }
