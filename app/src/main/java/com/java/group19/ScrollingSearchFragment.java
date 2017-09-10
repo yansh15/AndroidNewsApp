@@ -195,7 +195,7 @@ public class ScrollingSearchFragment extends BaseSearchFragment implements AppBa
             }
 
             @Override
-            public void onFinishDetail(List<Bitmap> bitmaps) {
+            public void onFinishDetail() {
 
             }
 

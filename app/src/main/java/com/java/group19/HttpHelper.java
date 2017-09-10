@@ -129,8 +129,9 @@ public class HttpHelper {
                     String responseData = response.body().string();
                     parseJSONForSingleNews(responseData, news, callback);
                     //printNews(news);
-                    ArrayList<Bitmap> bitmaps = new ArrayList<>();
-                    callback.onFinishDetail(bitmaps);
+                    //ArrayList<Bitmap> bitmaps = new ArrayList<>();
+                    downloadImage(context, news, callback);
+                    callback.onFinishDetail();
                 }catch (Exception e) {
                     e.printStackTrace();
                     callback.onError(e);
@@ -182,7 +183,7 @@ public class HttpHelper {
                 news.setClassTag(jsonObject.getString("newsClassTag"));
                 news.setAuthor(jsonObject.getString("news_Author"));
                 news.setUniqueId(jsonObject.getString("news_ID"));
-                news.setPictures(new ArrayList<String>(Arrays.asList(jsonObject.getString("news_Pictures").split(";"))));
+                news.setPictures(new ArrayList<String>(Arrays.asList(jsonObject.getString("news_Pictures").split("//s|;"))));
                 news.setSource(jsonObject.getString("news_Source"));
                 news.setTime(new SimpleDateFormat("yyyyMMdd", Locale.CHINA).parse(jsonObject.getString("news_Time").substring(0, 8)));
                 news.setTitle(jsonObject.getString("news_Title"));
@@ -199,11 +200,13 @@ public class HttpHelper {
         return newsList;
     }
 
-    private static Vector<Bitmap> downloadImage(final Context context, final News news, final CallBack callBack) {
-        final Vector<Bitmap> bitmaps = new Vector<Bitmap>();
+    private static void downloadImage(final Context context, final News news, final CallBack callBack) {
+        //final Vector<Bitmap> bitmaps = new Vector<Bitmap>();
         Vector<Thread> threads = new Vector<Thread>();
+        final Vector<String> pictureVector = new Vector<String>();
         for (final String s : news.getPictures()) {
-            if (!s.contains(".")) continue;
+            if (!s.contains("."))
+                continue;
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -215,7 +218,7 @@ public class HttpHelper {
                                 .get();
                         if (bitmap != null) {
                             saveImageToDevice(context, s, bitmap, callBack);
-                            bitmaps.add(bitmap);
+                            pictureVector.add(s);
                         }
                     }catch (ExecutionException e) {
                         Log.e(TAG, "run: "+s);
@@ -237,7 +240,8 @@ public class HttpHelper {
                 callBack.onError(e);
             }
         }
-        return bitmaps;
+        news.setPictures(new ArrayList<String>(pictureVector));
+        //return bitmaps;
     }
 
     private synchronized static void saveImageToDevice(final Context context, final String string, final Bitmap bitmap, final CallBack callBack) {
@@ -249,7 +253,7 @@ public class HttpHelper {
         if (!appDir.exists()) {
             appDir.mkdirs();
         }
-        fileName = string.replace('/', '-');
+        fileName = string.replaceAll("[^a-zA-Z0-9.]", "");
         File currentFile = new File(appDir, fileName);
 
         FileOutputStream fos = null;

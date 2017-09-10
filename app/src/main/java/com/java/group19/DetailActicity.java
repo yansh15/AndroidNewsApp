@@ -102,7 +102,7 @@ public class DetailActicity extends AppCompatActivity implements View.OnClickLis
         final News news = (News) getIntent().getSerializableExtra("news");
         detailNews = DatabaseHelper.getNews(news.getUniqueId());
         if (detailNews == null) {
-            HttpHelper.askDetailNews(news, new CallBack() {
+            HttpHelper.askDetailNews(this, news, new CallBack() {
                 @Override
                 public void onFinishNewsList(List<News> newsList) {
 
@@ -112,7 +112,12 @@ public class DetailActicity extends AppCompatActivity implements View.OnClickLis
                 public void onFinishDetail() {
                     detailNews = news;
                     DatabaseHelper.saveNews(detailNews);
-                    setupNews();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            setupNews();
+                        }
+                    });
                 }
 
                 @Override

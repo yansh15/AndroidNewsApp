@@ -31,7 +31,7 @@ public class DatabaseHelper {
     }
 
     public static News getNews(String uniqueId) {
-        return DataSupport.where("uniqueid = ", uniqueId).findFirst(News.class);
+        return DataSupport.where("uniqueid = ?", uniqueId).findFirst(News.class);
     }
 
     public static void saveNews(News news) {
