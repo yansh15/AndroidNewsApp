@@ -8,6 +8,10 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.URLSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -155,7 +159,20 @@ public class DetailActicity extends AppCompatActivity implements View.OnClickLis
         ((TextView) findViewById(R.id.detail_title)).setText(detailNews.getTitle());
         ((TextView) findViewById(R.id.detail_author)).setText(detailNews.getAuthor());
         ((TextView) findViewById(R.id.detail_date)).setText(dateFormat.format(detailNews.getTime()));
-        ((TextView) findViewById(R.id.detail_content)).setText(detailNews.getContent());
+
+        // set news content with baike links
+        String content = detailNews.getContent();
+        SpannableString spannableContent = new SpannableString(content);
+        for (String entry : detailNews.getEntries()) {
+            for (int i = content.indexOf(entry, 0); i != -1; ) {
+                int j = i + entry.length();
+                spannableContent.setSpan(new URLSpan("http://www.baike.com/wiki/" + entry), i, j, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                i = content.indexOf(entry, j);
+            }
+        }
+        ((TextView) findViewById(R.id.detail_content)).setMovementMethod(LinkMovementMethod.getInstance());
+        ((TextView) findViewById(R.id.detail_content)).setText(spannableContent);
+
         TextView source = (TextView) findViewById(R.id.detail_source);
         source.setText(detailNews.getSource());
         source.setOnClickListener(this);
