@@ -1,10 +1,12 @@
 package com.java.group19;
 
+import java.io.Serializable;
+
 /**
  * Created by strongoier on 17/9/9.
  */
 
-public class Keyword {
+public class Keyword implements Serializable {
     private News news;
     private String word;
     private double score;

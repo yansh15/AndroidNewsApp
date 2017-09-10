@@ -2,7 +2,7 @@ package com.java.group19;
 
 import org.litepal.crud.DataSupport;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * Created by strongoier on 17/9/9.
@@ -11,8 +11,8 @@ import java.util.Vector;
 public class Config extends DataSupport {
     private boolean isDarkTheme;
     private boolean isTextMode;
-    private Vector<String> forbiddenWords;
-    private Vector<String> searchRecords;
+    private ArrayList<String> forbiddenWords;
+    private ArrayList<String> searchRecords;
 
     public boolean isDarkTheme() {
         return isDarkTheme;
@@ -30,19 +30,19 @@ public class Config extends DataSupport {
         isTextMode = textMode;
     }
 
-    public Vector<String> getForbiddenWords() {
+    public ArrayList<String> getForbiddenWords() {
         return forbiddenWords;
     }
 
-    public void setForbiddenWords(Vector<String> forbiddenWords) {
+    public void setForbiddenWords(ArrayList<String> forbiddenWords) {
         this.forbiddenWords = forbiddenWords;
     }
 
-    public Vector<String> getSearchRecords() {
+    public ArrayList<String> getSearchRecords() {
         return searchRecords;
     }
 
-    public void setSearchRecords(Vector<String> searchRecords) {
+    public void setSearchRecords(ArrayList<String> searchRecords) {
         this.searchRecords = searchRecords;
     }
 }

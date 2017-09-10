@@ -5,22 +5,24 @@ import android.util.Pair;
 import org.litepal.annotation.Column;
 import org.litepal.crud.DataSupport;
 
+import java.io.Serializable;
 import java.net.URL;
 import java.security.Key;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.TreeMap;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * Created by strongoier on 17/9/8.
  */
 
-public class News extends DataSupport {
+public class News extends DataSupport implements Serializable {
     @Column(nullable = false, unique = true)
     private String uniqueId;
     private String classTag;
     private String author;
-    private Vector<String> pictures;
+    private ArrayList<String> pictures;
     private String source;
     private Date time;
     private String title;
@@ -28,8 +30,8 @@ public class News extends DataSupport {
     private String intro;
     private String journal;
     private String content;
-    private Vector<Keyword> keywords;
-    private Vector<String> entries;
+    private ArrayList<Keyword> keywords;
+    private ArrayList<String> entries;
     private Date lastVisitTime;
     private Date lastFavoriteTime;
 
@@ -57,11 +59,11 @@ public class News extends DataSupport {
         this.author = author;
     }
 
-    public Vector<String> getPictures() {
+    public ArrayList<String> getPictures() {
         return pictures;
     }
 
-    public void setPictures(Vector<String> pictures) {
+    public void setPictures(ArrayList<String> pictures) {
         this.pictures = pictures;
     }
 
@@ -121,19 +123,19 @@ public class News extends DataSupport {
         this.content = content;
     }
 
-    public Vector<Keyword> getKeywords() {
+    public ArrayList<Keyword> getKeywords() {
         return keywords;
     }
 
-    public void setKeywords(Vector<Keyword> keywords) {
+    public void setKeywords(ArrayList<Keyword> keywords) {
         this.keywords = keywords;
     }
 
-    public Vector<String> getEntries() {
+    public ArrayList<String> getEntries() {
         return entries;
     }
 
-    public void setEntries(Vector<String> entries) {
+    public void setEntries(ArrayList<String> entries) {
         this.entries = entries;
     }
 

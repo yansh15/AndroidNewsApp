@@ -19,9 +19,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Vector;
+import java.util.regex.Pattern;
 import java.util.concurrent.ExecutionException;
 
 import okhttp3.OkHttpClient;
@@ -36,6 +38,7 @@ public class HttpHelper {
     private static OkHttpClient client;
     private static String rootURL = "http://166.111.68.66:2042/news/action/query/";
     private static final String TAG = "HttpHelper";
+    private static Pattern pattern = Pattern.compile("(^　*)|(　*$)");
 
     public static final int SCIENCE = 1;
     public static final int EDUCATION = 2;
@@ -64,7 +67,7 @@ public class HttpHelper {
                             .build();
                     Response response = client.newCall(request).execute();
                     String responseData = response.body().string();
-                    callback.onFinishNewsList(parseJSONForNewsVector(responseData, callback));
+                    callback.onFinishNewsList(parseJSONForNewsList(responseData, callback));
                 }catch (Exception e) {
                     e.printStackTrace();
                     callback.onError(e);
@@ -95,7 +98,7 @@ public class HttpHelper {
                             .build();
                     Response response = client.newCall(request).execute();
                     String responseData = response.body().string();
-                    callback.onFinishNewsList(parseJSONForNewsVector(responseData, callback));
+                    callback.onFinishNewsList(parseJSONForNewsList(responseData, callback));
                 }catch (Exception e) {
                     e.printStackTrace();
                     callback.onError(e);
@@ -126,7 +129,8 @@ public class HttpHelper {
                     String responseData = response.body().string();
                     parseJSONForSingleNews(responseData, news, callback);
                     //printNews(news);
-                    Vector<Bitmap> bitmaps = downloadImage(context, news, callback);
+                    //ArrayList<Bitmap> bitmaps = new ArrayList<>();
+                    downloadImage(context, news, callback);
                     callback.onFinishDetail();
                 }catch (Exception e) {
                     e.printStackTrace();
@@ -144,18 +148,18 @@ public class HttpHelper {
             news.setContent(jsonObject.getString("news_Content"));
             //Keywords
             JSONArray jsonArray = jsonObject.getJSONArray("Keywords");
-            Vector<Keyword> keywordVector = new Vector<Keyword>();
+            ArrayList<Keyword> keywordList = new ArrayList<>();
             for (int i = 0; i < jsonArray.length(); ++i) {
                 JSONObject jsonKeywordObject = jsonArray.getJSONObject(i);
                 Keyword keyword = new Keyword();
                 keyword.setNews(news);
                 keyword.setWord(jsonKeywordObject.getString("word"));
                 keyword.setScore(jsonKeywordObject.getDouble("score"));
-                keywordVector.add(keyword);
+                keywordList.add(keyword);
             }
-            news.setKeywords(keywordVector);
+            news.setKeywords(keywordList);
             //Entries
-            Vector<String> entries = new Vector<String>();
+            ArrayList<String> entries = new ArrayList<>();
             jsonArray = jsonObject.getJSONArray("locations");
             for (int i = 0; i < jsonArray.length(); ++i)
                 entries.add(jsonArray.getJSONObject(i).getString("word"));
@@ -169,8 +173,8 @@ public class HttpHelper {
         }
     }
 
-    private static Vector<News> parseJSONForNewsVector(final String jsonData, final CallBack callback) {
-        Vector<News> newsVector = new Vector<News>();
+    private static ArrayList<News> parseJSONForNewsList(String jsonData, final CallBack callback) {
+        ArrayList<News> newsList = new ArrayList<>();
         try {
             JSONArray jsonArray = new JSONObject(jsonData).getJSONArray("list");
             for (int i = 0; i < jsonArray.length(); ++i) {
@@ -179,26 +183,30 @@ public class HttpHelper {
                 news.setClassTag(jsonObject.getString("newsClassTag"));
                 news.setAuthor(jsonObject.getString("news_Author"));
                 news.setUniqueId(jsonObject.getString("news_ID"));
-                news.setPictures(new Vector<String>(Arrays.asList(jsonObject.getString("news_Pictures").split("\\s|;"))));
+                news.setPictures(new ArrayList<String>(Arrays.asList(jsonObject.getString("news_Pictures").split("//s|;"))));
                 news.setSource(jsonObject.getString("news_Source"));
-                news.setTime(new SimpleDateFormat("yyyyMMdd", Locale.CHINA).parse(jsonObject.getString("news_Time")));
+                news.setTime(new SimpleDateFormat("yyyyMMdd", Locale.CHINA).parse(jsonObject.getString("news_Time").substring(0, 8)));
                 news.setTitle(jsonObject.getString("news_Title"));
                 news.setUrl(jsonObject.getString("news_URL"));
-                news.setIntro(jsonObject.getString("news_Intro"));
-                newsVector.add(news);
+                String intro = jsonObject.getString("news_Intro");
+                intro = "　　" + pattern.matcher(intro).replaceAll("");
+                news.setIntro(intro);
+                newsList.add(news);
             }
         }catch (Exception e) {
             e.printStackTrace();
             callback.onError(e);
         }
-        return newsVector;
+        return newsList;
     }
 
-    private static Vector<Bitmap> downloadImage(final Context context, final News news, final CallBack callBack) {
-        final Vector<Bitmap> bitmaps = new Vector<Bitmap>();
+    private static void downloadImage(final Context context, final News news, final CallBack callBack) {
+        //final Vector<Bitmap> bitmaps = new Vector<Bitmap>();
         Vector<Thread> threads = new Vector<Thread>();
+        final Vector<String> pictureVector = new Vector<String>();
         for (final String s : news.getPictures()) {
-            if (!s.contains(".")) continue;
+            if (!s.contains("."))
+                continue;
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -210,7 +218,7 @@ public class HttpHelper {
                                 .get();
                         if (bitmap != null) {
                             saveImageToDevice(context, s, bitmap, callBack);
-                            bitmaps.add(bitmap);
+                            pictureVector.add(s);
                         }
                     }catch (ExecutionException e) {
                         Log.e(TAG, "run: "+s);
@@ -232,7 +240,8 @@ public class HttpHelper {
                 callBack.onError(e);
             }
         }
-        return bitmaps;
+        news.setPictures(new ArrayList<String>(pictureVector));
+        //return bitmaps;
     }
 
     private synchronized static void saveImageToDevice(final Context context, final String string, final Bitmap bitmap, final CallBack callBack) {

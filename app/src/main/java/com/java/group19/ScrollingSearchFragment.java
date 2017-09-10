@@ -1,6 +1,7 @@
 package com.java.group19;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
@@ -35,6 +37,8 @@ public class ScrollingSearchFragment extends BaseSearchFragment implements AppBa
     private RecyclerView recyclerView;
 
     private NewsAdapter adapter;
+
+    private int pageNo;
     
     private boolean isDarkSearchTheme = false;
     
@@ -55,9 +59,11 @@ public class ScrollingSearchFragment extends BaseSearchFragment implements AppBa
         appBarLayout = (AppBarLayout) view.findViewById(R.id.appbar);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         appBarLayout.addOnOffsetChangedListener(this);
+        pageNo = 1;
         setupDrawer();
         setupSearchBar();
         setupRecyclerView();
+        updateLatestNewsList();
     }
 
     @Override
@@ -101,11 +107,12 @@ public class ScrollingSearchFragment extends BaseSearchFragment implements AppBa
         searchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
             @Override
             public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
-                lastQuery = searchSuggestion.getBody();
-                DatabaseHelper.addSearchRecord(lastQuery);
-                Intent intent = new Intent(getActivity(), SearchActivity.class);
-                intent.putExtra("query", lastQuery);
-                startActivity(intent);
+//                lastQuery = searchSuggestion.getBody();
+                searchView.setSearchText(searchSuggestion.getBody());
+//                DatabaseHelper.addSearchRecord(lastQuery);
+//                Intent intent = new Intent(getActivity(), SearchActivity.class);
+//                intent.putExtra("query", lastQuery);
+//                startActivity(intent);
             }
 
             @Override
@@ -164,5 +171,29 @@ public class ScrollingSearchFragment extends BaseSearchFragment implements AppBa
         recyclerView.setLayoutManager(layoutManager);
         adapter = new NewsAdapter();
         recyclerView.setAdapter(adapter);
+    }
+
+    private void updateLatestNewsList() {
+        HttpHelper.askLatestNews(pageNo, new CallBack() {
+            @Override
+            public void onFinishNewsList(final List<News> newsList) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.addNewsListRondom(newsList);
+                    }
+                });
+            }
+
+            @Override
+            public void onFinishDetail() {
+
+            }
+
+            @Override
+            public void onError(Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 }

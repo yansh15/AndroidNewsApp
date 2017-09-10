@@ -1,9 +1,13 @@
 package com.java.group19;
 
+import android.util.Log;
+
 import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -20,14 +24,10 @@ public class DatabaseHelper {
         config = DataSupport.findFirst(Config.class);
         if (config == null) {
             config = new Config();
-            config.setForbiddenWords(new Vector<String>());
-            config.setSearchRecords(new Vector<String>());
+            config.setForbiddenWords(new ArrayList<String>());
+            config.setSearchRecords(new ArrayList<String>());
             config.save();
         }
-    }
-
-    public static boolean isVisited(String uniqueId) {
-        return getNews(uniqueId) == null;
     }
 
     public static News getNews(String uniqueId) {
@@ -61,11 +61,11 @@ public class DatabaseHelper {
         config.save();
     }
 
-    public static Vector<String> getLatestSearchRecords(String prefix, int count) {
-        Vector<String> records = config.getSearchRecords();
-        Vector<String> result = new Vector<>();
+    public static List<String> getLatestSearchRecords(String prefix, int count) {
+        List<String> records = config.getSearchRecords();
+        List<String> result = new ArrayList<>();
         for (int i = 0, j = 0; j < count && i < records.size(); ++i) {
-            String record = records.elementAt(records.size() - 1 - i);
+            String record = records.get(records.size() - 1 - i);
             if (record.startsWith(prefix)) {
                 result.add(record);
                 ++j;
@@ -89,17 +89,17 @@ public class DatabaseHelper {
         config.save();
     }
 
-    public static Vector<String> getAllForbiddenWords() {
-        Vector<String> result = new Vector<>(DataSupport.findFirst(Config.class).getForbiddenWords());
+    public static List<String> getAllForbiddenWords() {
+        List<String> result = new ArrayList<>(DataSupport.findFirst(Config.class).getForbiddenWords());
         Collections.reverse(result);
         return result;
     }
 
-    public static Vector<News> getLatestVisits(int count) {
-        return new Vector<>(DataSupport.order("lastvisittime desc").limit(count).find(News.class));
+    public static List<News> getLatestVisits(int count) {
+        return new ArrayList<>(DataSupport.order("lastvisittime desc").limit(count).find(News.class));
     }
 
-    public static Vector<News> getLatestFavorites(int count) {
-        return new Vector<>(DataSupport.where("lastfavoritetime > ?", "0").order("lastfavoritetime desc").limit(count).find(News.class));
+    public static List<News> getLatestFavorites(int count) {
+        return new ArrayList<>(DataSupport.where("lastfavoritetime > ?", "0").order("lastfavoritetime desc").limit(count).find(News.class));
     }
 }
