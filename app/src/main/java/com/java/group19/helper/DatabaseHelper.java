@@ -1,6 +1,7 @@
-package com.java.group19;
+package com.java.group19.helper;
 
-import android.util.Log;
+import com.java.group19.data.Config;
+import com.java.group19.data.News;
 
 import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;
@@ -8,7 +9,6 @@ import org.litepal.tablemanager.Connector;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * Created by strongoier on 17/9/9.

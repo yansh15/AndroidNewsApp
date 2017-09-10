@@ -1,23 +1,21 @@
-package com.java.group19;
+package com.java.group19.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
+import com.java.group19.activity.DetailActicity;
+import com.java.group19.NewsCardView;
+import com.java.group19.R;
+import com.java.group19.data.News;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * Created by liena on 17/9/8.

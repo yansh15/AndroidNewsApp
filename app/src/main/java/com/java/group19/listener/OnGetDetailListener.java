@@ -1,4 +1,4 @@
-package com.java.group19.Listener;
+package com.java.group19.listener;
 
 public interface OnGetDetailListener {
     void onFinish();

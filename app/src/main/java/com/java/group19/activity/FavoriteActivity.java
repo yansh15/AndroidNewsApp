@@ -1,4 +1,4 @@
-package com.java.group19;
+package com.java.group19.activity;
 
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -6,9 +6,12 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
+
+import com.java.group19.helper.DatabaseHelper;
+import com.java.group19.R;
+import com.java.group19.adapter.NewsAdapter;
+import com.java.group19.data.News;
 
 import java.util.Comparator;
 

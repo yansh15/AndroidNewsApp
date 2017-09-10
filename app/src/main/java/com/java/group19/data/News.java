@@ -1,17 +1,11 @@
-package com.java.group19;
-
-import android.util.Pair;
+package com.java.group19.data;
 
 import org.litepal.annotation.Column;
 import org.litepal.crud.DataSupport;
 
 import java.io.Serializable;
-import java.net.URL;
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.TreeMap;
-import java.util.ArrayList;
 
 /**
  * Created by strongoier on 17/9/8.

@@ -1,4 +1,4 @@
-package com.java.group19;
+package com.java.group19.helper;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,9 +10,11 @@ import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
-import com.java.group19.Listener.OnGetDetailListener;
-import com.java.group19.Listener.OnGetImagesListener;
-import com.java.group19.Listener.OnGetNewsListener;
+import com.java.group19.listener.OnGetDetailListener;
+import com.java.group19.listener.OnGetImagesListener;
+import com.java.group19.listener.OnGetNewsListener;
+import com.java.group19.data.Keyword;
+import com.java.group19.data.News;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -26,10 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.TreeSet;
-import java.util.Vector;
 import java.util.regex.Pattern;
-import java.util.concurrent.ExecutionException;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

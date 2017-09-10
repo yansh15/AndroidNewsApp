@@ -1,4 +1,6 @@
-package com.java.group19;
+package com.java.group19.data;
+
+import com.java.group19.data.News;
 
 import org.litepal.crud.DataSupport;
 

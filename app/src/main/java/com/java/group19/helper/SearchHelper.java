@@ -1,4 +1,6 @@
-package com.java.group19;
+package com.java.group19.helper;
+
+import com.java.group19.SearchRecordSuggestion;
 
 import java.util.List;
 import java.util.Vector;
