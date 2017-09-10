@@ -11,6 +11,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -24,44 +27,19 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
 
     private List<News> mNewsList;
 
-    private boolean textMode;
-
     private SimpleDateFormat dateFormat;
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        CardView cardView;
-        TextView title;
-        LinearLayout imageLayout;
-        ImageView imageOne;
-        ImageView imageTwo;
-        ImageView imageThree;
-        TextView author;
-        TextView date;
-        TextView classTag;
-        ImageView hideIntro;
-        ImageView displayIntro;
-        TextView intro;
+        NewsCardView newsCardView;
 
         public ViewHolder(View view) {
             super(view);
-            cardView = (CardView) view;
-            title = (TextView) cardView.findViewById(R.id.news_title);
-            imageLayout = (LinearLayout) cardView.findViewById(R.id.news_images);
-            imageOne = (ImageView) imageLayout.findViewById(R.id.news_image_one);
-            imageTwo = (ImageView) imageLayout.findViewById(R.id.news_image_two);
-            imageThree = (ImageView) imageLayout.findViewById(R.id.news_image_three);
-            author = (TextView) cardView.findViewById(R.id.news_author);
-            date = (TextView) cardView.findViewById(R.id.news_date);
-            classTag = (TextView) cardView.findViewById(R.id.news_classtag);
-            hideIntro = (ImageView) cardView.findViewById(R.id.hide_intro);
-            displayIntro = (ImageView) cardView.findViewById(R.id.display_intro);
-            intro = (TextView) cardView.findViewById(R.id.news_intro);
+            newsCardView = (NewsCardView) view;
         }
     }
 
-    public NewsAdapter(List<News> newsList, boolean textMode) {
-        mNewsList = newsList;
-        this.textMode = textMode;
+    public NewsAdapter() {
+        mNewsList = new Vector<>();
         dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     }
 
@@ -69,48 +47,45 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (mContext == null)
             mContext = parent.getContext();
-        View view = LayoutInflater.from(mContext).inflate(R.layout.news_item, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.recycler_item, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         News news = mNewsList.get(position);
-        holder.title.setText(news.getTitle());
+        holder.newsCardView.setTitle(news.getTitle());
         Vector<String> pictures = news.getPictures();
-        if (textMode || pictures.isEmpty())
-            holder.imageLayout.setVisibility(View.GONE);
+        if (DatabaseHelper.isTextMode() || pictures.isEmpty())
+            holder.newsCardView.setImageViewVisibility(View.GONE);
         else {
             for (int i = 0; i < Math.min(3, pictures.size()); ++i) {
                 //todo get image and set image
             }
         }
-        holder.author.setText(news.getAuthor());
-        holder.date.setText(dateFormat.format(news.getTime()));
-        holder.classTag.setText(news.getClassTag());
-        holder.intro.setText(news.getIntro());
-        holder.intro.setVisibility(View.GONE);
-        holder.hideIntro.setVisibility(View.GONE);
-        holder.hideIntro.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                holder.intro.setVisibility(View.GONE);
-                holder.hideIntro.setVisibility(View.GONE);
-                holder.displayIntro.setVisibility(View.VISIBLE);
-            }
-        });
-        holder.displayIntro.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                holder.intro.setVisibility(View.VISIBLE);
-                holder.hideIntro.setVisibility(View.VISIBLE);
-                holder.displayIntro.setVisibility(View.GONE);
-            }
-        });
+        holder.newsCardView.setAuthor(news.getAuthor());
+        holder.newsCardView.setDate(dateFormat.format(news.getTime()));
+        holder.newsCardView.setClassTag(news.getClassTag());
+        holder.newsCardView.setIntro(news.getIntro());
     }
 
     @Override
     public int getItemCount() {
         return mNewsList.size();
+    }
+
+    public void addNewsList(List<News> newsList) {
+        for (News news : newsList)
+            mNewsList.add(news);
+        Collections.sort(mNewsList, new Comparator<News>() {
+            @Override
+            public int compare(News news, News t1) {
+                long diff = news.getTime().getTime() - t1.getTime().getTime();
+                if (diff < 0) return -1;
+                if (diff == 0) return 0;
+                return 1;
+            }
+        });
+        notifyDataSetChanged();
     }
 }
