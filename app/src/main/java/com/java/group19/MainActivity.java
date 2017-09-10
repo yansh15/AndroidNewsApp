@@ -1,5 +1,6 @@
 package com.java.group19;
 
+import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
@@ -23,12 +24,12 @@ import java.util.Vector;
 
 import org.litepal.tablemanager.Connector;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements BaseSearchFragment.BaseSearchFragmentCallbacks {
 
     private DrawerLayout mDrawerLayout;
     private Vector<News> newsList = new Vector<>();
     private NewsAdapter adapter;
-    private String mLastQuery;
 
     private static final String TAG = "MainActivity";
 
@@ -39,26 +40,78 @@ public class MainActivity extends AppCompatActivity {
 
         Connector.getDatabase();
 
-        /*//set toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        //set menu button
-        
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white);
-        }*/
-
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mLastQuery = "";
-
-        //set floatingsearchview
-        setFloatingSearchView();
-
-        //set navigation
         final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        setNavigationView(navigationView);
+
+        showFragment(new ScrollingSearchFragment());
+
+        //set RecycleView
+        /*RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new NewsAdapter(newsList, DatabaseHelper.isTextMode());
+        recyclerView.setAdapter(adapter);
+        //getLatestNews();
+
+        //set SwipeRefresh
+        SwipeRefreshLayout mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                //todo refresh
+            }
+        });*/
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            /*case android.R.id.home:
+                mDrawerLayout.openDrawer(GravityCompat.START);
+                break;*/
+            default:
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public void onAttachSearchViewToDrawer(FloatingSearchView searchView) {
+        searchView.attachNavigationDrawerToMenuButton(mDrawerLayout);
+    }
+
+    @Override
+    public void onBackPressed() {
+        /*List fragments = getSupportFragmentManager().getFragments();
+        BaseSearchFragment currentFragement = (BaseSearchFragment) fragments.get(fragments.size() - 1);
+
+        if (!currentFragement.onActivityBackPress())*/
+            super.onBackPressed();
+    }
+
+    private void getLatestNews() {
+        HttpHelper.askLatestNews(0, new CallBack() {
+            @Override
+            public void onFinishNewsList(List<News> newsList) {
+                Log.d(TAG, "onFinishNewsList: " + newsList.size());
+                adapter.addNewsList(newsList);
+            }
+
+            @Override
+            public void onFinishDetail(List<Bitmap> bitmaps) {
+
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.e(TAG, "onError: " + e);
+            }
+        });
+    }
+    
+    private void setNavigationView(final NavigationView navigationView) {
         navigationView.setCheckedItem(R.id.nav_favorite);
         final SwitchCompat themeSwitch = (SwitchCompat) navigationView.getMenu().getItem(3).getActionView().findViewById(R.id.theme_switch);
         themeSwitch.setChecked(DatabaseHelper.isDarkTheme());
@@ -116,119 +169,9 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-        //set RecycleView
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-        adapter = new NewsAdapter(newsList, DatabaseHelper.isTextMode());
-        recyclerView.setAdapter(adapter);
-        //getLatestNews();
-
-        //set SwipeRefresh
-        SwipeRefreshLayout mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                //todo refresh
-            }
-        });
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            /*case android.R.id.home:
-                mDrawerLayout.openDrawer(GravityCompat.START);
-                break;*/
-            default:
-                break;
-        }
-        return true;
-    }
-
-    private void getLatestNews() {
-        HttpHelper.askLatestNews(0, new CallBack() {
-            @Override
-            public void onFinishNewsList(List<News> newsList) {
-                Log.d(TAG, "onFinishNewsList: " + newsList.size());
-                adapter.addNewsList(newsList);
-            }
-
-            @Override
-            public void onFinishDetail(List<Bitmap> bitmaps) {
-
-            }
-
-            @Override
-            public void onError(Exception e) {
-                Log.e(TAG, "onError: " + e);
-            }
-        });
-    }
-    
-    private void setFloatingSearchView() {
-        final FloatingSearchView searchView = (FloatingSearchView) findViewById(R.id.floating_search_view);
-        searchView.attachNavigationDrawerToMenuButton(mDrawerLayout);
-        /*searchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
-            @Override
-            public void onActionMenuItemSelected(MenuItem item) {
-                switch (item.getItemId()) {
-                    default:
-                        break;
-                }
-            }
-        });*/
-        searchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
-            @Override
-            public void onSearchTextChanged(String oldQuery, String newQuery) {
-                Log.d(TAG, "onSearchTextChanged: enter");
-                List<SearchRecordSuggestion> suggestions = new Vector<>();
-                List<String> tmps = DatabaseHelper.getLatestSearchRecords(newQuery, 10);
-                for (String s : tmps)
-                    suggestions.add(new SearchRecordSuggestion(s));
-                Log.d(TAG, "onSearchTextChanged: size of suggest " + suggestions.size());
-                searchView.swapSuggestions(suggestions);
-                Log.d(TAG, "onSearchTextChanged: end");
-            }
-        });
-        searchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
-            @Override
-            public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
-                Log.d(TAG, "onSuggestionClicked: ");
-                mLastQuery = searchSuggestion.getBody();
-                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-                intent.putExtra("query", mLastQuery);
-                startActivity(intent);
-            }
-
-            @Override
-            public void onSearchAction(String currentQuery) {
-                Log.d(TAG, "onSearchAction: ");
-                mLastQuery = currentQuery;
-                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-                intent.putExtra("query", mLastQuery);
-                startActivity(intent);
-            }
-        });
-        searchView.setOnFocusChangeListener(new FloatingSearchView.OnFocusChangeListener() {
-            @Override
-            public void onFocus() {
-                Log.d(TAG, "onFocus: ");
-                List<SearchRecordSuggestion> suggestions = new Vector<>();
-                List<String> tmps = DatabaseHelper.getLatestSearchRecords("", 10);
-                for (String s : tmps)
-                    suggestions.add(new SearchRecordSuggestion(s));
-                Log.d(TAG, "onFocus: size " + suggestions.size());
-                searchView.swapSuggestions(suggestions);
-            }
-
-            @Override
-            public void onFocusCleared() {
-                Log.d(TAG, "onFocusCleared: ");
-                searchView.setSearchBarTitle(mLastQuery);
-            }
-        });
+    private void showFragment(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
     }
 }

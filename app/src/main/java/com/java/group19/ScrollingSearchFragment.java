@@ -1,0 +1,142 @@
+package com.java.group19;
+
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+
+import java.util.List;
+
+/**
+ * Created by liena on 17/9/10.
+ */
+
+public class ScrollingSearchFragment extends BaseSearchFragment implements AppBarLayout.OnOffsetChangedListener {
+    
+    private static final String TAG = "ScrollingSearchFragment";
+    
+    public static final long FIND_SUGGESTION_SIMULATED_DELAY = 250;
+    
+    private FloatingSearchView searchView;
+    
+    private AppBarLayout appBarLayout;
+    
+    private boolean isDarkSearchTheme = false;
+    
+    private String lastQuery = "";
+    
+    public ScrollingSearchFragment() {}
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_scrolling_search, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        searchView = (FloatingSearchView) view.findViewById(R.id.floating_search_view);
+        appBarLayout = (AppBarLayout) view.findViewById(R.id.appbar);
+        appBarLayout.addOnOffsetChangedListener(this);
+        setupDrawer();
+        setupSearchBar();
+    }
+    
+    private void setupSearchBar() {
+        searchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+            @Override
+            public void onSearchTextChanged(String oldQuery, String newQuery) {
+                searchView.showProgress();
+                SearchHelper.findSuggestions(newQuery, 5, new SearchHelper.OnFindSuggestionsListener() {
+                    @Override
+                    public void onResults(List<SearchRecordSuggestion> results) {
+                        searchView.swapSuggestions(results);
+                        searchView.hideProgress();
+                    }
+                });
+            }
+        });
+        searchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
+            @Override
+            public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
+                lastQuery = searchSuggestion.getBody();
+                Intent intent = new Intent(getActivity(), SearchActivity.class);
+                intent.putExtra("query", lastQuery);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onSearchAction(String currentQuery) {
+                lastQuery = currentQuery;
+                Intent intent = new Intent(getActivity(), SearchActivity.class);
+                intent.putExtra("query", lastQuery);
+                startActivity(intent);
+            }
+        });
+        searchView.setOnFocusChangeListener(new FloatingSearchView.OnFocusChangeListener() {
+            @Override
+            public void onFocus() {
+                SearchHelper.findSuggestions("", 5, new SearchHelper.OnFindSuggestionsListener() {
+                    @Override
+                    public void onResults(List<SearchRecordSuggestion> results) {
+                        searchView.swapSuggestions(results);
+                    }
+                });
+            }
+
+            @Override
+            public void onFocusCleared() {
+                searchView.setSearchBarTitle(lastQuery);
+            }
+        });
+        
+        searchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
+            @Override
+            public void onActionMenuItemSelected(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_change_colors:
+                        isDarkSearchTheme = true;
+                        //demonstrate setting colors for items
+                        searchView.setBackgroundColor(Color.parseColor("#787878"));
+                        searchView.setViewTextColor(Color.parseColor("#e9e9e9"));
+                        searchView.setHintTextColor(Color.parseColor("#e9e9e9"));
+                        searchView.setActionMenuOverflowColor(Color.parseColor("#e9e9e9"));
+                        searchView.setMenuItemIconColor(Color.parseColor("#e9e9e9"));
+                        searchView.setLeftActionIconColor(Color.parseColor("#e9e9e9"));
+                        searchView.setClearBtnColor(Color.parseColor("#e9e9e9"));
+                        searchView.setDividerColor(Color.parseColor("#BEBEBE"));
+                        searchView.setLeftActionIconColor(Color.parseColor("#e9e9e9"));
+                        break;
+                    //// TODO: 17/9/10
+                    default:
+                        break;
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+        searchView.setTranslationY(verticalOffset);
+    }
+
+    @Override
+    public boolean onActivityBackPress() {
+        if (!searchView.setSearchFocused(false))
+            return false;
+        return true;
+    }
+
+    private void setupDrawer() {
+        attachSearchViewActivityDrawer(searchView);
+    }
+}
