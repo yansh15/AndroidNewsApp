@@ -27,6 +27,8 @@ import org.litepal.tablemanager.Connector;
 public class MainActivity extends AppCompatActivity
         implements BaseSearchFragment.BaseSearchFragmentCallbacks {
 
+    private ScrollingSearchFragment fragment;
+
     private DrawerLayout mDrawerLayout;
     private Vector<News> newsList = new Vector<>();
     private NewsAdapter adapter;
@@ -43,7 +45,8 @@ public class MainActivity extends AppCompatActivity
         final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         setNavigationView(navigationView);
 
-        showFragment(new ScrollingSearchFragment());
+        fragment = new ScrollingSearchFragment();
+        showFragment(fragment);
     }
 
     @Override
@@ -65,31 +68,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        /*List fragments = getSupportFragmentManager().getFragments();
-        BaseSearchFragment currentFragement = (BaseSearchFragment) fragments.get(fragments.size() - 1);
-
-        if (!currentFragement.onActivityBackPress())*/
-            super.onBackPressed();
-    }
-
-    private void getLatestNews() {
-        HttpHelper.askLatestNews(0, new CallBack() {
-            @Override
-            public void onFinishNewsList(List<News> newsList) {
-                Log.d(TAG, "onFinishNewsList: " + newsList.size());
-                adapter.addNewsList(newsList);
-            }
-
-            @Override
-            public void onFinishDetail(List<Bitmap> bitmaps) {
-
-            }
-
-            @Override
-            public void onError(Exception e) {
-                Log.e(TAG, "onError: " + e);
-            }
-        });
+//        List fragments = getSupportFragmentManager().getFragments();
+//        BaseSearchFragment currentFragement = (BaseSearchFragment) fragments.get(fragments.size() - 1);
+//
+//        if (!currentFragement.onActivityBackPress())
+        super.onBackPressed();
     }
     
     private void setNavigationView(final NavigationView navigationView) {

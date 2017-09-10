@@ -1,6 +1,8 @@
 package com.java.group19;
 
 import android.content.Context;
+import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -8,6 +10,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  * Created by liena on 17/9/10.
@@ -15,6 +21,7 @@ import android.widget.TextView;
 
 public class NewsCardView extends CardView {
 
+    private News news;
     private TextView title;
     private LinearLayout imageLayout;
     private ImageView imageOne;
@@ -23,9 +30,8 @@ public class NewsCardView extends CardView {
     private TextView author;
     private TextView date;
     private TextView classTag;
-    private ImageView hideIntro;
-    private ImageView displayIntro;
     private TextView intro;
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public NewsCardView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -38,55 +44,27 @@ public class NewsCardView extends CardView {
         author = (TextView) findViewById(R.id.news_author);
         date = (TextView) findViewById(R.id.news_date);
         classTag = (TextView) findViewById(R.id.news_classtag);
-        hideIntro = (ImageView) findViewById(R.id.hide_intro);
-        displayIntro = (ImageView) findViewById(R.id.display_intro);
         intro = (TextView) findViewById(R.id.news_intro);
+    }
 
-        intro.setVisibility(View.GONE);
-        hideIntro.setVisibility(View.GONE);
-        hideIntro.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                intro.setVisibility(View.GONE);
-                hideIntro.setVisibility(View.GONE);
-                displayIntro.setVisibility(View.VISIBLE);
+    public void setNews(News news) {
+        this.news = news;
+        title.setText(news.getTitle());
+        List<String> pictures = news.getPictures();
+        if (DatabaseHelper.isTextMode() || pictures.isEmpty())
+            imageLayout.setVisibility(View.GONE);
+        else {
+            for (int i = 0; i < Math.min(3, pictures.size()); ++i) {
+                //todo get image and set image
             }
-        });
-        displayIntro.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                intro.setVisibility(View.VISIBLE);
-                hideIntro.setVisibility(View.VISIBLE);
-                displayIntro.setVisibility(View.GONE);
-            }
-        });
+        }
+        author.setText(news.getAuthor());
+        date.setText(dateFormat.format(news.getTime()));
+        classTag.setText(news.getClassTag());
+        intro.setText(news.getIntro());
     }
 
-    public void setTitle(String text) {
-        title.setText(text);
-    }
-
-    public void setImageViewVisibility(int visibility) {
-        imageLayout.setVisibility(visibility);
-    }
-
-    public void setImage(int index) {
-        //// TODO: 17/9/10
-    }
-
-    public void setAuthor(String text) {
-        author.setText(text);
-    }
-
-    public void setDate(String text) {
-        date.setText(text);
-    }
-
-    public void setClassTag(String text) {
-        classTag.setText(text);
-    }
-
-    public void setIntro(String text) {
-        intro.setText(text);
+    public News getNews() {
+        return news;
     }
 }

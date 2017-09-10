@@ -7,9 +7,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -23,6 +26,7 @@ public class HttpHelper {
     private static OkHttpClient client;
     private static String rootURL = "http://166.111.68.66:2042/news/action/query/";
     private static final String TAG = "HttpHelper";
+    private static Pattern pattern = Pattern.compile("(^　*)|(　*$)");
 
     public static final int SCIENCE = 1;
     public static final int EDUCATION = 2;
@@ -51,7 +55,7 @@ public class HttpHelper {
                             .build();
                     Response response = client.newCall(request).execute();
                     String responseData = response.body().string();
-                    callback.onFinishNewsList(parseJSONForNewsVector(responseData, callback));
+                    callback.onFinishNewsList(parseJSONForNewsList(responseData, callback));
                 }catch (Exception e) {
                     e.printStackTrace();
                     callback.onError(e);
@@ -82,7 +86,7 @@ public class HttpHelper {
                             .build();
                     Response response = client.newCall(request).execute();
                     String responseData = response.body().string();
-                    callback.onFinishNewsList(parseJSONForNewsVector(responseData, callback));
+                    callback.onFinishNewsList(parseJSONForNewsList(responseData, callback));
                 }catch (Exception e) {
                     e.printStackTrace();
                     callback.onError(e);
@@ -113,7 +117,7 @@ public class HttpHelper {
                     String responseData = response.body().string();
                     parseJSONForSingleNews(responseData, news, callback);
                     //printNews(news);
-                    Vector<Bitmap> bitmaps = new Vector<Bitmap>();
+                    ArrayList<Bitmap> bitmaps = new ArrayList<>();
                     callback.onFinishDetail(bitmaps);
                 }catch (Exception e) {
                     e.printStackTrace();
@@ -131,18 +135,18 @@ public class HttpHelper {
             news.setContent(jsonObject.getString("news_Content"));
             //Keywords
             JSONArray jsonArray = jsonObject.getJSONArray("Keywords");
-            Vector<Keyword> keywordVector = new Vector<Keyword>();
+            ArrayList<Keyword> keywordList = new ArrayList<>();
             for (int i = 0; i < jsonArray.length(); ++i) {
                 JSONObject jsonKeywordObject = jsonArray.getJSONObject(i);
                 Keyword keyword = new Keyword();
                 keyword.setNews(news);
                 keyword.setWord(jsonKeywordObject.getString("word"));
                 keyword.setScore(jsonKeywordObject.getDouble("score"));
-                keywordVector.add(keyword);
+                keywordList.add(keyword);
             }
-            news.setKeywords(keywordVector);
+            news.setKeywords(keywordList);
             //Entries
-            Vector<String> entries = new Vector<String>();
+            ArrayList<String> entries = new ArrayList<>();
             jsonArray = jsonObject.getJSONArray("locations");
             for (int i = 0; i < jsonArray.length(); ++i)
                 entries.add(jsonArray.getJSONObject(i).getString("word"));
@@ -156,8 +160,8 @@ public class HttpHelper {
         }
     }
 
-    private static Vector<News> parseJSONForNewsVector(String jsonData, final CallBack callback) {
-        Vector<News> newsVector = new Vector<News>();
+    private static ArrayList<News> parseJSONForNewsList(String jsonData, final CallBack callback) {
+        ArrayList<News> newsList = new ArrayList<>();
         try {
             JSONArray jsonArray = new JSONObject(jsonData).getJSONArray("list");
             for (int i = 0; i < jsonArray.length(); ++i) {
@@ -166,19 +170,21 @@ public class HttpHelper {
                 news.setClassTag(jsonObject.getString("newsClassTag"));
                 news.setAuthor(jsonObject.getString("news_Author"));
                 news.setUniqueId(jsonObject.getString("news_ID"));
-                news.setPictures(new Vector<String>(Arrays.asList(jsonObject.getString("news_Pictures").split(";"))));
+                news.setPictures(new ArrayList<String>(Arrays.asList(jsonObject.getString("news_Pictures").split(";"))));
                 news.setSource(jsonObject.getString("news_Source"));
-                news.setTime(new SimpleDateFormat("yyyyMMdd", Locale.CHINA).parse(jsonObject.getString("news_Time")));
+                news.setTime(new SimpleDateFormat("yyyyMMdd", Locale.CHINA).parse(jsonObject.getString("news_Time").substring(0, 8)));
                 news.setTitle(jsonObject.getString("news_Title"));
                 news.setUrl(jsonObject.getString("news_URL"));
-                news.setIntro(jsonObject.getString("news_Intro"));
-                newsVector.add(news);
+                String intro = jsonObject.getString("news_Intro");
+                intro = "　　" + pattern.matcher(intro).replaceAll("");
+                news.setIntro(intro);
+                newsList.add(news);
             }
         }catch (Exception e) {
             e.printStackTrace();
             callback.onError(e);
         }
-        return newsVector;
+        return newsList;
     }
 
 
