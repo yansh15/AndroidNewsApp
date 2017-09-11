@@ -18,6 +18,11 @@ public class DatabaseHelper {
 
     private static Config config;
 
+    // TODO: removeNews
+    public static synchronized void removeNews(String uniqueId){
+
+    }
+
     public static synchronized void init() {
         Connector.getDatabase();
         // check whether config exists
