@@ -78,8 +78,14 @@ public class MainActivity extends AppCompatActivity
         //推荐类别第一次获取数据
         HttpHelper.askLatestNews(10, 0, new OnGetNewsListener() {
             @Override
-            public void onFinish(List<News> newsList) {
-                adapter[0].setNewsList(newsList);
+            public void onFinish(final List<News> newsList) {
+                runOnUiThread(new Runnable() {
+                                  @Override
+                                  public void run() {
+                                      adapter[0].setNewsList(newsList);
+                                  }
+                              }
+                );
             }
 
             @Override
@@ -236,8 +242,14 @@ public class MainActivity extends AppCompatActivity
                 if (adapter[category].isEmpty()) { // 新类别第一次获取数据
                     HttpHelper.askLatestNews(10, 0, new OnGetNewsListener() {
                         @Override
-                        public void onFinish(List<News> newsList) {
-                            adapter[category].setNewsList(newsList);
+                        public void onFinish(final List<News> newsList) {
+                            runOnUiThread(new Runnable() {
+                                              @Override
+                                              public void run() {
+                                                  adapter[category].setNewsList(newsList);
+                                              }
+                                          }
+                            );
                         }
 
                         @Override
@@ -257,11 +269,11 @@ public class MainActivity extends AppCompatActivity
             public void onRefresh() { // 上拉刷新
                 HttpHelper.askLatestNews(10, 0, new OnGetNewsListener() {
                     @Override
-                    public void onFinish(List<News> newsList) {
-                        adapter[category].setNewsList(newsList);
+                    public void onFinish(final List<News> newsList) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                adapter[category].setNewsList(newsList);
                                 swipeRefreshLayout.setRefreshing(false);
                             }
                         });

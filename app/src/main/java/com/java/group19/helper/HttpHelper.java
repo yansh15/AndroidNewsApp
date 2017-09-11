@@ -89,7 +89,7 @@ public class HttpHelper {
     private static ArrayList subList(ArrayList arrayList, int l, int r) {
         ArrayList newsArrayList = new ArrayList<>();
         for (int i = l; i < r; ++i)
-            newsArrayList.add(arrayList.indexOf(i));
+            newsArrayList.add(arrayList.get(i));
         return newsArrayList;
     }
 

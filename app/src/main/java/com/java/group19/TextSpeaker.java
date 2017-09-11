@@ -1,5 +1,6 @@
 package com.java.group19;
 
+import com.baidu.tts.auth.AuthInfo;
 import com.java.group19.listener.OnFinishSpeakingListener;
 
 import android.content.Context;
@@ -239,14 +240,14 @@ public class TextSpeaker {
         mSpeechSynthesizer.setParam(SpeechSynthesizer.PARAM_MIX_MODE, SpeechSynthesizer.MIX_MODE_DEFAULT);
 
         // AuthInfo接口用于测试开发者是否成功申请了在线或者离线授权，如果测试授权成功了，可以删除AuthInfo部分的代码（该接口首次验证时比较耗时），不会影响正常使用（合成使用时SDK内部会自动验证授权）
-        /*AuthInfo authInfo = mSpeechSynthesizer.auth(TtsMode.MIX);
+        AuthInfo authInfo = mSpeechSynthesizer.auth(TtsMode.MIX);
 
         if (authInfo.isSuccess()) {
             toPrint("auth success");
         } else {
             String errorMsg = authInfo.getTtsError().getDetailMessage();
             toPrint("auth failed errorMsg=" + errorMsg);
-        }*/
+        }
 
         // 初始化tts
         mSpeechSynthesizer.initTts(TtsMode.MIX);
