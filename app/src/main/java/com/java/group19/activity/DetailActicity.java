@@ -35,7 +35,6 @@ import java.util.List;
 
 public class DetailActicity extends AppCompatActivity implements View.OnClickListener {
 
-//    private DetailLayout.Adapter adapter; //使用子类
     private DetailLayout detailLayout;
 
     @Override
@@ -54,7 +53,6 @@ public class DetailActicity extends AppCompatActivity implements View.OnClickLis
 
         //set content
         detailLayout = (DetailLayout) findViewById(R.id.detail_layout);
-//        detailLayout.setAdapter();
     }
 
     @Override
