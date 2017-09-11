@@ -1,6 +1,6 @@
-package com.java.group19.Listener;
+package com.java.group19.listener;
 
-import com.java.group19.News;
+import com.java.group19.data.News;
 
 import java.util.List;
 

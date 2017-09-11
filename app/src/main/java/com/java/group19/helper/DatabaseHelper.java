@@ -1,4 +1,7 @@
-package com.java.group19;
+package com.java.group19.helper;
+
+import com.java.group19.data.Config;
+import com.java.group19.data.News;
 
 import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;

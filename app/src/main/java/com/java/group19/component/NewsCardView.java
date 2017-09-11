@@ -1,8 +1,6 @@
-package com.java.group19;
+package com.java.group19.component;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -10,7 +8,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.java.group19.R;
+import com.java.group19.data.News;
+import com.java.group19.helper.DatabaseHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
