@@ -109,10 +109,13 @@ public class HttpHelper {
                     || ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS
                     || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_FORMS
                     || ub == Character.UnicodeBlock.VERTICAL_FORMS
-                    || c == ' ' || c == '　')
+                    || c == ' ' || c == '　'
+                    || (c >= '0' && c <= '9')
+                    || (c >= 'a' && c <= 'z')
+                    || (c >= 'A' && c <= 'a'))
                 s += c;
         }
-        s.replaceAll(" 　　", "　　");
+        s.replaceAll(" 　　", "\\n　　");
         return s;
     }
 
