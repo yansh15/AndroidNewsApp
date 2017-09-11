@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.java.group19.component.DetailLayout;
 import com.java.group19.helper.DatabaseHelper;
 import com.java.group19.helper.HttpHelper;
 import com.java.group19.R;
@@ -34,16 +35,14 @@ import java.util.List;
 
 public class DetailActicity extends AppCompatActivity implements View.OnClickListener {
 
-    private News detailNews;
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    private ImageView imageOne;
-    private LinearLayout imageLayout;
-    private LinearLayout classTagLayout;
+//    private DetailLayout.Adapter adapter; //使用子类
+    private DetailLayout detailLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
         //set toolber
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
@@ -53,11 +52,9 @@ public class DetailActicity extends AppCompatActivity implements View.OnClickLis
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.detail_fab);
         fab.setOnClickListener(this);
 
-        //set Visibility
-        setupLayoutVisibility();
-
-        //set news
-        getDetailNews();
+        //set content
+        detailLayout = (DetailLayout) findViewById(R.id.detail_layout);
+//        detailLayout.setAdapter();
     }
 
     @Override
@@ -84,9 +81,6 @@ public class DetailActicity extends AppCompatActivity implements View.OnClickLis
             case R.id.detail_fab:
                 //// TODO: 17/9/10  snackbar
                 break;
-            case R.id.detail_source:
-                //// TODO: 17/9/10 Uri
-                break;
             default:
                 break;
         }
@@ -100,16 +94,7 @@ public class DetailActicity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    private void setupLayoutVisibility() {
-        imageOne = (ImageView) findViewById(R.id.detail_image);
-        imageOne.setVisibility(View.GONE);
-        imageLayout = (LinearLayout) findViewById(R.id.detail_image_layout);
-        imageLayout.setVisibility(View.GONE);
-        classTagLayout = (LinearLayout) findViewById(R.id.detail_classtag_layout);
-        classTagLayout.setVisibility(View.GONE);
-    }
-
-    private void getDetailNews() {
+    /*private void getDetailNews() {
         final News news = (News) getIntent().getSerializableExtra("news");
         detailNews = DatabaseHelper.getNews(news.getUniqueId());
         if (detailNews == null) {
@@ -197,5 +182,5 @@ public class DetailActicity extends AppCompatActivity implements View.OnClickLis
                 imageLayout.addView(view);
             }
         }
-    }
+    }*/
 }

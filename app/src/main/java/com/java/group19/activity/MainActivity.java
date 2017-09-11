@@ -1,5 +1,4 @@
 package com.java.group19.activity;
-
 import android.support.design.widget.AppBarLayout;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -13,9 +12,7 @@ import android.support.v7.widget.SwitchCompat;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
-import android.widget.TextView;
-
+import android.widget.ImageView;import android.widget.TextView;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;

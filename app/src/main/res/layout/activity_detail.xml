@@ -25,6 +25,10 @@
         android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <com.java.group19.component.DetailLayout
+            android:id="@+id/detail_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
     </android.support.v4.widget.NestedScrollView>
 

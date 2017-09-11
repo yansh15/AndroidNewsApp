@@ -9,24 +9,30 @@ import android.widget.TextView;
 
 import com.java.group19.R;
 
+import java.util.List;
+
 /**
  * Created by 阎世宏 on 2017/9/11.
  */
 
 public class DetailLayout extends LinearLayout {
 
-    private interface OnDataChange {
-        void onDataChange(Adapter adapter);
-    }
-
     public abstract static class Adapter {
-        public abstract String getTitle();
-        public abstract String getAuthor();
-        public abstract String getDate();
-        public abstract String getContent();
-        public abstract String getSource();
-        public void notifyDataChange() {
 
+        private DetailLayout detailLayout;
+
+        public abstract CharSequence getTitle();
+        public abstract CharSequence getAuthor();
+        public abstract CharSequence getDate();
+        public abstract CharSequence getContent();
+        public abstract CharSequence getSource();
+
+        private void setDetailLayout(DetailLayout layout) {
+            detailLayout = layout;
+        }
+
+        public void notifyDataChange() {
+            detailLayout.update();
         }
     }
 
@@ -63,13 +69,14 @@ public class DetailLayout extends LinearLayout {
 
     public void setAdapter(Adapter adapter) {
         this.adapter = adapter;
+        adapter.setDetailLayout(this);
     }
 
     private void update() {
         title.setText(adapter.getTitle());
         author.setText(adapter.getAuthor());
         date.setText(adapter.getDate());
-        content.setText(adapter.getDate());
+        content.setText(adapter.getContent());
         source.setText(adapter.getSource());
     }
 }
