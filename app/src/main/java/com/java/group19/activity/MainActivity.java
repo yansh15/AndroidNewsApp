@@ -28,9 +28,12 @@ import com.java.group19.adapter.NewsAdapter;
 import com.java.group19.listener.OnCategoryChangeListener;
 import com.java.group19.listener.OnGetNewsListener;
 import com.java.group19.data.News;
+import in.srain.cube.image.ImageLoader;
 
 import java.util.Comparator;
 import java.util.List;
+
+import in.srain.cube.image.ImageLoaderFactory;
 
 public class MainActivity extends AppCompatActivity
         implements AppBarLayout.OnOffsetChangedListener {
@@ -45,6 +48,11 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout mDrawerLayout;
     private SwipeRefreshLayout swipeRefreshLayout;
     private TextSpeaker textSpeaker;
+    private ImageLoader imageLoader;
+
+    static {
+        DatabaseHelper.init();
+    }
 
     private static final String TAG = "MainActivity";
 
@@ -52,8 +60,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        DatabaseHelper.init();
         textSpeaker = TextSpeaker.getInstance(this);
+        imageLoader = ImageLoaderFactory.create(this);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -70,7 +78,17 @@ public class MainActivity extends AppCompatActivity
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.main_swipe_refresh);
         setupSwipeRefreshLayout();
 
-        //todo mor类别第一次获取数据
+        //推荐类别第一次获取数据
+        HttpHelper.askLatestNews(10, 0, new OnGetNewsListener() {
+            @Override
+            public void onFinish(List<News> newsList) {
+                adapter[0].setNewsList(newsList);
+            }
+
+            @Override
+            public void onError(Exception e) {
+            }
+        });
     }
 
     @Override
@@ -207,7 +225,7 @@ public class MainActivity extends AppCompatActivity
                     if (diff == 0) return 0;
                     return 1;
                 }
-            });
+            }, imageLoader);
         }
         recyclerView.setAdapter(adapter[category]);
         LinearLayoutManager categoryLayoutManager = new LinearLayoutManager(this);
@@ -218,8 +236,18 @@ public class MainActivity extends AppCompatActivity
             public void onCategoryChange(int cate) {
                 category = cate;
                 recyclerView.setAdapter(adapter[category]);
-                if (adapter[category].isEmpty())
-                    ;//todo 新类别第一次获取数据
+                if (adapter[category].isEmpty()) { // 新类别第一次获取数据
+                    HttpHelper.askLatestNews(10, 0, new OnGetNewsListener() {
+                        @Override
+                        public void onFinish(List<News> newsList) {
+                            adapter[category].setNewsList(newsList);
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                        }
+                    });
+                }
             }
         });
         categoryRecyclerView.setAdapter(categoryAdapter);
@@ -229,29 +257,25 @@ public class MainActivity extends AppCompatActivity
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onRefresh() {
-                //// TODO: 2017/9/11 上拉刷新
-                //结束时需要在UI线程里面调用 swipeRefreshLayout.setRefreshing(false)
+            public void onRefresh() { // 上拉刷新
+                HttpHelper.askLatestNews(10, 0, new OnGetNewsListener() {
+                    @Override
+                    public void onFinish(List<News> newsList) {
+                        adapter[category].setNewsList(newsList);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                swipeRefreshLayout.setRefreshing(false);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                    }
+                });
             }
         });
 
     }
-
-    /*private void updateNewsList() {
-        //// FIXME: 2017/9/11  pageNo
-        HttpHelper.askLatestNews(1, category, new OnGetNewsListener() {
-            @Override
-            public void onFinish(final List<News> newsList) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        adapter[category].addNewsListRondom(newsList);
-                    }
-                });
-            }
-
-            @Override
-            public void onError(Exception e) {}
-        });
-    }*/
 }

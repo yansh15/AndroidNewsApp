@@ -12,6 +12,7 @@
         android:layout_weight="1">
 
         <LinearLayout
+            android:id="@+id/detail_item"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -45,12 +46,6 @@
                     android:textSize="16sp"/>
 
             </LinearLayout>
-
-            <ImageView
-                android:id="@+id/detail_image"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"/>
 
             <TextView
                 android:id="@+id/detail_content"
@@ -115,7 +110,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/ic_favorite_border_black"/>
+            android:src="@drawable/ic_favorite_border_black"
+            android:tag="toSetFavorite"/>
 
         <ImageView
             android:id="@+id/detail_voice_start"

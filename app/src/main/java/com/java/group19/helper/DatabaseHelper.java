@@ -18,11 +18,6 @@ public class DatabaseHelper {
 
     private static Config config;
 
-    // TODO: removeNews
-    public static synchronized void removeNews(String uniqueId){
-
-    }
-
     public static synchronized void init() {
         Connector.getDatabase();
         // check whether config exists
@@ -41,6 +36,10 @@ public class DatabaseHelper {
 
     public static synchronized List<News> getAllNews() {
         return new ArrayList<>(DataSupport.findAll(News.class));
+    }
+
+    public static synchronized void removeNews(String uniqueId) {
+        DataSupport.deleteAll(News.class, "uniqueid = ?", uniqueId);
     }
 
     public static synchronized void saveNews(News news) {
