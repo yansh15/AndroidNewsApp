@@ -18,7 +18,7 @@ public class DatabaseHelper {
 
     private static Config config;
 
-    public static void init() {
+    public static synchronized void init() {
         Connector.getDatabase();
         // check whether config exists
         config = DataSupport.findFirst(Config.class);
@@ -30,38 +30,42 @@ public class DatabaseHelper {
         }
     }
 
-    public static News getNews(String uniqueId) {
+    public static synchronized News getNews(String uniqueId) {
         return DataSupport.where("uniqueid = ?", uniqueId).findFirst(News.class);
     }
 
-    public static void saveNews(News news) {
+    public static synchronized List<News> getAllNews() {
+        return new ArrayList<>(DataSupport.findAll(News.class));
+    }
+
+    public static synchronized void saveNews(News news) {
         news.save();
     }
 
-    public static boolean isDarkTheme() {
+    public static synchronized boolean isDarkTheme() {
         return config.isDarkTheme();
     }
 
-    public static void setDarkTheme(boolean darkTheme) {
+    public static synchronized void setDarkTheme(boolean darkTheme) {
         config.setDarkTheme(darkTheme);
         config.save();
     }
 
-    public static boolean isTextMode() {
+    public static synchronized boolean isTextMode() {
         return config.isTextMode();
     }
 
-    public static void setTextMode(boolean textMode) {
+    public static synchronized void setTextMode(boolean textMode) {
         config.setTextMode(textMode);
         config.save();
     }
 
-    public static void addSearchRecord(String record) {
+    public static synchronized void addSearchRecord(String record) {
         config.getSearchRecords().add(record);
         config.save();
     }
 
-    public static List<String> getLatestSearchRecords(String prefix, int count) {
+    public static synchronized List<String> getLatestSearchRecords(String prefix, int count) {
         List<String> records = config.getSearchRecords();
         List<String> result = new ArrayList<>();
         for (int i = 0, j = 0; j < count && i < records.size(); ++i) {
@@ -74,7 +78,7 @@ public class DatabaseHelper {
         return result;
     }
 
-    public static boolean addForbiddenWord(String word) {
+    public static synchronized boolean addForbiddenWord(String word) {
         if (config.getForbiddenWords().contains(word)) {
             return false;
         } else {
@@ -84,22 +88,22 @@ public class DatabaseHelper {
         }
     }
 
-    public static void removeForbiddenWord(String word) {
+    public static synchronized void removeForbiddenWord(String word) {
         config.getForbiddenWords().remove(word);
         config.save();
     }
 
-    public static List<String> getAllForbiddenWords() {
+    public static synchronized List<String> getAllForbiddenWords() {
         List<String> result = new ArrayList<>(DataSupport.findFirst(Config.class).getForbiddenWords());
         Collections.reverse(result);
         return result;
     }
 
-    public static List<News> getLatestVisits(int count) {
+    public static synchronized List<News> getLatestVisits(int count) {
         return new ArrayList<>(DataSupport.order("lastvisittime desc").limit(count).find(News.class));
     }
 
-    public static List<News> getLatestFavorites(int count) {
+    public static synchronized List<News> getLatestFavorites(int count) {
         return new ArrayList<>(DataSupport.where("lastfavoritetime > ?", "0").order("lastfavoritetime desc").limit(count).find(News.class));
     }
 }
