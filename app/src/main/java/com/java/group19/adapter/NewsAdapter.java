@@ -2,6 +2,7 @@ package com.java.group19.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import in.srain.cube.image.ImageLoader;
+
 /**
  * Created by liena on 17/9/8.
  */
@@ -26,6 +29,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     private Context mContext;
     private List<News> mNewsList;
     private Comparator<News> comparator;
+    private ImageLoader imageLoader;
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         NewsCardView newsCardView;
@@ -36,9 +40,10 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
         }
     }
 
-    public NewsAdapter(Comparator<News> comparator) {
+    public NewsAdapter(Comparator<News> comparator, ImageLoader imageLoader) {
         mNewsList = new ArrayList<>();
         this.comparator = comparator;
+        this.imageLoader = imageLoader;
     }
 
     @Override
@@ -52,7 +57,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         News news = mNewsList.get(position);
-        holder.newsCardView.setNews(news);
+        holder.newsCardView.setNews(news, imageLoader);
         holder.newsCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,10 +73,9 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
         return mNewsList.size();
     }
 
-    public void addNewsListRondom(List<News> newsList) {
-        for (News news : newsList)
-            mNewsList.add(news);
-        Collections.sort(mNewsList, comparator);
+    public void setNewsList(List<News> newsList) {
+        mNewsList = newsList;
+        //Collections.sort(mNewsList, comparator);
         notifyDataSetChanged();
     }
 

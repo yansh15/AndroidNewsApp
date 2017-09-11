@@ -14,15 +14,18 @@ import android.text.style.URLSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.java.group19.TextSpeaker;
 import com.java.group19.component.DetailLayout;
 import com.java.group19.helper.DatabaseHelper;
 import com.java.group19.helper.HttpHelper;
 import com.java.group19.R;
+import com.java.group19.listener.OnFinishSpeakingListener;
 import com.java.group19.listener.OnGetDetailListener;
 import com.java.group19.listener.OnGetImagesListener;
 import com.java.group19.data.News;
@@ -32,15 +35,24 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+
+import in.srain.cube.image.CubeImageView;
+import in.srain.cube.image.ImageLoader;
+import in.srain.cube.image.ImageLoaderFactory;
 
 public class DetailActicity extends AppCompatActivity {
 
     private DetailLayout detailLayout;
+    private TextSpeaker textSpeaker;
+    private News news;
+    private ImageLoader imageLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        imageLoader = ImageLoaderFactory.create(this);
 
         //set toolber
         /*Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
@@ -51,8 +63,93 @@ public class DetailActicity extends AppCompatActivity {
         /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.detail_fab);
         fab.setOnClickListener(this);*/
 
-        //set content
+        news = (News) getIntent().getSerializableExtra("news");
+        news.setVisitCount(news.getVisitCount() + 1);
+        news.setLastVisitTime(new Date());
+        news.save();
         detailLayout = (DetailLayout) findViewById(R.id.detail_layout);
+        detailLayout.setAuthor(news.getAuthor());
+        detailLayout.setTitle(news.getTitle());
+        detailLayout.setDate(new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(news.getTime()));
+        detailLayout.setSource(news.getSource());
+        // set news content with baike links
+        String content = news.getContent();
+        SpannableString spannableContent = new SpannableString(content);
+        for (String entry : news.getEntries()) {
+            for (int i = content.indexOf(entry, 0); i != -1; ) {
+                int j = i + entry.length();
+                spannableContent.setSpan(new URLSpan("http://www.baike.com/wiki/" + entry), i, j, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                i = content.indexOf(entry, j);
+            }
+        }
+        detailLayout.setContent(spannableContent);
+        if (!DatabaseHelper.isTextMode()) {
+            List<String> pictures = news.getPictures();
+            for (String picture : pictures) {
+                CubeImageView view = new CubeImageView(this);
+                view.loadImage(imageLoader, picture);
+                detailLayout.addImage(view);
+            }
+        }
+
+        // set textSpeaker
+        textSpeaker = TextSpeaker.getInstance(this);
+        textSpeaker.setOnFinishSpeakingListener(new OnFinishSpeakingListener() {
+            @Override
+            public void onFinishSpeaking() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        detailLayout.getStartVoice().setTag("toStart");
+                        detailLayout.getStartVoice().setImageResource(R.drawable.ic_keyboard_voice_black);
+                    }
+                });
+            }
+        });
+        detailLayout.setOnClickStartVoiceListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (view.getTag().equals("toStart")) {
+                    if (textSpeaker.isSpeaking()) {
+                        textSpeaker.resume();
+                    } else {
+                        textSpeaker.speak(detailLayout.getContent().toString());
+                    }
+                    view.setTag("toPause");
+                    ((ImageView) view).setImageResource(R.drawable.ic_keyboard_voice_pause_black);
+                } else {
+                    textSpeaker.pause();
+                    view.setTag("toStart");
+                    ((ImageView) view).setImageResource(R.drawable.ic_keyboard_voice_black);
+                }
+            }
+        });
+        detailLayout.setOnClickStopVoiceListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                textSpeaker.stop();
+                view.setTag("toStart");
+                ((ImageView) view).setImageResource(R.drawable.ic_keyboard_voice_black);
+            }
+        });
+
+        // set Favorite
+        detailLayout.setOnClickFavoriteListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (view.getTag().equals("toSetFavorite")) {
+                    news.setLastFavoriteTime(new Date());
+                    news.save();
+                    view.setTag("toCancelFavorite");
+                    ((ImageView) view).setImageResource(R.drawable.ic_favorite_black);
+                } else {
+                    news.setLastFavoriteTime(new Date(0));
+                    news.save();
+                    view.setTag("toSetFavorite");
+                    ((ImageView) view).setImageResource(R.drawable.ic_favorite_border_black);
+                }
+            }
+        });
     }
 
     /*@Override
@@ -75,7 +172,7 @@ public class DetailActicity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
+        textSpeaker.stop();
         super.onBackPressed();
     }
 }

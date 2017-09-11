@@ -38,6 +38,10 @@ public class DatabaseHelper {
         return new ArrayList<>(DataSupport.findAll(News.class));
     }
 
+    public static synchronized void removeNews(String uniqueId) {
+        DataSupport.deleteAll(News.class, "uniqueid = ?", uniqueId);
+    }
+
     public static synchronized void saveNews(News news) {
         news.save();
     }

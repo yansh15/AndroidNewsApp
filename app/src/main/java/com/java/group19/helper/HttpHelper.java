@@ -1,31 +1,22 @@
 package com.java.group19.helper;
 
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Environment;
-import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.Target;
-import com.java.group19.listener.OnGetDetailListener;
-import com.java.group19.listener.OnGetImagesListener;
-import com.java.group19.listener.OnGetNewsListener;
 import com.java.group19.data.Keyword;
+import com.java.group19.listener.OnGetDetailListener;
+import com.java.group19.listener.OnGetNewsListener;
 import com.java.group19.data.News;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -34,11 +25,35 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+class NewsWithScore implements Comparable<NewsWithScore>{
+    private News news;
+    private Double score;
+
+    public News getNews() {
+        return news;
+    }
+
+    public void setNews(News news) {
+        this.news = news;
+    }
+
+    public Double getScore() {
+        return score;
+    }
+
+    public void setScore(Double score) {
+        this.score = score;
+    }
+
+    NewsWithScore(News news) {this.news = news;}
+
+    @Override
+    public int compareTo(@NonNull NewsWithScore newsWithScore) {
+        return this.score < newsWithScore.score ? 1 : (this.score > newsWithScore.score ? 1 : 0);
+    }
+}
+
 public class HttpHelper {
-    private static OkHttpClient client;
-    private static String rootURL = "http://166.111.68.66:2042/news/action/query/";
-    private static final String TAG = "HttpHelper";
-    private static Pattern pattern = Pattern.compile("(^　*)|(　*$)");
 
     public static final int ALL = 0;
     public static final int SCIENCE = 1;
@@ -54,136 +69,145 @@ public class HttpHelper {
     public static final int HEALTH = 11;
     public static final int ENTERTAINMENT = 12;
 
-    public static void askLatestNews(final int pageNo, final int pageSize, final  int category, final OnGetNewsListener listener) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    String url = rootURL+"latest?pageNo="+pageNo+"&pageSize="+pageSize;
-                    if (category > 0 && category < 13)
-                        url += "&category=" + category;
-                    client = new OkHttpClient();
-                    Request request = new Request.Builder()
-                            .url(url)
-                            .build();
-                    Response response = client.newCall(request).execute();
-                    String responseData = response.body().string();
-                    listener.onFinish(parseJSONForNewsList(responseData, listener));
-                }catch (Exception e) {
-                    e.printStackTrace();
-                    listener.onError(e);
-                }
+    private static final double oo = 1e100;
+    private static final int STORAGESIZE = 1200;
+    private static final int KEYWORDMAXIMUMSIZE = 10;
+
+    private static OkHttpClient client;
+    private static String rootURL = "http://166.111.68.66:2042/news/action/query/";
+    private static final String TAG = "HttpHelper";
+    private static Pattern pattern = Pattern.compile("(^　*)|(　*$)");
+    private static HashMap<String, Double> scoreMap = new HashMap<>();
+    private static ArrayList<News> newsList;
+    private static String url;
+    private static List<String> forbiddenWordList;
+    private static int unreadNewsCount;
+    private static HashSet<String> newsIDSet;
+    private static int pageStartNo;
+    private static int searchPageSize = 10;
+
+    private static String connectNetworkFromURL() throws Exception{
+        client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        Response response = client.newCall(request).execute();
+        String responseData = response.body().string();
+        return responseData;
+    }
+
+    private static void askBestRecommendation(final int pageSize) {
+        scoreMap = new HashMap<>();
+        ArrayList<NewsWithScore> newsWithScoreArrayList = new ArrayList<>();
+        for (News news : newsList)
+            if (news.getVisitCount() > 0){
+                for (Keyword keyword : news.getKeywords())
+                    if (scoreMap.containsKey(keyword.getWord()))
+                        scoreMap.put(keyword.getWord(), scoreMap.get(keyword.getWord()) + keyword.getScore() * news.getVisitCount());
+                    else
+                        scoreMap.put(keyword.getWord(), keyword.getScore() * news.getVisitCount());
             }
-        }).start();
-    }
-
-    public static void askLatestNews(final int pageNo, final int category, final OnGetNewsListener listener) {
-        askLatestNews(pageNo, 20, category, listener);
-    }
-
-    public static void askLatestNews(final int pageNo, final OnGetNewsListener listener) {
-        askLatestNews(pageNo, 0, listener);
-    }
-
-    public static void askKeywordNews(final String keyword, final int category, final int pageNo, final int pageSize, final OnGetNewsListener listener) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    String url = rootURL+"search?keyword="+keyword+"&pageNo="+pageNo+"&pageSize="+pageSize;
-                    if (category > 0 && category < 13)
-                        url += "&category=" + category;
-                    client = new OkHttpClient();
-                    Request request = new Request.Builder()
-                            .url(url)
-                            .build();
-                    Response response = client.newCall(request).execute();
-                    String responseData = response.body().string();
-                    listener.onFinish(parseJSONForNewsList(responseData, listener));
-                }catch (Exception e) {
-                    e.printStackTrace();
-                    listener.onError(e);
-                }
+            else
+                newsWithScoreArrayList.add(new NewsWithScore(news));
+        for (String word : forbiddenWordList)
+            scoreMap.put(word, -oo);
+        for (NewsWithScore newsWithScore : newsWithScoreArrayList) {
+            double score = 0;
+            for (Keyword keyword : newsWithScore.getNews().getKeywords()){
+                if (scoreMap.containsKey(keyword.getWord()))
+                    score += scoreMap.get(keyword.getWord()) * keyword.getScore();
             }
-        }).start();
+            newsWithScore.setScore(score);
+        }
+        Collections.sort(newsWithScoreArrayList);
+        newsList = new ArrayList<>();
+        for (NewsWithScore newsWithScore : newsWithScoreArrayList.subList(0, newsWithScoreArrayList.size())){
+            newsList.add(newsWithScore.getNews());
+            DatabaseHelper.removeNews(newsWithScore.getNews().getUniqueId());
+        }
     }
 
-    public static void askKeywordNews(final String keyword, final int category, final int pageNo, final OnGetNewsListener listener) {
-        askKeywordNews(keyword, category, pageNo, 20, listener);
+    private static ArrayList<News> parseJSONForNewsList(String jsonData, final OnGetNewsListener listener) throws Exception{
+        ArrayList<News> thisNewsList = new ArrayList<>();
+        JSONArray jsonArray = new JSONObject(jsonData).getJSONArray("list");
+        for (int i = 0; i < jsonArray.length(); ++i) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            News news = new News();
+            String id = jsonObject.getString("news_ID");
+            if (newsIDSet.contains(id))
+                continue;
+            else
+                newsIDSet.add(id);
+            if (DatabaseHelper.getNews(id) != null)
+                continue;
+            url = rootURL+"detail?newsId="+id;
+            if (!parseJSONForSingleNews(connectNetworkFromURL(), news, listener))
+                continue;
+            news.setUniqueId(id);
+            news.setClassTag(jsonObject.getString("newsClassTag"));
+            news.setAuthor(jsonObject.getString("news_Author"));
+            news.setPictures(new ArrayList<>(Arrays.asList(jsonObject.getString("news_Pictures").split("//s|;"))));
+            news.setSource(jsonObject.getString("news_Source"));
+            news.setTime(new SimpleDateFormat("yyyyMMdd", Locale.CHINA).parse(jsonObject.getString("news_Time").substring(0, 8)));
+            news.setTitle(jsonObject.getString("news_Title"));
+            news.setUrl(jsonObject.getString("news_URL"));
+            String intro = jsonObject.getString("news_Intro");
+            intro = "　　" + pattern.matcher(intro).replaceAll("");
+            news.setIntro(intro);
+            thisNewsList.add(news);
+            if (DatabaseHelper.getNews(news.getUniqueId()) != null)
+                DatabaseHelper.saveNews(news);
+            unreadNewsCount ++;
+        }
+        return thisNewsList;
     }
 
-    public static void askKeywordNews(final String keyword, final int pageNo, final OnGetNewsListener listener) {
-        askKeywordNews(keyword, 0, pageNo, 20, listener);
+    private static boolean getKeyword(News news, JSONObject jsonObject) throws Exception{
+        JSONArray jsonArray = jsonObject.getJSONArray("Keywords");
+        ArrayList<Keyword> keywordList = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length(); ++i) {
+            JSONObject jsonKeywordObject = jsonArray.getJSONObject(i);
+            Keyword keyword = new Keyword();
+            keyword.setNews(news);
+            keyword.setWord(jsonKeywordObject.getString("word"));
+            if (forbiddenWordList.contains(keyword.getWord()))
+                return false;
+            keyword.setScore(jsonKeywordObject.getDouble("score"));
+            keywordList.add(keyword);
+        }
+        Collections.sort(keywordList);
+        news.setKeywords((ArrayList<Keyword>) keywordList.subList(0, Math.min(KEYWORDMAXIMUMSIZE, keywordList.size())));
+        return true;
     }
 
-    public static void askDetailNews(final News news, final OnGetDetailListener listener) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    String url = rootURL+"detail?newsId="+news.getUniqueId();
-                    client = new OkHttpClient();
-                    Request request = new Request.Builder()
-                            .url(url)
-                            .build();
-                    Response response = client.newCall(request).execute();
-                    String responseData = response.body().string();
-                    parseJSONForSingleNews(responseData, news, listener);
-                    listener.onFinish();
-                }catch (Exception e) {
-                    e.printStackTrace();
-                    listener.onError(e);
-                }
+    private static void searchWithKeyword(final String keyword, final int category, final int pageSize, final OnGetNewsListener listener) {
+        try {
+            while (pageStartNo <= searchPageSize && newsList.size() < pageSize) {
+                url = rootURL + "search?keyword=" + keyword + "&pageNo=" + pageStartNo + "&pageSize=" + searchPageSize;
+                if (category > 0 && category < 13)
+                    url += "&category=" + category;
+                ++pageStartNo;
+                String responseData = connectNetworkFromURL();
+                newsList.addAll(parseJSONForNewsList(responseData,listener));
             }
-        }).start();
-
+            listener.onFinish(newsList.subList(0, pageSize));
+            newsList = (ArrayList<News>) newsList.subList(pageSize, newsList.size());
+        }catch (Exception e) {
+            e.printStackTrace();
+            listener.onError(e);
+        }
     }
 
-    public static void downloadImage(final Context context, final List<String> urls, final OnGetImagesListener listener) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                ArrayList<String> results = new ArrayList<String>();
-                for (String s : urls) {
-                    if (!s.contains("."))
-                        continue;
-                    try {
-                        Bitmap bitmap = Glide.with(context).load(s).asBitmap()
-                                .into(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).get();
-                        if (bitmap != null) {
-                            saveImageToDevice(context, s, bitmap, listener);
-                            results.add(s);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        listener.onError(e);
-                    }
-                }
-                listener.onFinish(results);
-            }
-        }).start();
-    }
-
-    private static void parseJSONForSingleNews(final String jsonData, final News news, final OnGetDetailListener listener) {
+    private static boolean parseJSONForSingleNews(final String jsonData, final News news, final OnGetNewsListener listener) {
         try {
             JSONObject jsonObject = new JSONObject(jsonData);
+            if (!getKeyword(news, jsonObject))
+                return false;
             news.setJournal(jsonObject.getString("news_Journal"));
             news.setContent(jsonObject.getString("news_Content"));
-            //Keywords
-            JSONArray jsonArray = jsonObject.getJSONArray("Keywords");
-            ArrayList<Keyword> keywordList = new ArrayList<>();
-            for (int i = 0; i < jsonArray.length(); ++i) {
-                JSONObject jsonKeywordObject = jsonArray.getJSONObject(i);
-                Keyword keyword = new Keyword();
-                keyword.setNews(news);
-                keyword.setWord(jsonKeywordObject.getString("word"));
-                keyword.setScore(jsonKeywordObject.getDouble("score"));
-                keywordList.add(keyword);
-            }
-            news.setKeywords(keywordList);
             //Entries
             ArrayList<String> entries = new ArrayList<>();
-            jsonArray = jsonObject.getJSONArray("locations");
+            JSONArray jsonArray = jsonObject.getJSONArray("locations");
             for (int i = 0; i < jsonArray.length(); ++i)
                 entries.add(jsonArray.getJSONObject(i).getString("word"));
             jsonArray = jsonObject.getJSONArray("persons");
@@ -194,75 +218,90 @@ public class HttpHelper {
             e.printStackTrace();
             listener.onError(e);
         }
+        return true;
     }
 
-    private static ArrayList<News> parseJSONForNewsList(String jsonData, final OnGetNewsListener listener) {
-        ArrayList<News> newsList = new ArrayList<>();
-        try {
-            JSONArray jsonArray = new JSONObject(jsonData).getJSONArray("list");
-            for (int i = 0; i < jsonArray.length(); ++i) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                News news = new News();
-                news.setClassTag(jsonObject.getString("newsClassTag"));
-                news.setAuthor(jsonObject.getString("news_Author"));
-                news.setUniqueId(jsonObject.getString("news_ID"));
-                news.setPictures(new ArrayList<>(Arrays.asList(jsonObject.getString("news_Pictures").split("//s|;"))));
-                news.setSource(jsonObject.getString("news_Source"));
-                news.setTime(new SimpleDateFormat("yyyyMMdd", Locale.CHINA).parse(jsonObject.getString("news_Time").substring(0, 8)));
-                news.setTitle(jsonObject.getString("news_Title"));
-                news.setUrl(jsonObject.getString("news_URL"));
-                String intro = jsonObject.getString("news_Intro");
-                intro = "　　" + pattern.matcher(intro).replaceAll("");
-                news.setIntro(intro);
-                newsList.add(news);
+    public static void askLatestNews(final int pageSize, final int category, final OnGetNewsListener listener) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                forbiddenWordList = DatabaseHelper.getAllForbiddenWords();
+                if (category <= 0 || category > 12) {
+                    askLatestNews(pageSize, listener);
+                    return;
+                }
+                newsList = new ArrayList<News>();
+                newsIDSet = new HashSet<String>();
+                try {
+                    for (int i = 1; i <= (pageSize << 1) && newsList.size() < pageSize; ++i) {
+                        String url = rootURL + "latest?pageNo="+i+"&pageSize=" + (pageSize << 1) + "&category=" + category;
+                        newsList.addAll(parseJSONForNewsList(connectNetworkFromURL(), listener));
+                    }
+                    listener.onFinish(newsList.subList(0, pageSize));
+                }catch (Exception e) {
+                    e.printStackTrace();
+                    listener.onError(e);
+                }
             }
-        }catch (Exception e) {
-            e.printStackTrace();
-            listener.onError(e);
-        }
-        return newsList;
+        }).start();
     }
 
-    private synchronized static void saveImageToDevice(final Context context, final String string, final Bitmap bitmap, final OnGetImagesListener listener) {
-        File file = Environment.getDataDirectory().getAbsoluteFile();
-        file = new File(file, "/data/com.java.group19/");
-        String fileName = "newsPicture";
-        File appDir = new File(file ,fileName);
-        if (!appDir.exists()) {
-            appDir.mkdirs();
-        }
-        fileName = string.replaceAll("[^a-zA-Z0-9.]", "");
-        File currentFile = new File(appDir, fileName);
-
-        FileOutputStream fos = null;
+    public static void askLatestNews(final int pageSize, final OnGetNewsListener listener) {
         try {
-            fos = new FileOutputStream(currentFile);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-            fos.flush();
+            newsList = (ArrayList<News>) DatabaseHelper.getAllNews();
+            unreadNewsCount = 0;
+            newsIDSet = new HashSet<String>();
+            for (News news : newsList) {
+                if (news.getVisitCount() == 0)
+                    unreadNewsCount++;
+                newsIDSet.add(news.getUniqueId());
+            }
+            for (int i = 1; i <= (pageSize << 1) && unreadNewsCount - pageSize < STORAGESIZE; ++i) {
+                String url = rootURL + "latest?pageNo="+i+"&pageSize="+(pageSize<<1);
+                newsList.addAll(parseJSONForNewsList(connectNetworkFromURL(), listener));
+            }
+            askBestRecommendation(pageSize);
+            listener.onFinish(newsList);
         } catch (Exception e) {
             e.printStackTrace();
             listener.onError(e);
-        } finally {
-            try {
-                if (fos != null) {
-                    fos.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                listener.onError(e);
+        }
+    }
+
+    public static void askMoreKeywordNews(final String keyword, final int category, final int pageSize, final OnGetNewsListener listener) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                searchWithKeyword(keyword, category, pageSize, listener);
             }
-        }
+        }).start();
+    }
 
-        try {
-            MediaStore.Images.Media.insertImage(context.getContentResolver(),
-                    currentFile.getAbsolutePath(), fileName, null);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            listener.onError(e);
-        }
+    public static void askMoreKeywordNews(final String keyword, final int category, final OnGetNewsListener listener) {
+        askMoreKeywordNews(keyword, category, 10, listener);
+    }
 
-        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-                Uri.fromFile(new File(currentFile.getPath()))));
+    public static void askMoreKeywordNews(final String keyword, final OnGetNewsListener listener) {
+        askMoreKeywordNews(keyword, 0, listener);
+    }
+
+    public static void askKeywordNews(final String keyword, final int category, final int pageSize, final OnGetNewsListener listener) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                newsList = new ArrayList<News>();
+                pageStartNo = 1;
+                searchWithKeyword(keyword, category, pageSize, listener);
+            }
+        }).start();
+    }
+
+    public static void askKeywordNews(final String keyword, final int category, final OnGetNewsListener listener) {
+        askKeywordNews(keyword, category, 10, listener);
+    }
+
+    public static void askKeywordNews(final String keyword, final OnGetNewsListener listener) {
+        askKeywordNews(keyword, 0, listener);
     }
 
     public static void printNews(News news) {
@@ -276,13 +315,14 @@ public class HttpHelper {
         output += "\nnews_URL: "+news.getUrl();
         output += "\nnews_Intro: "+news.getIntro()+"\n";
         output += "news_journal: "+news.getJournal() + "\nnews_content: "+news.getContent() + "\nKeywords: ";
-        /*if (!news.getKeywords().isEmpty())
-            for (String s : news.getKeywords().keySet())
-                output += "\n   word: " + s + ", score: " + news.getKeywords().get(s);*/
+        if (!news.getKeywords().isEmpty())
+            for (Keyword keyword : news.getKeywords())
+                output += "\n   word: " + keyword.getWord() + ", score: " + keyword.getScore();
         output += "\nnews_Entries:\n";
         if (!news.getEntries().isEmpty())
             for (String s : news.getEntries())
                 output += s + "\n";
         Log.d(TAG, output);
     }
+
 }

@@ -3,6 +3,7 @@ package com.java.group19.component;
 import android.content.Context;
 import android.media.Image;
 import android.provider.ContactsContract;
+import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,8 @@ import com.java.group19.R;
 
 import java.util.List;
 
+import in.srain.cube.image.CubeImageView;
+
 /**
  * Created by 阎世宏 on 2017/9/11.
  */
@@ -23,8 +26,8 @@ public class DetailLayout extends LinearLayout {
     private TextView title;
     private TextView author;
     private TextView date;
-    private ImageView imageOne;
     private TextView content;
+    private LinearLayout detailItem;
     private LinearLayout imageLayout;
     private LinearLayout classTagLayout;
     private TextView source;
@@ -34,6 +37,7 @@ public class DetailLayout extends LinearLayout {
     private ImageView favorite;
     private ImageView startVoice;
     private ImageView stopVoice;
+    private int imageCount = 0;
 
     public DetailLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -41,9 +45,9 @@ public class DetailLayout extends LinearLayout {
         title = (TextView) findViewById(R.id.detail_title);
         author = (TextView) findViewById(R.id.detail_author);
         date = (TextView) findViewById(R.id.detail_date);
-        imageOne = (ImageView) findViewById(R.id.detail_image);
-        imageOne.setVisibility(GONE);
         content = (TextView) findViewById(R.id.detail_content);
+        content.setMovementMethod(LinkMovementMethod.getInstance());
+        detailItem = (LinearLayout) findViewById(R.id.detail_item);
         imageLayout = (LinearLayout) findViewById(R.id.detail_image_layout);
         imageLayout.setVisibility(GONE);
         classTagLayout = (LinearLayout) findViewById(R.id.detail_classtag_layout);
@@ -56,7 +60,11 @@ public class DetailLayout extends LinearLayout {
         startVoice = (ImageView) findViewById(R.id.detail_voice_start);
         stopVoice = (ImageView) findViewById(R.id.detail_voice_stop);
     }
-    
+
+    public ImageView getStartVoice() {
+        return startVoice;
+    }
+
     public CharSequence getTitle() {
         return title.getText();
     }
@@ -97,8 +105,13 @@ public class DetailLayout extends LinearLayout {
         source.setText(charSequence);
     }
     
-    public void addImage(ImageView view) {
-        //// TODO: 2017/9/11
+    public void addImage(CubeImageView view) {
+        if (++imageCount == 1) {
+            detailItem.addView(view, 2);
+        } else {
+            imageLayout.setVisibility(VISIBLE);
+            imageLayout.addView(view);
+        }
     }
 
     public void setOnClickWxContactListener(View.OnClickListener listener) {
