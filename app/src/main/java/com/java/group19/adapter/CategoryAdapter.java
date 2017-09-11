@@ -20,6 +20,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
             "文化", "汽车", "国际", "体育", "经济", "健康", "娱乐"};
     private Context context;
     private OnCategoryChangeListener listener;
+    private TextView highLight;
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
@@ -46,10 +47,19 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     public void onBindViewHolder(ViewHolder holder, final int position) {
         String s = categorys[position];
         holder.textView.setText(s);
+        if (position == 0) {
+            highLight = holder.textView;
+            holder.textView.setTextColor(context.getResources().getColor(R.color.colorPrimary));
+        } else {
+            holder.textView.setTextColor(context.getResources().getColor(R.color.black));
+        }
         holder.textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 listener.onCategoryChange(position);
+                highLight.setTextColor(context.getResources().getColor(R.color.black));
+                highLight = (TextView) view;
+                highLight.setTextColor(context.getResources().getColor(R.color.colorPrimary));
             }
         });
     }

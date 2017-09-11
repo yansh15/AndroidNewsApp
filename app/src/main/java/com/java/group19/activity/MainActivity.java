@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity
         implements AppBarLayout.OnOffsetChangedListener {
 
     private FloatingSearchView searchView;
-    private AppBarLayout appBarLayout;
     private RecyclerView recyclerView;
     private RecyclerView categoryRecyclerView;
     private NewsAdapter[] adapter;
@@ -61,10 +60,8 @@ public class MainActivity extends AppCompatActivity
         setNavigationView(navigationView);
 
         searchView = (FloatingSearchView) findViewById(R.id.floating_search_view);
-        appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
         recyclerView = (RecyclerView) findViewById(R.id.news_recycler_view);
         categoryRecyclerView = (RecyclerView) findViewById(R.id.category_recycle_view);
-        appBarLayout.addOnOffsetChangedListener(this);
 
         //set
         searchView.attachNavigationDrawerToMenuButton(mDrawerLayout);

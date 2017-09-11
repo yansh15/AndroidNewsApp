@@ -1,5 +1,7 @@
 package com.java.group19.data;
 
+import android.support.annotation.NonNull;
+
 import com.java.group19.data.News;
 
 import org.litepal.crud.DataSupport;
@@ -10,7 +12,7 @@ import java.io.Serializable;
  * Created by strongoier on 17/9/9.
  */
 
-public class Keyword extends DataSupport implements Serializable {
+public class Keyword extends DataSupport implements Serializable, Comparable<Keyword> {
     private News news;
     private String word;
     private double score;
@@ -37,5 +39,10 @@ public class Keyword extends DataSupport implements Serializable {
 
     public void setScore(double score) {
         this.score = score;
+    }
+
+    @Override
+    public int compareTo(@NonNull Keyword keyword) {
+        return this.score < keyword.getScore() ? 1 : (this.score > keyword.getScore() ? -1 : 0);
     }
 }
