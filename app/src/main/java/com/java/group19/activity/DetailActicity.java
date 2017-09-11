@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class DetailActicity extends AppCompatActivity implements View.OnClickListener {
+public class DetailActicity extends AppCompatActivity {
 
     private DetailLayout detailLayout;
 
@@ -43,25 +43,25 @@ public class DetailActicity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_detail);
 
         //set toolber
-        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
+        /*Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
-        setupToolbar();
+        setupToolbar();*/
 
         //set fab
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.detail_fab);
-        fab.setOnClickListener(this);
+        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.detail_fab);
+        fab.setOnClickListener(this);*/
 
         //set content
         detailLayout = (DetailLayout) findViewById(R.id.detail_layout);
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu_detail, menu);
         return true;
-    }
+    }*/
 
-    @Override
+    /*@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -71,26 +71,26 @@ public class DetailActicity extends AppCompatActivity implements View.OnClickLis
                 break;
         }
         return true;
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.detail_fab:
-                //// TODO: 17/9/10  snackbar
+
                 break;
             default:
                 break;
         }
-    }
+    }*/
 
-    private void setupToolbar() {
+    /*private void setupToolbar() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_black);
         }
-    }
+    }*/
 
     /*private void getDetailNews() {
         final News news = (News) getIntent().getSerializableExtra("news");

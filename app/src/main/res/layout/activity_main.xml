@@ -21,7 +21,8 @@
         android:fitsSystemWindows="true"
         tools:context=".activity.MainActivity">
 
-        <android.support.design.widget.CoordinatorLayout
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
@@ -46,26 +47,31 @@
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/category_recycle_view"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:scrollbars="horizontal"
+                        android:scrollbarStyle="outsideOverlay"/>
 
                 </LinearLayout>
 
             </android.support.design.widget.AppBarLayout>
 
-            <android.support.v4.widget.NestedScrollView
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/main_swipe_refresh"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:clipToPadding="false"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
                 <android.support.v7.widget.RecyclerView
-                        android:id="@+id/news_recycler_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                    android:id="@+id/news_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scrollbars="vertical"
+                    android:scrollbarStyle="outsideOverlay"/>
 
-            </android.support.v4.widget.NestedScrollView>
+            </android.support.v4.widget.SwipeRefreshLayout>
 
-        </android.support.design.widget.CoordinatorLayout>
+        </LinearLayout>
 
         <com.arlib.floatingsearchview.FloatingSearchView
             android:id="@+id/floating_search_view"
