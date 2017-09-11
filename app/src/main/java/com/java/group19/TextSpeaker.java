@@ -1,5 +1,7 @@
 package com.java.group19;
 
+import com.java.group19.listener.OnFinishSpeakingListener;
+
 import android.content.Context;
 import android.util.Log;
 
@@ -26,7 +28,10 @@ public class TextSpeaker {
     private SpeechSynthesizer mSpeechSynthesizer;
     private Context mContext;
     private String mSampleDirPath;
-    private static final int LENGTH_PER_SPEAK = 300;
+    private boolean isSpeaking = false;
+    private int count = 0;
+    private OnFinishSpeakingListener listener;
+    private static final int LENGTH_PER_SPEAK = 500;
     private static final String SAMPLE_DIR_NAME = "baiduTTS";
     private static final String SPEECH_FEMALE_MODEL_NAME = "bd_etts_speech_female.dat";
     private static final String SPEECH_MALE_MODEL_NAME = "bd_etts_speech_male.dat";
@@ -41,10 +46,13 @@ public class TextSpeaker {
         synchronized (TextSpeaker.class) {
             if (mTextSpeaker == null) {
                 mTextSpeaker = new TextSpeaker(context);
-                Log.d(TAG, "getInstance: " + mTextSpeaker.toString());
             }
         }
         return mTextSpeaker;
+    }
+
+    public void setOnFinishSpeakingListener(OnFinishSpeakingListener listener) {
+        this.listener = listener;
     }
 
     private TextSpeaker(Context context) {
@@ -137,6 +145,9 @@ public class TextSpeaker {
              */
             @Override
             public void onSynthesizeStart(String utteranceId) {
+                if (++count > 0) {
+                    isSpeaking = true;
+                }
                 toPrint("onSynthesizeStart utteranceId=" + utteranceId);
             }
 
@@ -190,6 +201,14 @@ public class TextSpeaker {
              */
             @Override
             public void onSpeechFinish(String utteranceId) {
+                if (--count == 0) {
+                    isSpeaking = false;
+                    try {
+                        listener.onFinishSpeaking();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
                 toPrint("onSpeechFinish utteranceId=" + utteranceId);
             }
 
@@ -251,9 +270,19 @@ public class TextSpeaker {
         toPrint("speechModelInfo=" + speechModelInfo);
     }
 
+    public boolean isSpeaking() {
+        return isSpeaking;
+    }
+
     public void speak(String text) {
-        //需要合成的文本text的长度不能超过1024个GBK字节。
-        stop();
+        String[] texts = text.split("\n");
+        for (String single : texts) {
+            speakSingle(single);
+        }
+    }
+
+    public void speakSingle(String text) {
+        //mSpeechSynthesizer.speak文本的长度不能超过1024个GBK字节。
         while (text.length() > LENGTH_PER_SPEAK) {
             int result = mSpeechSynthesizer.speak(text.substring(0, LENGTH_PER_SPEAK));
             if (result < 0) {
@@ -276,6 +305,8 @@ public class TextSpeaker {
     }
 
     public void stop() {
+        count = 0;
+        isSpeaking = false;
         mSpeechSynthesizer.stop();
     }
 
