@@ -176,7 +176,10 @@ public class HttpHelper {
             keywordList.add(keyword);
         }
         Collections.sort(keywordList);
-        news.setKeywords((ArrayList<Keyword>) keywordList.subList(0, Math.min(KEYWORDMAXIMUMSIZE, keywordList.size())));
+        ArrayList<Keyword> keywords = new ArrayList<>();
+        for (int i = 0; i < Math.min(KEYWORDMAXIMUMSIZE, keywordList.size()); ++i)
+            keywords.add(keywordList.get(i));
+        news.setKeywords(keywords);
         return true;
     }
 
@@ -257,7 +260,7 @@ public class HttpHelper {
                 newsIDSet.add(news.getUniqueId());
             }
             for (int i = 1; i <= (pageSize << 1) && unreadNewsCount - pageSize < STORAGESIZE; ++i) {
-                String url = rootURL + "latest?pageNo="+i+"&pageSize="+(pageSize<<1);
+                url = rootURL + "latest?pageNo="+i+"&pageSize="+(pageSize<<1);
                 newsList.addAll(parseJSONForNewsList(connectNetworkFromURL(), listener));
             }
             askBestRecommendation(pageSize);

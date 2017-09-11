@@ -98,7 +98,7 @@ public class DatabaseHelper {
     }
 
     public static synchronized List<String> getAllForbiddenWords() {
-        List<String> result = new ArrayList<>(DataSupport.findFirst(Config.class).getForbiddenWords());
+        List<String> result = new ArrayList<>(config.getForbiddenWords());
         Collections.reverse(result);
         return result;
     }

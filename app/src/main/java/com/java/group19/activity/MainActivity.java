@@ -50,16 +50,13 @@ public class MainActivity extends AppCompatActivity
     private TextSpeaker textSpeaker;
     private ImageLoader imageLoader;
 
-    static {
-        DatabaseHelper.init();
-    }
-
     private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        DatabaseHelper.init();
         textSpeaker = TextSpeaker.getInstance(this);
         imageLoader = ImageLoaderFactory.create(this);
 
