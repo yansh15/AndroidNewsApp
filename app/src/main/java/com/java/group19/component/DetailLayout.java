@@ -17,25 +17,6 @@ import java.util.List;
 
 public class DetailLayout extends LinearLayout {
 
-    public abstract static class Adapter {
-
-        private DetailLayout detailLayout;
-
-        public abstract CharSequence getTitle();
-        public abstract CharSequence getAuthor();
-        public abstract CharSequence getDate();
-        public abstract CharSequence getContent();
-        public abstract CharSequence getSource();
-
-        private void setDetailLayout(DetailLayout layout) {
-            detailLayout = layout;
-        }
-
-        public void notifyDataChange() {
-            detailLayout.update();
-        }
-    }
-
     private TextView title;
     private TextView author;
     private TextView date;
@@ -44,8 +25,6 @@ public class DetailLayout extends LinearLayout {
     private LinearLayout imageLayout;
     private LinearLayout classTagLayout;
     private TextView source;
-
-    private Adapter adapter;
 
     public DetailLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -62,21 +41,48 @@ public class DetailLayout extends LinearLayout {
         classTagLayout.setVisibility(GONE);
         source = (TextView) findViewById(R.id.detail_source);
     }
-
-    public Adapter getAdapter() {
-        return adapter;
+    
+    public CharSequence getTitle() {
+        return title.getText();
     }
-
-    public void setAdapter(Adapter adapter) {
-        this.adapter = adapter;
-        adapter.setDetailLayout(this);
+    
+    public void setTitle(CharSequence charSequence) {
+        title.setText(charSequence);
     }
-
-    private void update() {
-        title.setText(adapter.getTitle());
-        author.setText(adapter.getAuthor());
-        date.setText(adapter.getDate());
-        content.setText(adapter.getContent());
-        source.setText(adapter.getSource());
+    
+    public CharSequence getAuthor() {
+        return author.getText();
+    }
+    
+    public void setAuthor(CharSequence charSequence) {
+        author.setText(charSequence);
+    }
+    
+    public CharSequence getDate() {
+        return date.getText();
+    }
+    
+    public void setDate(CharSequence charSequence) {
+        date.setText(charSequence);
+    }
+    
+    public CharSequence getContent() {
+        return content.getText();
+    }
+    
+    public void setContent(CharSequence charSequence) {
+        content.setText(charSequence);
+    }
+    
+    public CharSequence getSource() {
+        return source.getText();
+    }
+    
+    public void setSource(CharSequence charSequence) {
+        source.setText(charSequence);
+    }
+    
+    public void addImage(ImageView view) {
+        //// TODO: 2017/9/11  
     }
 }
