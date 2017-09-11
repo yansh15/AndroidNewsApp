@@ -28,6 +28,7 @@ public class News extends DataSupport implements Serializable {
     private ArrayList<String> entries;
     private Date lastVisitTime;
     private Date lastFavoriteTime;
+    private int visitCount;
 
     public String getUniqueId() {
         return uniqueId;
@@ -147,5 +148,13 @@ public class News extends DataSupport implements Serializable {
 
     public void setLastFavoriteTime(Date lastFavoriteTime) {
         this.lastFavoriteTime = lastFavoriteTime;
+    }
+
+    public int getVisitCount() {
+        return visitCount;
+    }
+
+    public void setVisitCount(int visitCount) {
+        this.visitCount = visitCount;
     }
 }

@@ -8,7 +8,6 @@ import org.litepal.tablemanager.Connector;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,6 +32,10 @@ public class DatabaseHelper {
 
     public static synchronized News getNews(String uniqueId) {
         return DataSupport.where("uniqueid = ?", uniqueId).findFirst(News.class);
+    }
+
+    public static synchronized List<News> getAllNews() {
+        return new ArrayList<>(DataSupport.findAll(News.class));
     }
 
     public static synchronized void saveNews(News news) {
@@ -96,18 +99,8 @@ public class DatabaseHelper {
         return result;
     }
 
-    public static synchronized void setLastVisitTime(News news, Date lastVisitTime) {
-        news.setLastVisitTime(lastVisitTime);
-        news.save();
-    }
-
     public static synchronized List<News> getLatestVisits(int count) {
         return new ArrayList<>(DataSupport.order("lastvisittime desc").limit(count).find(News.class));
-    }
-
-    public static synchronized void setLastFavoriteTime(News news, Date lastFavoriteTime) {
-        news.setLastFavoriteTime(lastFavoriteTime);
-        news.save();
     }
 
     public static synchronized List<News> getLatestFavorites(int count) {
