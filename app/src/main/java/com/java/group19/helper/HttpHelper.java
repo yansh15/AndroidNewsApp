@@ -127,7 +127,7 @@ public class HttpHelper {
         }
     }
 
-    private static ArrayList<News> parseJSONForNewsList(String jsonData) throws Exception{
+    private static ArrayList<News> parseJSONForNewsList(String jsonData, final OnGetNewsListener listener) throws Exception{
         ArrayList<News> thisNewsList = new ArrayList<>();
         JSONArray jsonArray = new JSONObject(jsonData).getJSONArray("list");
         for (int i = 0; i < jsonArray.length(); ++i) {
@@ -154,6 +154,7 @@ public class HttpHelper {
             String intro = jsonObject.getString("news_Intro");
             intro = "　　" + pattern.matcher(intro).replaceAll("");
             news.setIntro(intro);
+            askDetailNews(news, listener);
             thisNewsList.add(news);
             if (DatabaseHelper.getNews(news.getUniqueId()) != null)
                 DatabaseHelper.saveNews(news);
@@ -188,7 +189,7 @@ public class HttpHelper {
                 if (category > 0 && category < 13)
                     url += "&category=" + category;
                 String responseData = connectNetworkFromURL();
-                newsList.addAll(parseJSONForNewsList(responseData));
+                newsList.addAll(parseJSONForNewsList(responseData,listener));
             }
             listener.onFinish(newsList.subList(0, pageSize));
             newsList = (ArrayList<News>) newsList.subList(pageSize, newsList.size());
@@ -198,7 +199,7 @@ public class HttpHelper {
         }
     }
 
-    private static void parseJSONForSingleNews(final String jsonData, final News news, final OnGetDetailListener listener) {
+    private static void parseJSONForSingleNews(final String jsonData, final News news, final OnGetNewsListener listener) {
         try {
             JSONObject jsonObject = new JSONObject(jsonData);
             news.setJournal(jsonObject.getString("news_Journal"));
@@ -235,7 +236,7 @@ public class HttpHelper {
                 try {
                     for (int i = 1; i <= (pageSize << 1) && newsList.size() < pageSize; ++i) {
                         String url = rootURL + "latest?pageNo="+i+"&pageSize=" + (pageSize << 1) + "&category=" + category;
-                        newsList.addAll(parseJSONForNewsList(connectNetworkFromURL()));
+                        newsList.addAll(parseJSONForNewsList(connectNetworkFromURL(), listener));
                     }
                     listener.onFinish(newsList.subList(0, pageSize));
                 }catch (Exception e) {
@@ -258,7 +259,7 @@ public class HttpHelper {
             }
             for (int i = 1; i <= (pageSize << 1) && unreadNewsCount - pageSize < STORAGESIZE; ++i) {
                 String url = rootURL + "latest?pageNo="+i+"&pageSize="+(pageSize<<1);
-                newsList.addAll(parseJSONForNewsList(connectNetworkFromURL()));
+                newsList.addAll(parseJSONForNewsList(connectNetworkFromURL(), listener));
             }
             askBestRecommendation(pageSize);
             listener.onFinish(newsList);
@@ -304,22 +305,15 @@ public class HttpHelper {
         askKeywordNews(keyword, 0, listener);
     }
 
-    public static void askDetailNews(final News news, final OnGetDetailListener listener) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    url = rootURL+"detail?newsId="+news.getUniqueId();
-                    String responseData = connectNetworkFromURL();
-                    parseJSONForSingleNews(responseData, news, listener);
-                    listener.onFinish();
-                }catch (Exception e) {
-                    e.printStackTrace();
-                    listener.onError(e);
-                }
-            }
-        }).start();
-
+    private static void askDetailNews(final News news, final OnGetNewsListener listener){
+        try {
+            url = rootURL+"detail?newsId="+news.getUniqueId();
+            String responseData = connectNetworkFromURL();
+            parseJSONForSingleNews(responseData, news, listener);
+        }catch (Exception e) {
+            e.printStackTrace();
+            listener.onError(e);
+        }
     }
 
     public static void printNews(News news) {
