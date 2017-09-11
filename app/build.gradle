@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'maven'
 
 android {
     compileSdkVersion 26
@@ -36,6 +37,11 @@ dependencies {
     compile 'org.litepal.android:core:1.+'
     testCompile 'junit:junit:4.12'
     compile 'com.github.arimorty:floatingsearchview:2.1.1'
-    compile 'com.nostra13.universalimageloader:universal-image-loader:1+'
-    compile 'in.srain.cube:cube-sdk:1.0.44@aar'
+    repositories {
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots'
+        }
+        mavenCentral()
+    }
+    compile 'in.srain.cube:cube-sdk:1.0.44.40-SNAPSHOT@aar'
 }

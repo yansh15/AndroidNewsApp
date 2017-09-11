@@ -15,6 +15,10 @@ import com.java.group19.data.News;
 import com.java.group19.listener.OnScrollToBottomListener;
 
 import java.util.Comparator;
+import java.util.Date;
+
+import in.srain.cube.image.ImageLoader;
+import in.srain.cube.image.ImageLoaderFactory;
 
 public class FavoriteActivity extends AppCompatActivity {
 
@@ -22,10 +26,13 @@ public class FavoriteActivity extends AppCompatActivity {
 
     private NewsAdapter adapter;
 
+    private ImageLoader imageLoader;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorite);
+        imageLoader = ImageLoaderFactory.create(this);
 
         //set toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.favorite_toolbar);
@@ -35,10 +42,9 @@ public class FavoriteActivity extends AppCompatActivity {
         //set recyclerview
         recyclerView = (RecyclerView) findViewById(R.id.favorite_recycler_view);
         setupRecyclerView();
-        
-        //// TODO: 2017/9/11 获取数据
-    }
 
+        adapter.setNewsList(DatabaseHelper.getLatestAllFavorites());
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -63,14 +69,7 @@ public class FavoriteActivity extends AppCompatActivity {
     private void setupRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new NewsAdapter(null);
+        adapter = new NewsAdapter(null, imageLoader);
         recyclerView.setAdapter(adapter);
-        recyclerView.addOnScrollListener(new OnScrollToBottomListener() {
-            @Override
-            public void onScrollToBottom() {
-                //// TODO: 2017/9/11 划至底部，加载新内容
-                // 加载完毕后调用this.noticeLoadingEnd();
-            }
-        });
     }
 }

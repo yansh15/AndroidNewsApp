@@ -70,7 +70,7 @@ public class HttpHelper {
     public static final int ENTERTAINMENT = 12;
 
     private static final double oo = 1e100;
-    private static final int STORAGESIZE = 1200;
+    private static final int STORAGESIZE = 100;
     private static final int KEYWORDMAXIMUMSIZE = 10;
 
     private static OkHttpClient client;

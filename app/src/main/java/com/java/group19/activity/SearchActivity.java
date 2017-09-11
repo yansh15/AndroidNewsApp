@@ -16,16 +16,22 @@ import com.java.group19.listener.OnScrollToBottomListener;
 
 import java.util.Comparator;
 
+import in.srain.cube.image.ImageLoader;
+import in.srain.cube.image.ImageLoaderFactory;
+
 public class SearchActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
 
     private NewsAdapter adapter;
 
+    private ImageLoader imageLoader;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+        imageLoader = ImageLoaderFactory.create(this);
 
         //set toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.search_toolbar);
@@ -68,7 +74,7 @@ public class SearchActivity extends AppCompatActivity {
     private void setupRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new NewsAdapter(null);
+        adapter = new NewsAdapter(null, imageLoader);
         recyclerView.setAdapter(adapter);
         recyclerView.addOnScrollListener(new OnScrollToBottomListener() {
             @Override

@@ -103,8 +103,16 @@ public class DatabaseHelper {
         return result;
     }
 
+    public static synchronized List<News> getLatestAllVisits() {
+        return new ArrayList<>(DataSupport.order("lastvisittime desc").find(News.class));
+    }
+
     public static synchronized List<News> getLatestVisits(int count) {
         return new ArrayList<>(DataSupport.order("lastvisittime desc").limit(count).find(News.class));
+    }
+
+    public static synchronized List<News> getLatestAllFavorites() {
+        return new ArrayList<>(DataSupport.where("lastfavoritetime > ?", "0").order("lastfavoritetime desc").find(News.class));
     }
 
     public static synchronized List<News> getLatestFavorites(int count) {
