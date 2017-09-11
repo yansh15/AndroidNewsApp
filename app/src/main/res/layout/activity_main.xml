@@ -28,46 +28,41 @@
             android:fitsSystemWindows="true"
             tools:context=".activity.MainActivity">
 
-            <android.support.design.widget.AppBarLayout
-                android:id="@+id/appbar"
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:background="@color/colorPrimary"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/category_recycle_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+                android:padding="5dp"
+                android:scrollbars="horizontal"
+                android:scrollbarStyle="outsideOverlay"
+                android:background="@color/white"
+                android:fadingEdge="none"/>
 
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="64dp"
-                        android:background="@color/colorPrimary"/>
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/category_recycle_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:scrollbars="horizontal"
-                        android:scrollbarStyle="outsideOverlay"/>
-
-                </LinearLayout>
-
-            </android.support.design.widget.AppBarLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorPrimary" />
 
             <android.support.v4.widget.SwipeRefreshLayout
                 android:id="@+id/main_swipe_refresh"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                android:fadingEdge="none">
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/news_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scrollbars="vertical"
-                    android:scrollbarStyle="outsideOverlay"/>
+                    android:scrollbarStyle="outsideOverlay"
+                    android:background="@color/white"
+                    android:fadingEdge="none"/>
 
             </android.support.v4.widget.SwipeRefreshLayout>
 
