@@ -86,6 +86,39 @@ public class HttpHelper {
     private static int pageStartNo;
     private static int searchPageSize = 10;
 
+    private static ArrayList subList(ArrayList arrayList, int l, int r) {
+        ArrayList newsArrayList = new ArrayList<>();
+        for (int i = l; i < r; ++i)
+            newsArrayList.add(arrayList.get(i));
+        return newsArrayList;
+    }
+
+    private static String checkStringCharacter(String content) {
+        String s = "";
+        for (char c : content.toCharArray()) {
+            Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
+            if (ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS
+                    || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A
+                    || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B
+                    || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C
+                    || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_D
+                    || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS
+                    || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT
+                    || ub == Character.UnicodeBlock.GENERAL_PUNCTUATION
+                    || ub == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION
+                    || ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS
+                    || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_FORMS
+                    || ub == Character.UnicodeBlock.VERTICAL_FORMS
+                    || c == ' ' || c == '　'
+                    || (c >= '0' && c <= '9')
+                    || (c >= 'a' && c <= 'z')
+                    || (c >= 'A' && c <= 'a'))
+                s += c;
+        }
+        s.replaceAll(" 　　", "\\n　　");
+        return s;
+    }
+
     private static String connectNetworkFromURL() throws Exception{
         client = new OkHttpClient();
         Request request = new Request.Builder()
@@ -121,7 +154,7 @@ public class HttpHelper {
         }
         Collections.sort(newsWithScoreArrayList);
         newsList = new ArrayList<>();
-        for (NewsWithScore newsWithScore : newsWithScoreArrayList.subList(0, newsWithScoreArrayList.size())){
+        for (NewsWithScore newsWithScore : (ArrayList<NewsWithScore>)subList(newsWithScoreArrayList, 0, newsWithScoreArrayList.size())){
             newsList.add(newsWithScore.getNews());
             DatabaseHelper.removeNews(newsWithScore.getNews().getUniqueId());
         }
@@ -176,7 +209,10 @@ public class HttpHelper {
             keywordList.add(keyword);
         }
         Collections.sort(keywordList);
-        news.setKeywords((ArrayList<Keyword>) keywordList.subList(0, Math.min(KEYWORDMAXIMUMSIZE, keywordList.size())));
+        ArrayList<Keyword> keywords = new ArrayList<>();
+        for (int i = 0; i < Math.min(KEYWORDMAXIMUMSIZE, keywordList.size()); ++i)
+            keywords.add(keywordList.get(i));
+        news.setKeywords(keywords);
         return true;
     }
 
@@ -190,8 +226,8 @@ public class HttpHelper {
                 String responseData = connectNetworkFromURL();
                 newsList.addAll(parseJSONForNewsList(responseData,listener));
             }
-            listener.onFinish(newsList.subList(0, pageSize));
-            newsList = (ArrayList<News>) newsList.subList(pageSize, newsList.size());
+            listener.onFinish((ArrayList<News>)subList(newsList, 0, pageSize));
+            newsList = (ArrayList<News>) subList(newsList, pageSize, newsList.size());
         }catch (Exception e) {
             e.printStackTrace();
             listener.onError(e);
@@ -204,7 +240,7 @@ public class HttpHelper {
             if (!getKeyword(news, jsonObject))
                 return false;
             news.setJournal(jsonObject.getString("news_Journal"));
-            news.setContent(jsonObject.getString("news_Content"));
+            news.setContent(checkStringCharacter(jsonObject.getString("news_Content")));
             //Entries
             ArrayList<String> entries = new ArrayList<>();
             JSONArray jsonArray = jsonObject.getJSONArray("locations");
@@ -237,7 +273,7 @@ public class HttpHelper {
                         String url = rootURL + "latest?pageNo="+i+"&pageSize=" + (pageSize << 1) + "&category=" + category;
                         newsList.addAll(parseJSONForNewsList(connectNetworkFromURL(), listener));
                     }
-                    listener.onFinish(newsList.subList(0, pageSize));
+                    listener.onFinish((ArrayList<News>)subList(newsList, 0, pageSize));
                 }catch (Exception e) {
                     e.printStackTrace();
                     listener.onError(e);
@@ -257,7 +293,7 @@ public class HttpHelper {
                 newsIDSet.add(news.getUniqueId());
             }
             for (int i = 1; i <= (pageSize << 1) && unreadNewsCount - pageSize < STORAGESIZE; ++i) {
-                String url = rootURL + "latest?pageNo="+i+"&pageSize="+(pageSize<<1);
+                url = rootURL + "latest?pageNo="+i+"&pageSize="+(pageSize<<1);
                 newsList.addAll(parseJSONForNewsList(connectNetworkFromURL(), listener));
             }
             askBestRecommendation(pageSize);
