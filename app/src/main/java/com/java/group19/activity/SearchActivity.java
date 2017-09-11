@@ -12,6 +12,7 @@ import com.java.group19.helper.DatabaseHelper;
 import com.java.group19.R;
 import com.java.group19.adapter.NewsAdapter;
 import com.java.group19.data.News;
+import com.java.group19.listener.OnScrollToBottomListener;
 
 import java.util.Comparator;
 
@@ -34,6 +35,8 @@ public class SearchActivity extends AppCompatActivity {
         //set recyclerview
         recyclerView = (RecyclerView) findViewById(R.id.search_recycler_view);
         setupRecyclerView();
+
+        //// TODO: 2017/9/12 //获取数据
     }
 
 //    @Override
@@ -65,16 +68,14 @@ public class SearchActivity extends AppCompatActivity {
     private void setupRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new NewsAdapter(new Comparator<News>() {
+        adapter = new NewsAdapter(null);
+        recyclerView.setAdapter(adapter);
+        recyclerView.addOnScrollListener(new OnScrollToBottomListener() {
             @Override
-            public int compare(News news, News t1) {
-                long diff = news.getLastVisitTime().getTime() - t1.getLastVisitTime().getTime();
-                if (diff < 0) return -1;
-                if (diff == 0) return 0;
-                return 1;
+            public void onScrollToBottom() {
+                //// TODO: 2017/9/11 划至底部，加载新内容
+                // 加载完毕后调用this.noticeLoadingEnd();
             }
         });
-        recyclerView.setAdapter(adapter);
-        adapter.addNewsListRondom(DatabaseHelper.getLatestVisits(100));
     }
 }

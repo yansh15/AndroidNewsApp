@@ -12,6 +12,7 @@ import com.java.group19.helper.DatabaseHelper;
 import com.java.group19.R;
 import com.java.group19.adapter.NewsAdapter;
 import com.java.group19.data.News;
+import com.java.group19.listener.OnScrollToBottomListener;
 
 import java.util.Comparator;
 
@@ -29,17 +30,14 @@ public class FavoriteActivity extends AppCompatActivity {
         //set toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.favorite_toolbar);
         setSupportActionBar(toolbar);
-        setipToolbar();
+        setupToolbar();
 
         //set recyclerview
         recyclerView = (RecyclerView) findViewById(R.id.favorite_recycler_view);
         setupRecyclerView();
+        
+        //// TODO: 2017/9/11 获取数据
     }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        return super.onCreateOptionsMenu(menu);
-//    }
 
 
     @Override
@@ -54,7 +52,7 @@ public class FavoriteActivity extends AppCompatActivity {
         return true;
     }
 
-    private void setipToolbar() {
+    private void setupToolbar() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -65,16 +63,14 @@ public class FavoriteActivity extends AppCompatActivity {
     private void setupRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new NewsAdapter(new Comparator<News>() {
+        adapter = new NewsAdapter(null);
+        recyclerView.setAdapter(adapter);
+        recyclerView.addOnScrollListener(new OnScrollToBottomListener() {
             @Override
-            public int compare(News news, News t1) {
-                long diff = news.getLastVisitTime().getTime() - t1.getLastVisitTime().getTime();
-                if (diff < 0) return -1;
-                if (diff == 0) return 0;
-                return 1;
+            public void onScrollToBottom() {
+                //// TODO: 2017/9/11 划至底部，加载新内容
+                // 加载完毕后调用this.noticeLoadingEnd();
             }
         });
-        recyclerView.setAdapter(adapter);
-        adapter.addNewsListRondom(DatabaseHelper.getLatestVisits(100));
     }
 }
