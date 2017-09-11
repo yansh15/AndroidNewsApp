@@ -141,7 +141,7 @@ public class HttpHelper {
             if (DatabaseHelper.getNews(id) != null)
                 continue;
             url = rootURL+"detail?newsId="+id;
-            if (!getKeyword(news, connectNetworkFromURL()))
+            if (!parseJSONForSingleNews(connectNetworkFromURL(), news, listener))
                 continue;
             news.setUniqueId(id);
             news.setClassTag(jsonObject.getString("newsClassTag"));
@@ -154,7 +154,6 @@ public class HttpHelper {
             String intro = jsonObject.getString("news_Intro");
             intro = "　　" + pattern.matcher(intro).replaceAll("");
             news.setIntro(intro);
-            askDetailNews(news, listener);
             thisNewsList.add(news);
             if (DatabaseHelper.getNews(news.getUniqueId()) != null)
                 DatabaseHelper.saveNews(news);
@@ -163,8 +162,7 @@ public class HttpHelper {
         return thisNewsList;
     }
 
-    private static boolean getKeyword(News news, String jsonData) throws Exception{
-        JSONObject jsonObject = new JSONObject(jsonData);
+    private static boolean getKeyword(News news, JSONObject jsonObject) throws Exception{
         JSONArray jsonArray = jsonObject.getJSONArray("Keywords");
         ArrayList<Keyword> keywordList = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); ++i) {
@@ -188,6 +186,7 @@ public class HttpHelper {
                 url = rootURL + "search?keyword=" + keyword + "&pageNo=" + pageStartNo + "&pageSize=" + searchPageSize;
                 if (category > 0 && category < 13)
                     url += "&category=" + category;
+                ++pageStartNo;
                 String responseData = connectNetworkFromURL();
                 newsList.addAll(parseJSONForNewsList(responseData,listener));
             }
@@ -199,14 +198,13 @@ public class HttpHelper {
         }
     }
 
-    private static void parseJSONForSingleNews(final String jsonData, final News news, final OnGetNewsListener listener) {
+    private static boolean parseJSONForSingleNews(final String jsonData, final News news, final OnGetNewsListener listener) {
         try {
             JSONObject jsonObject = new JSONObject(jsonData);
+            if (!getKeyword(news, jsonObject))
+                return false;
             news.setJournal(jsonObject.getString("news_Journal"));
             news.setContent(jsonObject.getString("news_Content"));
-            //Keywords
-            if (news.getKeywords() == null)
-                getKeyword(news, jsonData);
             //Entries
             ArrayList<String> entries = new ArrayList<>();
             JSONArray jsonArray = jsonObject.getJSONArray("locations");
@@ -220,6 +218,7 @@ public class HttpHelper {
             e.printStackTrace();
             listener.onError(e);
         }
+        return true;
     }
 
     public static void askLatestNews(final int pageSize, final int category, final OnGetNewsListener listener) {
@@ -303,17 +302,6 @@ public class HttpHelper {
 
     public static void askKeywordNews(final String keyword, final OnGetNewsListener listener) {
         askKeywordNews(keyword, 0, listener);
-    }
-
-    private static void askDetailNews(final News news, final OnGetNewsListener listener){
-        try {
-            url = rootURL+"detail?newsId="+news.getUniqueId();
-            String responseData = connectNetworkFromURL();
-            parseJSONForSingleNews(responseData, news, listener);
-        }catch (Exception e) {
-            e.printStackTrace();
-            listener.onError(e);
-        }
     }
 
     public static void printNews(News news) {
