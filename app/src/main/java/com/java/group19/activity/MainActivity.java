@@ -11,9 +11,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.java.group19.helper.DatabaseHelper;
 import com.java.group19.helper.HttpHelper;
@@ -63,7 +67,6 @@ public class MainActivity extends AppCompatActivity
         //set
         searchView.attachNavigationDrawerToMenuButton(mDrawerLayout);
         setupSearchBar();
-        setupSearchBar();
         setupRecyclerView();
         updateNewsList();
     }
@@ -75,7 +78,7 @@ public class MainActivity extends AppCompatActivity
 
     private void setNavigationView(final NavigationView navigationView) {
         navigationView.setCheckedItem(R.id.nav_favorite);
-        final SwitchCompat themeSwitch = (SwitchCompat) navigationView.getMenu().getItem(3).getActionView().findViewById(R.id.theme_switch);
+        final SwitchCompat themeSwitch = (SwitchCompat) navigationView.getMenu().getItem(3).getActionView().findViewById(R.id.nav_switch);
         themeSwitch.setChecked(DatabaseHelper.isDarkTheme());
         themeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -90,7 +93,7 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-        final SwitchCompat modeSwitch = (SwitchCompat) navigationView.getMenu().getItem(4).getActionView().findViewById(R.id.text_mode_switch);
+        final SwitchCompat modeSwitch = (SwitchCompat) navigationView.getMenu().getItem(4).getActionView().findViewById(R.id.nav_switch);
         modeSwitch.setChecked(false);
         modeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -180,14 +183,11 @@ public class MainActivity extends AppCompatActivity
                 searchView.setSearchBarTitle("");
             }
         });
-        searchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
+        searchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
             @Override
-            public void onActionMenuItemSelected(MenuItem item) {
-                switch (item.getItemId()) {
-                    //// TODO: 2017/9/10
-                    default:
-                        break;
-                }
+            public void onBindSuggestion(View suggestionView, ImageView leftIcon, TextView textView, SearchSuggestion item, int itemPosition) {
+                leftIcon.setImageResource(R.drawable.ic_history_black);
+                textView.setText(item.getBody());
             }
         });
     }

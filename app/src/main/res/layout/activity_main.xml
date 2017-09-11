@@ -33,11 +33,22 @@
                 android:layout_height="wrap_content"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-                <View
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="64dp"
-                    android:background="@color/colorPrimary"
-                    app:layout_scrollFlags="scroll|enterAlways"/>
+                    android:layout_height="wrap_content">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="64dp"
+                        android:background="@color/colorPrimary"/>
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/category_recycle_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
 
             </android.support.design.widget.AppBarLayout>
 
@@ -47,22 +58,10 @@
                 android:clipToPadding="false"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/category_recycle_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-
-                    <android.support.v7.widget.RecyclerView
+                <android.support.v7.widget.RecyclerView
                         android:id="@+id/news_recycler_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
-
-                </LinearLayout>
 
             </android.support.v4.widget.NestedScrollView>
 
@@ -76,7 +75,6 @@
             app:floatingSearch_dimBackground="false"
             app:floatingSearch_dismissOnOutsideTouch="true"
             app:floatingSearch_leftActionMode="showHamburger"
-            app:floatingSearch_menu="@menu/toolbar_menu_main"
             app:floatingSearch_searchBarMarginLeft="5dp"
             app:floatingSearch_searchBarMarginRight="5dp"
             app:floatingSearch_searchBarMarginTop="5dp"
