@@ -127,7 +127,7 @@ public class HttpHelper {
         }
     }
 
-    private static ArrayList<News> parseJSONForNewsList(String jsonData) throws Exception{
+    private static ArrayList<News> parseJSONForNewsList(String jsonData, final OnGetNewsListener listener) throws Exception{
         ArrayList<News> thisNewsList = new ArrayList<>();
         JSONArray jsonArray = new JSONObject(jsonData).getJSONArray("list");
         for (int i = 0; i < jsonArray.length(); ++i) {
@@ -141,7 +141,7 @@ public class HttpHelper {
             if (DatabaseHelper.getNews(id) != null)
                 continue;
             url = rootURL+"detail?newsId="+id;
-            if (!getKeyword(news, connectNetworkFromURL()))
+            if (!parseJSONForSingleNews(connectNetworkFromURL(), news, listener))
                 continue;
             news.setUniqueId(id);
             news.setClassTag(jsonObject.getString("newsClassTag"));
@@ -162,8 +162,7 @@ public class HttpHelper {
         return thisNewsList;
     }
 
-    private static boolean getKeyword(News news, String jsonData) throws Exception{
-        JSONObject jsonObject = new JSONObject(jsonData);
+    private static boolean getKeyword(News news, JSONObject jsonObject) throws Exception{
         JSONArray jsonArray = jsonObject.getJSONArray("Keywords");
         ArrayList<Keyword> keywordList = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); ++i) {
@@ -187,8 +186,9 @@ public class HttpHelper {
                 url = rootURL + "search?keyword=" + keyword + "&pageNo=" + pageStartNo + "&pageSize=" + searchPageSize;
                 if (category > 0 && category < 13)
                     url += "&category=" + category;
+                ++pageStartNo;
                 String responseData = connectNetworkFromURL();
-                newsList.addAll(parseJSONForNewsList(responseData));
+                newsList.addAll(parseJSONForNewsList(responseData,listener));
             }
             listener.onFinish(newsList.subList(0, pageSize));
             newsList = (ArrayList<News>) newsList.subList(pageSize, newsList.size());
@@ -198,14 +198,13 @@ public class HttpHelper {
         }
     }
 
-    private static void parseJSONForSingleNews(final String jsonData, final News news, final OnGetDetailListener listener) {
+    private static boolean parseJSONForSingleNews(final String jsonData, final News news, final OnGetNewsListener listener) {
         try {
             JSONObject jsonObject = new JSONObject(jsonData);
+            if (!getKeyword(news, jsonObject))
+                return false;
             news.setJournal(jsonObject.getString("news_Journal"));
             news.setContent(jsonObject.getString("news_Content"));
-            //Keywords
-            if (news.getKeywords() == null)
-                getKeyword(news, jsonData);
             //Entries
             ArrayList<String> entries = new ArrayList<>();
             JSONArray jsonArray = jsonObject.getJSONArray("locations");
@@ -219,6 +218,7 @@ public class HttpHelper {
             e.printStackTrace();
             listener.onError(e);
         }
+        return true;
     }
 
     public static void askLatestNews(final int pageSize, final int category, final OnGetNewsListener listener) {
@@ -235,7 +235,7 @@ public class HttpHelper {
                 try {
                     for (int i = 1; i <= (pageSize << 1) && newsList.size() < pageSize; ++i) {
                         String url = rootURL + "latest?pageNo="+i+"&pageSize=" + (pageSize << 1) + "&category=" + category;
-                        newsList.addAll(parseJSONForNewsList(connectNetworkFromURL()));
+                        newsList.addAll(parseJSONForNewsList(connectNetworkFromURL(), listener));
                     }
                     listener.onFinish(newsList.subList(0, pageSize));
                 }catch (Exception e) {
@@ -258,7 +258,7 @@ public class HttpHelper {
             }
             for (int i = 1; i <= (pageSize << 1) && unreadNewsCount - pageSize < STORAGESIZE; ++i) {
                 String url = rootURL + "latest?pageNo="+i+"&pageSize="+(pageSize<<1);
-                newsList.addAll(parseJSONForNewsList(connectNetworkFromURL()));
+                newsList.addAll(parseJSONForNewsList(connectNetworkFromURL(), listener));
             }
             askBestRecommendation(pageSize);
             listener.onFinish(newsList);
@@ -302,24 +302,6 @@ public class HttpHelper {
 
     public static void askKeywordNews(final String keyword, final OnGetNewsListener listener) {
         askKeywordNews(keyword, 0, listener);
-    }
-
-    public static void askDetailNews(final News news, final OnGetDetailListener listener) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    url = rootURL+"detail?newsId="+news.getUniqueId();
-                    String responseData = connectNetworkFromURL();
-                    parseJSONForSingleNews(responseData, news, listener);
-                    listener.onFinish();
-                }catch (Exception e) {
-                    e.printStackTrace();
-                    listener.onError(e);
-                }
-            }
-        }).start();
-
     }
 
     public static void printNews(News news) {
