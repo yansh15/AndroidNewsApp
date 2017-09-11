@@ -56,7 +56,11 @@ public class DetailLayout extends LinearLayout {
         startVoice = (ImageView) findViewById(R.id.detail_voice_start);
         stopVoice = (ImageView) findViewById(R.id.detail_voice_stop);
     }
-    
+
+    public ImageView getStartVoice() {
+        return startVoice;
+    }
+
     public CharSequence getTitle() {
         return title.getText();
     }

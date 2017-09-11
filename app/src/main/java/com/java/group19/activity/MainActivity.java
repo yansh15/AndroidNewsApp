@@ -17,6 +17,7 @@ import android.widget.ImageView;import android.widget.TextView;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.java.group19.TextSpeaker;
 import com.java.group19.helper.DatabaseHelper;
 import com.java.group19.helper.HttpHelper;
 import com.java.group19.R;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity
     private String lastQuery = "";
     private DrawerLayout mDrawerLayout;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private TextSpeaker textSpeaker;
 
     private static final String TAG = "MainActivity";
 
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         DatabaseHelper.init();
+        textSpeaker = TextSpeaker.getInstance(this);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);

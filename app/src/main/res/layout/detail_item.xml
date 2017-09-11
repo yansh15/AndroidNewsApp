@@ -122,7 +122,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/ic_keyboard_voice_black"/>
+            android:src="@drawable/ic_keyboard_voice_black"
+            android:tag="toStart"/>
 
         <ImageView
             android:id="@+id/detail_voice_stop"

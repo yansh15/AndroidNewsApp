@@ -19,10 +19,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.java.group19.TextSpeaker;
 import com.java.group19.component.DetailLayout;
 import com.java.group19.helper.DatabaseHelper;
 import com.java.group19.helper.HttpHelper;
 import com.java.group19.R;
+import com.java.group19.listener.OnFinishSpeakingListener;
 import com.java.group19.listener.OnGetDetailListener;
 import com.java.group19.listener.OnGetImagesListener;
 import com.java.group19.data.News;
@@ -36,6 +38,7 @@ import java.util.List;
 public class DetailActicity extends AppCompatActivity {
 
     private DetailLayout detailLayout;
+    private TextSpeaker textSpeaker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +56,46 @@ public class DetailActicity extends AppCompatActivity {
 
         //set content
         detailLayout = (DetailLayout) findViewById(R.id.detail_layout);
+
+        textSpeaker = TextSpeaker.getInstance(this);
+        textSpeaker.setOnFinishSpeakingListener(new OnFinishSpeakingListener() {
+            @Override
+            public void onFinishSpeaking() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        detailLayout.getStartVoice().setTag("toStart");
+                        detailLayout.getStartVoice().setImageResource(R.drawable.ic_keyboard_voice_black);
+                    }
+                });
+            }
+        });
+        detailLayout.setOnClickStartVoiceListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (view.getTag().equals("toStart")) {
+                    if (textSpeaker.isSpeaking()) {
+                        textSpeaker.resume();
+                    } else {
+                        textSpeaker.speak(detailLayout.getContent().toString());
+                    }
+                    view.setTag("toPause");
+                    ((ImageView) view).setImageResource(R.drawable.ic_keyboard_voice_pause_black);
+                } else {
+                    textSpeaker.pause();
+                    view.setTag("toStart");
+                    ((ImageView) view).setImageResource(R.drawable.ic_keyboard_voice_black);
+                }
+            }
+        });
+        detailLayout.setOnClickStopVoiceListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                textSpeaker.stop();
+                view.setTag("toStart");
+                ((ImageView) view).setImageResource(R.drawable.ic_keyboard_voice_black);
+            }
+        });
     }
 
     /*@Override
@@ -75,7 +118,7 @@ public class DetailActicity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
+        textSpeaker.stop();
         super.onBackPressed();
     }
 }
