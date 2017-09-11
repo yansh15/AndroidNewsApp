@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.java.group19.activity.DetailActicity;
-import com.java.group19.NewsCardView;
+import com.java.group19.component.NewsCardView;
 import com.java.group19.R;
 import com.java.group19.data.News;
 

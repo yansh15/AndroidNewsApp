@@ -1,4 +1,4 @@
-package com.java.group19;
+package com.java.group19.component;
 
 import android.content.Context;
 import android.support.v7.widget.CardView;
@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.java.group19.R;
 import com.java.group19.data.News;
 import com.java.group19.helper.DatabaseHelper;
 
