@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity
     public static int category = HttpHelper.ALL;
     private String lastQuery = "";
     private DrawerLayout mDrawerLayout;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private static final String TAG = "MainActivity";
 
@@ -65,7 +67,10 @@ public class MainActivity extends AppCompatActivity
         searchView.attachNavigationDrawerToMenuButton(mDrawerLayout);
         setupSearchBar();
         setupRecyclerView();
-        updateNewsList();
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.main_swipe_refresh);
+        setupSwipeRefreshLayout();
+
+        //todo mor类别第一次获取数据
     }
 
     @Override
@@ -214,13 +219,25 @@ public class MainActivity extends AppCompatActivity
                 category = cate;
                 recyclerView.setAdapter(adapter[category]);
                 if (adapter[category].isEmpty())
-                    updateNewsList();
+                    ;//todo 新类别第一次获取数据
             }
         });
         categoryRecyclerView.setAdapter(categoryAdapter);
     }
 
-    private void updateNewsList() {
+    private void setupSwipeRefreshLayout() {
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                //// TODO: 2017/9/11 上拉刷新
+                //结束时需要在UI线程里面调用 swipeRefreshLayout.setRefreshing(false)
+            }
+        });
+
+    }
+
+    /*private void updateNewsList() {
         //// FIXME: 2017/9/11  pageNo
         HttpHelper.askLatestNews(1, category, new OnGetNewsListener() {
             @Override
@@ -236,5 +253,5 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onError(Exception e) {}
         });
-    }
+    }*/
 }
