@@ -93,6 +93,29 @@ public class HttpHelper {
         return newsArrayList;
     }
 
+    private static String checkStringCharacter(String content) {
+        String s = "";
+        for (char c : content.toCharArray()) {
+            Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
+            if (ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS
+                    || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A
+                    || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B
+                    || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C
+                    || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_D
+                    || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS
+                    || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT
+                    || ub == Character.UnicodeBlock.GENERAL_PUNCTUATION
+                    || ub == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION
+                    || ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS
+                    || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_FORMS
+                    || ub == Character.UnicodeBlock.VERTICAL_FORMS
+                    || c == ' ' || c == '　')
+                s += c;
+        }
+        s.replaceAll(" 　　", "　　");
+        return s;
+    }
+
     private static String connectNetworkFromURL() throws Exception{
         client = new OkHttpClient();
         Request request = new Request.Builder()
@@ -214,7 +237,7 @@ public class HttpHelper {
             if (!getKeyword(news, jsonObject))
                 return false;
             news.setJournal(jsonObject.getString("news_Journal"));
-            news.setContent(jsonObject.getString("news_Content"));
+            news.setContent(checkStringCharacter(jsonObject.getString("news_Content")));
             //Entries
             ArrayList<String> entries = new ArrayList<>();
             JSONArray jsonArray = jsonObject.getJSONArray("locations");
