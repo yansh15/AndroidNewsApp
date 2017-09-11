@@ -86,6 +86,13 @@ public class HttpHelper {
     private static int pageStartNo;
     private static int searchPageSize = 10;
 
+    private static ArrayList subList(ArrayList arrayList, int l, int r) {
+        ArrayList newsArrayList = new ArrayList<>();
+        for (int i = l; i < r; ++i)
+            newsArrayList.add(arrayList.indexOf(i));
+        return newsArrayList;
+    }
+
     private static String connectNetworkFromURL() throws Exception{
         client = new OkHttpClient();
         Request request = new Request.Builder()
@@ -121,7 +128,7 @@ public class HttpHelper {
         }
         Collections.sort(newsWithScoreArrayList);
         newsList = new ArrayList<>();
-        for (NewsWithScore newsWithScore : newsWithScoreArrayList.subList(0, newsWithScoreArrayList.size())){
+        for (NewsWithScore newsWithScore : (ArrayList<NewsWithScore>)subList(newsWithScoreArrayList, 0, newsWithScoreArrayList.size())){
             newsList.add(newsWithScore.getNews());
             DatabaseHelper.removeNews(newsWithScore.getNews().getUniqueId());
         }
@@ -193,8 +200,8 @@ public class HttpHelper {
                 String responseData = connectNetworkFromURL();
                 newsList.addAll(parseJSONForNewsList(responseData,listener));
             }
-            listener.onFinish(newsList.subList(0, pageSize));
-            newsList = (ArrayList<News>) newsList.subList(pageSize, newsList.size());
+            listener.onFinish((ArrayList<News>)subList(newsList, 0, pageSize));
+            newsList = (ArrayList<News>) subList(newsList, pageSize, newsList.size());
         }catch (Exception e) {
             e.printStackTrace();
             listener.onError(e);
@@ -240,7 +247,7 @@ public class HttpHelper {
                         String url = rootURL + "latest?pageNo="+i+"&pageSize=" + (pageSize << 1) + "&category=" + category;
                         newsList.addAll(parseJSONForNewsList(connectNetworkFromURL(), listener));
                     }
-                    listener.onFinish(newsList.subList(0, pageSize));
+                    listener.onFinish((ArrayList<News>)subList(newsList, 0, pageSize));
                 }catch (Exception e) {
                     e.printStackTrace();
                     listener.onError(e);
