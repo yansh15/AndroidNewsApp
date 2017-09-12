@@ -1,39 +1,28 @@
 package com.java.group19.activity;
 
-import android.os.Environment;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.ActionBar;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
 import android.text.style.URLSpan;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.java.group19.NewsApp;
 import com.java.group19.component.DetailLayout;
-import com.java.group19.helper.DatabaseHelper;
-import com.java.group19.helper.HttpHelper;
 import com.java.group19.R;
 import com.java.group19.helper.SharedPreferencesHelper;
 import com.java.group19.helper.SpeechHelper;
 import com.java.group19.listener.OnFinishSpeakingListener;
-import com.java.group19.listener.OnGetDetailListener;
-import com.java.group19.listener.OnGetImagesListener;
 import com.java.group19.data.News;
+import com.sina.weibo.sdk.api.TextObject;
+import com.sina.weibo.sdk.api.WeiboMultiMessage;
+import com.sina.weibo.sdk.share.WbShareCallback;
+import com.sina.weibo.sdk.share.WbShareHandler;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -46,10 +35,16 @@ public class DetailActicity extends AppCompatActivity {
     private SpeechHelper speechHelper;
     private News news;
 
+    private WbShareHandler shareHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+        //set weibo
+        shareHandler = new WbShareHandler(this);
+        shareHandler.registerApp();
 
         //set toolber
         /*Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
@@ -144,6 +139,14 @@ public class DetailActicity extends AppCompatActivity {
                 }
             }
         });
+
+        //set weibo
+        detailLayout.setOnClickWeiboListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendMessage();
+            }
+        });
     }
 
     /*@Override
@@ -174,5 +177,37 @@ public class DetailActicity extends AppCompatActivity {
     protected void onDestroy() {
         speechHelper.stop();
         super.onDestroy();
+    }
+
+    //set weibo
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        shareHandler.doResultIntent(intent, new WbShareCallback() {
+            @Override
+            public void onWbShareSuccess() {
+                Toast.makeText(DetailActicity.this, "分享成功", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onWbShareCancel() {
+                Toast.makeText(DetailActicity.this, "分享取消", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onWbShareFail() {
+                Toast.makeText(DetailActicity.this, "分享失败", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void sendMessage() {
+        WeiboMultiMessage weiboMultiMessage = new WeiboMultiMessage();
+        weiboMultiMessage.textObject = new TextObject();
+        weiboMultiMessage.textObject.text = "Monkey的新闻应用";
+        weiboMultiMessage.textObject.title = "Monkey";
+        weiboMultiMessage.textObject.actionUrl = "https://github.com/yansh15";
+        shareHandler.shareMessage(weiboMultiMessage, false);
     }
 }
