@@ -72,6 +72,7 @@ public class DetailActicity extends AppCompatActivity {
         detailLayout.setTitle(news.getTitle());
         detailLayout.setDate(new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(news.getTime()));
         detailLayout.setSource(news.getSource());
+        detailLayout.setFavoriteStatus(news.getLastFavoriteTime().getTime() != 0);
         // set news content with baike links
         String content = news.getContent();
         SpannableString spannableContent = new SpannableString(content);
@@ -140,13 +141,11 @@ public class DetailActicity extends AppCompatActivity {
                 if (view.getTag().equals("toSetFavorite")) {
                     news.setLastFavoriteTime(new Date());
                     news.save();
-                    view.setTag("toCancelFavorite");
-                    ((ImageView) view).setImageResource(R.drawable.ic_favorite_black);
+                    detailLayout.setFavoriteStatus(true);
                 } else {
                     news.setLastFavoriteTime(new Date(0));
                     news.save();
-                    view.setTag("toSetFavorite");
-                    ((ImageView) view).setImageResource(R.drawable.ic_favorite_border_black);
+                    detailLayout.setFavoriteStatus(false);
                 }
             }
         });
