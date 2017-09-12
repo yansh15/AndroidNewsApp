@@ -17,7 +17,7 @@ import android.widget.ImageView;import android.widget.TextView;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
-import com.java.group19.TextSpeaker;
+import com.java.group19.NewsApp;
 import com.java.group19.component.CategorySelectView;
 import com.java.group19.helper.DatabaseHelper;
 import com.java.group19.helper.HttpHelper;
@@ -47,9 +47,6 @@ public class MainActivity extends AppCompatActivity
     private String lastQuery = "";
     private DrawerLayout mDrawerLayout;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private TextSpeaker textSpeaker;
-    private ImageLoader imageLoader;
-
     private static final String TAG = "MainActivity";
 
     static {
@@ -60,8 +57,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        textSpeaker = TextSpeaker.getInstance(this);
-        imageLoader = ImageLoaderFactory.create(this);
+
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -231,7 +227,7 @@ public class MainActivity extends AppCompatActivity
                     if (diff == 0) return 0;
                     return 1;
                 }
-            }, imageLoader);
+            });
         }
         recyclerView.setAdapter(adapter[category]);
 

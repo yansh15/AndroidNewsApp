@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.java.group19.NewsApp;
 import com.java.group19.activity.DetailActicity;
 import com.java.group19.component.NewsCardView;
 import com.java.group19.R;
@@ -29,7 +30,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     private Context mContext;
     private List<News> mNewsList;
     private Comparator<News> comparator;
-    private ImageLoader imageLoader;
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         NewsCardView newsCardView;
@@ -40,10 +40,9 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
         }
     }
 
-    public NewsAdapter(Comparator<News> comparator, ImageLoader imageLoader) {
+    public NewsAdapter(Comparator<News> comparator) {
         mNewsList = new ArrayList<>();
         this.comparator = comparator;
-        this.imageLoader = imageLoader;
     }
 
     @Override
@@ -57,7 +56,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         News news = mNewsList.get(position);
-        holder.newsCardView.setNews(news, imageLoader);
+        holder.newsCardView.setNews(news, ((NewsApp) mContext.getApplicationContext()).getImageLoader());
         holder.newsCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

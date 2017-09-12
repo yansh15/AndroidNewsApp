@@ -22,13 +22,10 @@ public class VisitedActivity extends AppCompatActivity {
 
     private NewsAdapter adapter;
 
-    private ImageLoader imageLoader;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_visited);
-        imageLoader = ImageLoaderFactory.create(this);
 
         //set toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.favorite_toolbar);
@@ -65,7 +62,7 @@ public class VisitedActivity extends AppCompatActivity {
     private void setupRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new NewsAdapter(null, imageLoader);
+        adapter = new NewsAdapter(null);
         recyclerView.setAdapter(adapter);
     }
 }

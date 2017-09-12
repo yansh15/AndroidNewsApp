@@ -25,13 +25,10 @@ public class SearchActivity extends AppCompatActivity {
 
     private NewsAdapter adapter;
 
-    private ImageLoader imageLoader;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        imageLoader = ImageLoaderFactory.create(this);
 
         //set toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.search_toolbar);
@@ -74,7 +71,7 @@ public class SearchActivity extends AppCompatActivity {
     private void setupRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new NewsAdapter(null, imageLoader);
+        adapter = new NewsAdapter(null);
         recyclerView.setAdapter(adapter);
         recyclerView.addOnScrollListener(new OnScrollToBottomListener() {
             @Override
