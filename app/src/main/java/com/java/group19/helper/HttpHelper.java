@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -194,6 +195,8 @@ public class HttpHelper {
             news.setUrl(jsonObject.getString("news_URL"));
             String intro = jsonObject.getString("news_Intro");
             intro = "　　" + pattern.matcher(intro).replaceAll("");
+            news.setLastFavoriteTime(new Date(0));
+            news.setLastVisitTime(new Date(0));
             news.setIntro(intro);
             thisNewsList.add(news);
             if (DatabaseHelper.getNews(news.getUniqueId()) != null)
@@ -369,4 +372,30 @@ public class HttpHelper {
         Log.d(TAG, output);
     }
 
+    public static News testSpeaker(final String Id, final News news) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                News news = new News();
+                try {
+                    news.setUniqueId(Id);
+                    url = rootURL + "detail?newsId=" + Id;
+                    client = new OkHttpClient();
+                    Request request = new Request.Builder()
+                            .url(url)
+                            .build();
+                    Response response = client.newCall(request).execute();
+                    String responseData = response.body().string();
+                    JSONObject jsonObject = new JSONObject(responseData);
+                    String content = checkStringCharacter(jsonObject.getString("news_Content"));
+                    for (int i = 0; i < content.length(); ++i){
+                        Log.d(TAG, "testSpeaker: "+i+" "+content.charAt(i) + (int)content.charAt(i));
+                    }
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+        return news;
+    }
 }
