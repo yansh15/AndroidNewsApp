@@ -18,23 +18,17 @@ import android.widget.ImageView;import android.widget.TextView;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
-import com.java.group19.NewsApp;
 import com.java.group19.component.CategorySelectView;
-import com.java.group19.helper.DatabaseHelper;
 import com.java.group19.helper.HttpHelper;
 import com.java.group19.R;
-import com.java.group19.data.SearchRecordSuggestion;
 import com.java.group19.adapter.NewsAdapter;
 import com.java.group19.helper.SharedPreferencesHelper;
 import com.java.group19.listener.OnCategoryChangeListener;
 import com.java.group19.listener.OnGetNewsListener;
 import com.java.group19.data.News;
-import in.srain.cube.image.ImageLoader;
 
 import java.util.Comparator;
 import java.util.List;
-
-import in.srain.cube.image.ImageLoaderFactory;
 
 public class MainActivity extends AppCompatActivity
         implements AppBarLayout.OnOffsetChangedListener {
@@ -55,7 +49,6 @@ public class MainActivity extends AppCompatActivity
         SharedPreferencesHelper.init(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);

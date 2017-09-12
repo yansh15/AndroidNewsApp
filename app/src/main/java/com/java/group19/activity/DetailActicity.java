@@ -1,6 +1,5 @@
 package com.java.group19.activity;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -8,19 +7,15 @@ import android.text.Spanned;
 import android.text.style.URLSpan;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.java.group19.NewsApp;
 import com.java.group19.component.DetailLayout;
 import com.java.group19.R;
+import com.java.group19.helper.DatabaseHelper;
 import com.java.group19.helper.SharedPreferencesHelper;
 import com.java.group19.helper.SpeechHelper;
 import com.java.group19.listener.OnFinishSpeakingListener;
 import com.java.group19.data.News;
-import com.sina.weibo.sdk.api.TextObject;
-import com.sina.weibo.sdk.api.WeiboMultiMessage;
-import com.sina.weibo.sdk.share.WbShareCallback;
-import com.sina.weibo.sdk.share.WbShareHandler;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -35,16 +30,10 @@ public class DetailActicity extends AppCompatActivity {
     private SpeechHelper speechHelper;
     private News news;
 
-    private WbShareHandler shareHandler;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-
-        //set weibo
-        shareHandler = new WbShareHandler(this);
-        shareHandler.registerApp();
 
         //set toolber
         /*Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
@@ -143,14 +132,6 @@ public class DetailActicity extends AppCompatActivity {
                 }
             }
         });
-
-        //set weibo
-        detailLayout.setOnClickWeiboListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendMessage();
-            }
-        });
     }
 
     /*@Override
@@ -181,37 +162,5 @@ public class DetailActicity extends AppCompatActivity {
     protected void onDestroy() {
         speechHelper.stop();
         super.onDestroy();
-    }
-
-    //set weibo
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        shareHandler.doResultIntent(intent, new WbShareCallback() {
-            @Override
-            public void onWbShareSuccess() {
-                Toast.makeText(DetailActicity.this, "分享成功", Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onWbShareCancel() {
-                Toast.makeText(DetailActicity.this, "分享取消", Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onWbShareFail() {
-                Toast.makeText(DetailActicity.this, "分享失败", Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    private void sendMessage() {
-        WeiboMultiMessage weiboMultiMessage = new WeiboMultiMessage();
-        weiboMultiMessage.textObject = new TextObject();
-        weiboMultiMessage.textObject.text = "Monkey的新闻应用";
-        weiboMultiMessage.textObject.title = "Monkey";
-        weiboMultiMessage.textObject.actionUrl = "https://github.com/yansh15";
-        shareHandler.shareMessage(weiboMultiMessage, false);
     }
 }

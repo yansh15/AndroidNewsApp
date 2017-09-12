@@ -12,11 +12,17 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+}
+
+repositories {
+    flatDir {
+        dirs 'libs'
     }
 }
 
@@ -46,5 +52,4 @@ dependencies {
     }
     compile 'in.srain.cube:clog:1.0.2'
     compile 'in.srain.cube:cube-sdk:1.0.44.40-SNAPSHOT@aar'
-    compile 'com.sina.weibo.sdk:core:4.1.0:openDefaultRelease@aar'
 }

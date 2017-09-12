@@ -1,7 +1,6 @@
 package com.java.group19.component;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,10 +16,6 @@ import com.java.group19.adapter.CategorySetAdaper;
 import com.java.group19.helper.SharedPreferencesHelper;
 import com.java.group19.listener.OnCategoryChangeListener;
 import com.java.group19.listener.OnCategorySetListener;
-
-/**
- * Created by 阎世宏 on 2017/9/12.
- */
 
 public class CategorySelectView extends LinearLayout {
 

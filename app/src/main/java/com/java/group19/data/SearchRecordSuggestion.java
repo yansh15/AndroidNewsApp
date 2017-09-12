@@ -4,10 +4,6 @@ import android.os.Parcel;
 
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 
-/**
- * Created by liena on 17/9/9.
- */
-
 public class SearchRecordSuggestion implements SearchSuggestion {
 
     private String mRecord;

@@ -2,10 +2,6 @@ package com.java.group19.data;
 
 import android.support.annotation.NonNull;
 
-/**
- * Created by strongoier on 17/9/9.
- */
-
 public class Keyword implements Comparable<Keyword> {
 
     private String word;

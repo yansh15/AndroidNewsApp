@@ -11,10 +11,6 @@ import android.view.MenuItem;
 import com.java.group19.R;
 import com.java.group19.adapter.NewsAdapter;
 import com.java.group19.helper.DatabaseHelper;
-import com.java.group19.listener.OnScrollToBottomListener;
-
-import in.srain.cube.image.ImageLoader;
-import in.srain.cube.image.ImageLoaderFactory;
 
 public class VisitedActivity extends AppCompatActivity {
 

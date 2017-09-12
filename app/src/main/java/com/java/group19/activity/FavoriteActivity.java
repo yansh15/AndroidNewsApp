@@ -11,14 +11,6 @@ import android.view.MenuItem;
 import com.java.group19.helper.DatabaseHelper;
 import com.java.group19.R;
 import com.java.group19.adapter.NewsAdapter;
-import com.java.group19.data.News;
-import com.java.group19.listener.OnScrollToBottomListener;
-
-import java.util.Comparator;
-import java.util.Date;
-
-import in.srain.cube.image.ImageLoader;
-import in.srain.cube.image.ImageLoaderFactory;
 
 public class FavoriteActivity extends AppCompatActivity {
 

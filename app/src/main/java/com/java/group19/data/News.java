@@ -7,10 +7,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
-/**
- * Created by strongoier on 17/9/8.
- */
-
 public class News extends DataSupport implements Serializable {
     @Column(nullable = false, unique = true)
     private String uniqueId;
