@@ -1,5 +1,6 @@
 package com.java.group19.helper;
 
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -71,10 +72,10 @@ public class HttpHelper {
     public static final int ENTERTAINMENT = 12;
 
     private static final double oo = 1e100;
-    private static final int STORAGESIZE = 100;
+    private static final int STORAGESIZE = 1200;
     private static final int KEYWORDMAXIMUMSIZE = 10;
 
-    private static OkHttpClient client;
+    private static OkHttpClient client = new OkHttpClient();
     private static String rootURL = "http://166.111.68.66:2042/news/action/query/";
     private static final String TAG = "HttpHelper";
     private static Pattern pattern = Pattern.compile("(^　*)|(　*$)");
@@ -99,13 +100,11 @@ public class HttpHelper {
     }
 
     private static String connectNetworkFromURL() throws Exception{
-        client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url)
                 .build();
         Response response = client.newCall(request).execute();
-        String responseData = response.body().string();
-        return responseData;
+        return response.body().string();
     }
 
     private static void askBestRecommendation(final int pageSize) {
@@ -147,41 +146,47 @@ public class HttpHelper {
         ArrayList<News> thisNewsList = new ArrayList<>();
         JSONArray jsonArray = new JSONObject(jsonData).getJSONArray("list");
         for (int i = 0; i < jsonArray.length(); ++i) {
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
-            News news = new News();
-            String id = jsonObject.getString("news_ID");
-            if (newsIDSet.contains(id))
-                continue;
-            else
-                newsIDSet.add(id);
-            if (DatabaseHelper.getNews(id) != null)
-                continue;
-            url = rootURL+"detail?newsId="+id;
-            if (!parseJSONForSingleNews(connectNetworkFromURL(), news, listener))
-                continue;
-            news.setUniqueId(id);
-            news.setClassTag(jsonObject.getString("newsClassTag"));
-            news.setAuthor(jsonObject.getString("news_Author"));
-            news.setPictures(new ArrayList<>(Arrays.asList(jsonObject.getString("news_Pictures").split("\\s|;"))));
-            ArrayList<String> pictureList = new ArrayList<>();
-            for (String s : news.getPictures()){
-                if (s.contains("."))
-                    pictureList.add(s);
+            try {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                News news = new News();
+                String id = jsonObject.getString("news_ID");
+                if (newsIDSet.contains(id))
+                    continue;
+                else
+                    newsIDSet.add(id);
+                if (DatabaseHelper.getNews(id) != null)
+                    continue;
+                url = rootURL+"detail?newsId="+id;
+                if (!parseJSONForSingleNews(connectNetworkFromURL(), news, listener))
+                    continue;
+                news.setUniqueId(id);
+                news.setClassTag(jsonObject.getString("newsClassTag"));
+                news.setAuthor(jsonObject.getString("news_Author"));
+                news.setPictures(new ArrayList<>(Arrays.asList(jsonObject.getString("news_Pictures").split("\\s|;"))));
+                ArrayList<String> pictureList = new ArrayList<>();
+                for (String s : news.getPictures()){
+                    if (s.contains("."))
+                        pictureList.add(s);
+                }
+                news.setPictures(pictureList);
+                news.setSource(jsonObject.getString("news_Source"));
+                news.setTime(new SimpleDateFormat("yyyyMMdd", Locale.CHINA).parse(jsonObject.getString("news_Time").substring(0, 8)));
+                news.setTitle(jsonObject.getString("news_Title"));
+                news.setUrl(jsonObject.getString("news_URL"));
+                String intro = jsonObject.getString("news_Intro");
+                intro = "　　" + pattern.matcher(intro).replaceAll("");
+                news.setLastFavoriteTime(new Date(0));
+                news.setLastVisitTime(new Date(0));
+                news.setIntro(intro);
+                thisNewsList.add(news);
+                if (DatabaseHelper.getNews(news.getUniqueId()) == null) {
+                    DatabaseHelper.saveNews(news);
+                    unreadNewsCount++;
+                    //Log.d(TAG, "parseJSONForNewsList: " + unreadNewsCount);
+                }
+            }catch (Exception e) {
+                e.printStackTrace();
             }
-            news.setPictures(pictureList);
-            news.setSource(jsonObject.getString("news_Source"));
-            news.setTime(new SimpleDateFormat("yyyyMMdd", Locale.CHINA).parse(jsonObject.getString("news_Time").substring(0, 8)));
-            news.setTitle(jsonObject.getString("news_Title"));
-            news.setUrl(jsonObject.getString("news_URL"));
-            String intro = jsonObject.getString("news_Intro");
-            intro = "　　" + pattern.matcher(intro).replaceAll("");
-            news.setLastFavoriteTime(new Date(0));
-            news.setLastVisitTime(new Date(0));
-            news.setIntro(intro);
-            thisNewsList.add(news);
-            if (DatabaseHelper.getNews(news.getUniqueId()) == null)
-                DatabaseHelper.saveNews(news);
-            unreadNewsCount ++;
         }
         return thisNewsList;
     }
@@ -276,7 +281,7 @@ public class HttpHelper {
         }).start();
     }
 
-    public static void askLatestNews(final int pageSize, final OnGetNewsListener listener) {
+    private static void askLatestNews(final int pageSize, final OnGetNewsListener listener) {
         try {
             newsList = (ArrayList<News>) DatabaseHelper.getAllNews();
             unreadNewsCount = 0;
@@ -293,6 +298,7 @@ public class HttpHelper {
             askBestRecommendation(pageSize);
             listener.onFinish(newsList);
         } catch (Exception e) {
+            Log.e(TAG, "askLatestNews: "+url);
             e.printStackTrace();
             listener.onError(e);
         }
