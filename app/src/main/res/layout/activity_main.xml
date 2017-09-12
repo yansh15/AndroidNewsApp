@@ -33,15 +33,12 @@
                 android:layout_height="64dp"
                 android:background="@color/colorPrimary"/>
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/category_recycle_view"
+            <com.java.group19.component.CategorySelectView
+                android:id="@+id/category_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
-                android:scrollbars="horizontal"
-                android:scrollbarStyle="outsideOverlay"
-                android:background="@color/white"
-                android:fadingEdge="none"/>
+                android:background="@color/white"/>
 
             <View
                 android:layout_width="match_parent"

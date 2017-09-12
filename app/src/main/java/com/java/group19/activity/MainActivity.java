@@ -18,6 +18,7 @@ import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.java.group19.TextSpeaker;
+import com.java.group19.component.CategorySelectView;
 import com.java.group19.helper.DatabaseHelper;
 import com.java.group19.helper.HttpHelper;
 import com.java.group19.R;
@@ -40,9 +41,8 @@ public class MainActivity extends AppCompatActivity
 
     private FloatingSearchView searchView;
     private RecyclerView recyclerView;
-    private RecyclerView categoryRecyclerView;
     private NewsAdapter[] adapter;
-    private CategoryAdapter categoryAdapter;
+    private CategorySelectView categorySelectView;
     public static int category = HttpHelper.ALL;
     private String lastQuery = "";
     private DrawerLayout mDrawerLayout;
@@ -52,11 +52,14 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = "MainActivity";
 
+    static {
+        DatabaseHelper.init();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        DatabaseHelper.init();
         textSpeaker = TextSpeaker.getInstance(this);
         imageLoader = ImageLoaderFactory.create(this);
 
@@ -66,7 +69,7 @@ public class MainActivity extends AppCompatActivity
 
         searchView = (FloatingSearchView) findViewById(R.id.floating_search_view);
         recyclerView = (RecyclerView) findViewById(R.id.news_recycler_view);
-        categoryRecyclerView = (RecyclerView) findViewById(R.id.category_recycle_view);
+        categorySelectView = (CategorySelectView) findViewById(R.id.category_view);
 
         //set
         searchView.attachNavigationDrawerToMenuButton(mDrawerLayout);
@@ -231,10 +234,8 @@ public class MainActivity extends AppCompatActivity
             }, imageLoader);
         }
         recyclerView.setAdapter(adapter[category]);
-        LinearLayoutManager categoryLayoutManager = new LinearLayoutManager(this);
-        categoryLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        categoryRecyclerView.setLayoutManager(categoryLayoutManager);
-        categoryAdapter = new CategoryAdapter(new OnCategoryChangeListener() {
+
+        categorySelectView.setOnCategoryChangeListener(new OnCategoryChangeListener() {
             @Override
             public void onCategoryChange(int cate) {
                 category = cate;
@@ -259,7 +260,6 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-        categoryRecyclerView.setAdapter(categoryAdapter);
     }
 
     private void setupSwipeRefreshLayout() {

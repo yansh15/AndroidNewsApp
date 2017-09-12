@@ -137,4 +137,14 @@ public class DetailLayout extends LinearLayout {
     public void setOnClickStopVoiceListener(View.OnClickListener listener) {
         stopVoice.setOnClickListener(listener);
     }
+
+    public void setFavoriteStatus(boolean flag) {
+        if (flag) {
+            favorite.setTag("toCancelFavorite");
+            favorite.setImageResource(R.drawable.ic_favorite_black);
+        } else {
+            favorite.setTag("toSetFavorite");
+            favorite.setImageResource(R.drawable.ic_favorite_border_black);
+        }
+    }
 }
