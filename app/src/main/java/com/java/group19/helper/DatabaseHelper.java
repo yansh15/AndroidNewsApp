@@ -1,13 +1,11 @@
 package com.java.group19.helper;
 
-import com.java.group19.data.Config;
 import com.java.group19.data.News;
 
 import org.litepal.crud.DataSupport;
-import org.litepal.tablemanager.Connector;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,26 +14,12 @@ import java.util.List;
 
 public class DatabaseHelper {
 
-    private static Config config;
-
-    public static synchronized void init() {
-        Connector.getDatabase();
-        // check whether config exists
-        config = DataSupport.findFirst(Config.class);
-        if (config == null) {
-            config = new Config();
-            config.setForbiddenWords(new ArrayList<String>());
-            config.setSearchRecords(new ArrayList<String>());
-            config.save();
-        }
-    }
-
     public static synchronized News getNews(String uniqueId) {
-        return DataSupport.where("uniqueid = ?", uniqueId).findFirst(News.class);
+        return complete(DataSupport.where("uniqueid = ?", uniqueId).findFirst(News.class));
     }
 
     public static synchronized List<News> getAllNews() {
-        return new ArrayList<>(DataSupport.findAll(News.class));
+        return completeList(DataSupport.findAll(News.class));
     }
 
     public static synchronized void removeNews(String uniqueId) {
@@ -47,18 +31,52 @@ public class DatabaseHelper {
     }
 
     public static synchronized List<News> getLatestAllVisits() {
-        return new ArrayList<>(DataSupport.order("lastvisittime desc").find(News.class));
-    }
-
-    public static synchronized List<News> getLatestVisits(int count) {
-        return new ArrayList<>(DataSupport.order("lastvisittime desc").limit(count).find(News.class));
+        return completeList(DataSupport.order("lastvisittime desc").find(News.class));
     }
 
     public static synchronized List<News> getLatestAllFavorites() {
-        return new ArrayList<>(DataSupport.where("lastfavoritetime > ?", "0").order("lastfavoritetime desc").find(News.class));
+        return completeList(DataSupport.where("lastfavoritetime > ?", "0").order("lastfavoritetime desc").find(News.class));
     }
 
-    public static synchronized List<News> getLatestFavorites(int count) {
-        return new ArrayList<>(DataSupport.where("lastfavoritetime > ?", "0").order("lastfavoritetime desc").limit(count).find(News.class));
+    private static List<News> completeList(List<News> newsList) {
+        ArrayList<News> result = new ArrayList<>();
+        if (newsList == null) {
+            return result;
+        }
+        for (News news : newsList) {
+            result.add(complete(news));
+        }
+        return result;
+    }
+
+    private static News complete(News news) {
+        if (news == null) {
+            return null;
+        }
+        if (news.getPictures() == null) {
+            news.setPictures(new ArrayList<String>());
+        }
+        if (news.getWords() == null) {
+            news.setWords(new ArrayList<String>());
+        }
+        if (news.getScores() == null) {
+            news.setScores(new ArrayList<Double>());
+        }
+        if (news.getEntries() == null) {
+            news.setEntries(new ArrayList<String>());
+        }
+        if (news.getPictures() == null) {
+            news.setPictures(new ArrayList<String>());
+        }
+        if (news.getTime() == null) {
+            news.setTime(new Date(0));
+        }
+        if (news.getLastFavoriteTime() == null) {
+            news.setLastFavoriteTime(new Date(0));
+        }
+        if (news.getLastVisitTime() == null) {
+            news.setLastVisitTime(new Date(0));
+        }
+        return news;
     }
 }

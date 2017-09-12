@@ -2,28 +2,14 @@ package com.java.group19.data;
 
 import android.support.annotation.NonNull;
 
-import com.java.group19.data.News;
-
-import org.litepal.crud.DataSupport;
-
-import java.io.Serializable;
-
 /**
  * Created by strongoier on 17/9/9.
  */
 
-public class Keyword extends DataSupport implements Serializable, Comparable<Keyword> {
-    private News news;
+public class Keyword implements Comparable<Keyword> {
+
     private String word;
     private double score;
-
-    public News getNews() {
-        return news;
-    }
-
-    public void setNews(News news) {
-        this.news = news;
-    }
 
     public String getWord() {
         return word;

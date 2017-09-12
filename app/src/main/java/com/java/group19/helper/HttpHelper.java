@@ -113,11 +113,14 @@ public class HttpHelper {
         ArrayList<NewsWithScore> newsWithScoreArrayList = new ArrayList<>();
         for (News news : newsList)
             if (news.getVisitCount() > 0){
-                for (Keyword keyword : news.getKeywords())
-                    if (scoreMap.containsKey(keyword.getWord()))
-                        scoreMap.put(keyword.getWord(), scoreMap.get(keyword.getWord()) + keyword.getScore() * news.getVisitCount());
+                for (int i = 0; i < news.getWords().size(); ++i) {
+                    String keyword = news.getWords().get(i);
+                    double score = news.getScores().get(i);
+                    if (scoreMap.containsKey(keyword))
+                        scoreMap.put(keyword, scoreMap.get(keyword) + score * news.getVisitCount());
                     else
-                        scoreMap.put(keyword.getWord(), keyword.getScore() * news.getVisitCount());
+                        scoreMap.put(keyword, score * news.getVisitCount());
+                }
             }
             else
                 newsWithScoreArrayList.add(new NewsWithScore(news));
@@ -125,9 +128,10 @@ public class HttpHelper {
             scoreMap.put(word, -oo);
         for (NewsWithScore newsWithScore : newsWithScoreArrayList) {
             double score = 0;
-            for (Keyword keyword : newsWithScore.getNews().getKeywords()){
-                if (scoreMap.containsKey(keyword.getWord()))
-                    score += scoreMap.get(keyword.getWord()) * keyword.getScore();
+            for (int i = 0; i < newsWithScore.getNews().getWords().size(); ++i) {
+                String keyword = newsWithScore.getNews().getWords().get(i);
+                if (scoreMap.containsKey(keyword))
+                    score += scoreMap.get(keyword) * newsWithScore.getNews().getScores().get(i);
             }
             newsWithScore.setScore(score);
         }
@@ -158,7 +162,7 @@ public class HttpHelper {
             news.setUniqueId(id);
             news.setClassTag(jsonObject.getString("newsClassTag"));
             news.setAuthor(jsonObject.getString("news_Author"));
-            news.setPictures(new ArrayList<>(Arrays.asList(jsonObject.getString("news_Pictures").split("//s|;"))));
+            news.setPictures(new ArrayList<>(Arrays.asList(jsonObject.getString("news_Pictures").split("\\s|;"))));
             ArrayList<String> pictureList = new ArrayList<>();
             for (String s : news.getPictures()){
                 if (s.contains("."))
@@ -175,7 +179,7 @@ public class HttpHelper {
             news.setLastVisitTime(new Date(0));
             news.setIntro(intro);
             thisNewsList.add(news);
-            if (DatabaseHelper.getNews(news.getUniqueId()) != null)
+            if (DatabaseHelper.getNews(news.getUniqueId()) == null)
                 DatabaseHelper.saveNews(news);
             unreadNewsCount ++;
         }
@@ -188,7 +192,6 @@ public class HttpHelper {
         for (int i = 0; i < jsonArray.length(); ++i) {
             JSONObject jsonKeywordObject = jsonArray.getJSONObject(i);
             Keyword keyword = new Keyword();
-            keyword.setNews(news);
             keyword.setWord(jsonKeywordObject.getString("word"));
             if (forbiddenWordList.contains(keyword.getWord()))
                 return false;
@@ -196,10 +199,14 @@ public class HttpHelper {
             keywordList.add(keyword);
         }
         Collections.sort(keywordList);
-        ArrayList<Keyword> keywords = new ArrayList<>();
-        for (int i = 0; i < Math.min(KEYWORDMAXIMUMSIZE, keywordList.size()); ++i)
-            keywords.add(keywordList.get(i));
-        news.setKeywords(keywords);
+        ArrayList<String> words = new ArrayList<>();
+        ArrayList<Double> score = new ArrayList<>();
+        for (int i = 0; i < Math.min(KEYWORDMAXIMUMSIZE, keywordList.size()); ++i) {
+            words.add(keywordList.get(i).getWord());
+            score.add(keywordList.get(i).getScore());
+        }
+        news.setWords(words);
+        news.setScores(score);
         return true;
     }
 
@@ -338,9 +345,9 @@ public class HttpHelper {
         output += "\nnews_URL: "+news.getUrl();
         output += "\nnews_Intro: "+news.getIntro()+"\n";
         output += "news_journal: "+news.getJournal() + "\nnews_content: "+news.getContent() + "\nKeywords: ";
-        if (!news.getKeywords().isEmpty())
+        /*if (!news.getKeywords().isEmpty())
             for (Keyword keyword : news.getKeywords())
-                output += "\n   word: " + keyword.getWord() + ", score: " + keyword.getScore();
+                output += "\n   word: " + keyword.getWord() + ", score: " + keyword.getScore();*/
         output += "\nnews_Entries:\n";
         if (!news.getEntries().isEmpty())
             for (String s : news.getEntries())

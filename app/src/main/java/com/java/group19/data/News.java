@@ -24,7 +24,8 @@ public class News extends DataSupport implements Serializable {
     private String intro;
     private String journal;
     private String content;
-    private ArrayList<Keyword> keywords;
+    private ArrayList<String> words;
+    private ArrayList<Double> scores;
     private ArrayList<String> entries;
     private Date lastVisitTime;
     private Date lastFavoriteTime;
@@ -118,12 +119,20 @@ public class News extends DataSupport implements Serializable {
         this.content = content;
     }
 
-    public ArrayList<Keyword> getKeywords() {
-        return keywords;
+    public ArrayList<String> getWords() {
+        return words;
     }
 
-    public void setKeywords(ArrayList<Keyword> keywords) {
-        this.keywords = keywords;
+    public void setWords(ArrayList<String> words) {
+        this.words = words;
+    }
+
+    public ArrayList<Double> getScores() {
+        return scores;
+    }
+
+    public void setScores(ArrayList<Double> scores) {
+        this.scores = scores;
     }
 
     public ArrayList<String> getEntries() {
