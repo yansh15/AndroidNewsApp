@@ -159,6 +159,12 @@ public class HttpHelper {
             news.setClassTag(jsonObject.getString("newsClassTag"));
             news.setAuthor(jsonObject.getString("news_Author"));
             news.setPictures(new ArrayList<>(Arrays.asList(jsonObject.getString("news_Pictures").split("//s|;"))));
+            ArrayList<String> pictureList = new ArrayList<>();
+            for (String s : news.getPictures()){
+                if (s.contains("."))
+                    pictureList.add(s);
+            }
+            news.setPictures(pictureList);
             news.setSource(jsonObject.getString("news_Source"));
             news.setTime(new SimpleDateFormat("yyyyMMdd", Locale.CHINA).parse(jsonObject.getString("news_Time").substring(0, 8)));
             news.setTitle(jsonObject.getString("news_Title"));
