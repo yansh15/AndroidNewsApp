@@ -175,7 +175,7 @@ public class HttpHelper {
             news.setLastVisitTime(new Date(0));
             news.setIntro(intro);
             thisNewsList.add(news);
-            if (DatabaseHelper.getNews(news.getUniqueId()) != null)
+            if (DatabaseHelper.getNews(news.getUniqueId()) == null)
                 DatabaseHelper.saveNews(news);
             unreadNewsCount ++;
         }
@@ -248,7 +248,7 @@ public class HttpHelper {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                forbiddenWordList = DatabaseHelper.getAllForbiddenWords();
+                forbiddenWordList = SharedPreferencesHelper.getForbiddenWord();
                 if (category <= 0 || category > 12) {
                     askLatestNews(pageSize, listener);
                     return;

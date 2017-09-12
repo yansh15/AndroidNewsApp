@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.java.group19.R;
 import com.java.group19.data.News;
 import com.java.group19.helper.DatabaseHelper;
+import com.java.group19.helper.SharedPreferencesHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -51,7 +52,7 @@ public class NewsCardView extends CardView {
         this.news = news;
         title.setText(news.getTitle());
         List<String> pictures = news.getPictures();
-        if (DatabaseHelper.isTextMode() || pictures.isEmpty())
+        if (SharedPreferencesHelper.getTextMode() || pictures.isEmpty())
             image.setVisibility(View.GONE);
         else {
             image.loadImage(imageLoader, news.getPictures().get(0));

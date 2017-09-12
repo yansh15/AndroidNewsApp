@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.java.group19.helper.SharedPreferencesHelper;
 import com.java.group19.listener.OnCategoryChangeListener;
 import com.java.group19.R;
 
@@ -39,9 +40,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         }
     }
 
-    public CategoryAdapter() {
-        mList = new ArrayList<>();
-        mList.add(0);
+    public CategoryAdapter(List<Integer> list) {
+        mList = list;
+        Collections.sort(mList);
         clickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -105,5 +106,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
             cl = clickListener;
             notifyDataSetChanged();
         }
+    }
+
+    public void storeCategoryList() {
+        SharedPreferencesHelper.putCategoryList(mList);
     }
 }
