@@ -95,37 +95,7 @@ public class HttpHelper {
     }
 
     private static String checkStringCharacter(String content) {
-        String s = "";
-        int flag = 0;
-        for (char c : content.toCharArray()) {
-            Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
-            if (c == ' ' || c == '　') {
-                s += c;
-                flag = 0;
-                continue;
-            }
-            if (c >= '\u4E00' && c <= '\u9FCC'
-                    || ub == Character.UnicodeBlock.GENERAL_PUNCTUATION
-                    || ub == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION
-                    || ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS) {
-                if (flag == 1)
-                    s += " " + c;
-                else
-                    s += c;
-                flag = -1;
-                continue;
-            }
-            if (c >= 33 && c <= 126) {
-                if (flag == -1)
-                    s += " " + c;
-                else
-                    s += c;
-                flag = 1;
-                continue;
-            }
-        }
-        s.replaceAll(" 　　", "\n　　");
-        return s;
+        return content.replaceAll("\\s　　", "\n　　");
     }
 
     private static String connectNetworkFromURL() throws Exception{
