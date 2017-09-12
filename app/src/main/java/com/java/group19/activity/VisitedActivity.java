@@ -28,12 +28,12 @@ public class VisitedActivity extends AppCompatActivity {
         setContentView(R.layout.activity_visited);
 
         //set toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.favorite_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.visited_toolbar);
         setSupportActionBar(toolbar);
         setupToolbar();
 
         //set recyclerview
-        recyclerView = (RecyclerView) findViewById(R.id.favorite_recycler_view);
+        recyclerView = (RecyclerView) findViewById(R.id.visited_recycler_view);
         setupRecyclerView();
 
         adapter.setNewsList(DatabaseHelper.getLatestAllVisits());

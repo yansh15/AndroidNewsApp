@@ -60,6 +60,10 @@ public class DetailActicity extends AppCompatActivity {
         fab.setOnClickListener(this);*/
 
         news = (News) getIntent().getSerializableExtra("news");
+        News newNews = DatabaseHelper.getNews(news.getUniqueId());
+        if (newNews != null) {
+            news = newNews;
+        }
         news.setVisitCount(news.getVisitCount() + 1);
         news.setLastVisitTime(new Date());
         news.save();
@@ -133,12 +137,14 @@ public class DetailActicity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (view.getTag().equals("toSetFavorite")) {
-                    news.setLastFavoriteTime(new Date());
-                    news.save();
+                    News newNews = DatabaseHelper.getNews(news.getUniqueId());
+                    newNews.setLastFavoriteTime(new Date());
+                    newNews.save();
                     detailLayout.setFavoriteStatus(true);
                 } else {
-                    news.setLastFavoriteTime(new Date(0));
-                    news.save();
+                    News newNews = DatabaseHelper.getNews(news.getUniqueId());
+                    newNews.setLastFavoriteTime(new Date(1));
+                    newNews.save();
                     detailLayout.setFavoriteStatus(false);
                 }
             }
