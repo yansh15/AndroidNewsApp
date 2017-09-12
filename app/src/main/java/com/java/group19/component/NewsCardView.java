@@ -3,6 +3,7 @@ package com.java.group19.component;
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -45,16 +46,16 @@ public class NewsCardView extends CardView {
         author = (TextView) findViewById(R.id.news_author);
         date = (TextView) findViewById(R.id.news_date);
         classTag = (TextView) findViewById(R.id.news_classtag);
-        image.setMaxHeight(newsItem.getWidth() / 3);
     }
 
     public void setNews(News news, ImageLoader imageLoader) {
         this.news = news;
         title.setText(news.getTitle());
-        List<String> pictures = news.getPictures();
-        if (SharedPreferencesHelper.getTextMode() || pictures.isEmpty())
+        if (SharedPreferencesHelper.getTextMode() || news.getPictures().size() == 0) {
             image.setVisibility(View.GONE);
+        }
         else {
+            image.setVisibility(View.VISIBLE);
             image.loadImage(imageLoader, news.getPictures().get(0));
         }
         author.setText(news.getAuthor());
