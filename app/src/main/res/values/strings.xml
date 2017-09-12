@@ -13,4 +13,8 @@
 
     <string name="category_view_set_title">我的分类</string>
     <string name="category_view_set_change_title">点击编辑分类</string>
+
+    <string name="app_id">59b787e1</string>
+    <string name="iflytek_prefer_name">iflytek_settings</string>
+    <string formatted="false" name="tts_toast_format">缓冲进度为%d%%，播放进度为%d%%</string>
 </resources>

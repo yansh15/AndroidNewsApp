@@ -19,13 +19,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.java.group19.TextSpeaker;
+import com.java.group19.NewsApp;
 import com.java.group19.component.DetailLayout;
 import com.java.group19.helper.DatabaseHelper;
 import com.java.group19.helper.HttpHelper;
 import com.java.group19.R;
 import com.java.group19.helper.SharedPreferencesHelper;
+import com.java.group19.helper.SpeechHelper;
 import com.java.group19.listener.OnFinishSpeakingListener;
 import com.java.group19.listener.OnGetDetailListener;
 import com.java.group19.listener.OnGetImagesListener;
@@ -39,21 +39,17 @@ import java.util.List;
 import java.util.Locale;
 
 import in.srain.cube.image.CubeImageView;
-import in.srain.cube.image.ImageLoader;
-import in.srain.cube.image.ImageLoaderFactory;
 
 public class DetailActicity extends AppCompatActivity {
 
     private DetailLayout detailLayout;
-    private TextSpeaker textSpeaker;
+    private SpeechHelper speechHelper;
     private News news;
-    private ImageLoader imageLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        imageLoader = ImageLoaderFactory.create(this);
 
         //set toolber
         /*Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
@@ -89,14 +85,14 @@ public class DetailActicity extends AppCompatActivity {
             List<String> pictures = news.getPictures();
             for (String picture : pictures) {
                 CubeImageView view = new CubeImageView(this);
-                view.loadImage(imageLoader, picture);
+                view.loadImage(((NewsApp) getApplicationContext()).getImageLoader(), picture);
                 detailLayout.addImage(view);
             }
         }
 
-        // set textSpeaker
-        textSpeaker = TextSpeaker.getInstance(this);
-        textSpeaker.setOnFinishSpeakingListener(new OnFinishSpeakingListener() {
+        // set speechHelper
+        speechHelper = ((NewsApp) getApplicationContext()).getSpeechHelper();
+        speechHelper.setOnFinishSpeakingListener(new OnFinishSpeakingListener() {
             @Override
             public void onFinishSpeaking() {
                 runOnUiThread(new Runnable() {
@@ -112,15 +108,15 @@ public class DetailActicity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (view.getTag().equals("toStart")) {
-                    if (textSpeaker.isSpeaking()) {
-                        textSpeaker.resume();
+                    if (speechHelper.isSpeaking()) {
+                        speechHelper.resume();
                     } else {
-                        textSpeaker.speak(detailLayout.getContent().toString());
+                        speechHelper.speak(detailLayout.getContent().toString());
                     }
                     view.setTag("toPause");
                     ((ImageView) view).setImageResource(R.drawable.ic_keyboard_voice_pause_black);
                 } else {
-                    textSpeaker.pause();
+                    speechHelper.pause();
                     view.setTag("toStart");
                     ((ImageView) view).setImageResource(R.drawable.ic_keyboard_voice_black);
                 }
@@ -129,9 +125,7 @@ public class DetailActicity extends AppCompatActivity {
         detailLayout.setOnClickStopVoiceListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                textSpeaker.stop();
-                view.setTag("toStart");
-                ((ImageView) view).setImageResource(R.drawable.ic_keyboard_voice_black);
+                speechHelper.stop();
             }
         });
 
@@ -172,7 +166,13 @@ public class DetailActicity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        textSpeaker.stop();
+        speechHelper.stop();
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        speechHelper.stop();
+        super.onDestroy();
     }
 }
