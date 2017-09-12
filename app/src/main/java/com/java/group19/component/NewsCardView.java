@@ -45,7 +45,7 @@ public class NewsCardView extends CardView {
         author = (TextView) findViewById(R.id.news_author);
         date = (TextView) findViewById(R.id.news_date);
         classTag = (TextView) findViewById(R.id.news_classtag);
-        image.setMaxHeight(newsItem.getWidth() * 2 / 9);
+        image.setMaxHeight(newsItem.getWidth());
     }
 
     public void setNews(News news, ImageLoader imageLoader) {
