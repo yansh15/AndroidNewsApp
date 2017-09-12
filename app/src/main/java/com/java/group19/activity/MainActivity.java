@@ -228,7 +228,7 @@ public class MainActivity extends AppCompatActivity
                 category = cate;
                 recyclerView.setAdapter(adapter[category]);
                 if (adapter[category].isEmpty()) { // 新类别第一次获取数据
-                    HttpHelper.askLatestNews(10, 0, new OnGetNewsListener() {
+                    HttpHelper.askLatestNews(10, category, new OnGetNewsListener() {
                         @Override
                         public void onFinish(final List<News> newsList) {
                             runOnUiThread(new Runnable() {
@@ -254,7 +254,7 @@ public class MainActivity extends AppCompatActivity
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() { // 上拉刷新
-                HttpHelper.askLatestNews(10, 0, new OnGetNewsListener() {
+                HttpHelper.askLatestNews(10, category, new OnGetNewsListener() {
                     @Override
                     public void onFinish(final List<News> newsList) {
                         runOnUiThread(new Runnable() {

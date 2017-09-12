@@ -136,7 +136,7 @@ public class HttpHelper {
         }
         Collections.sort(newsWithScoreArrayList);
         newsList = new ArrayList<>();
-        for (NewsWithScore newsWithScore : (ArrayList<NewsWithScore>)subList(newsWithScoreArrayList, 0, newsWithScoreArrayList.size())){
+        for (NewsWithScore newsWithScore : (ArrayList<NewsWithScore>)subList(newsWithScoreArrayList, 0, Math.min(pageSize, newsWithScoreArrayList.size()))){
             newsList.add(newsWithScore.getNews());
             DatabaseHelper.removeNews(newsWithScore.getNews().getUniqueId());
         }
@@ -182,7 +182,7 @@ public class HttpHelper {
                 if (DatabaseHelper.getNews(news.getUniqueId()) == null) {
                     DatabaseHelper.saveNews(news);
                     unreadNewsCount++;
-                    //Log.d(TAG, "parseJSONForNewsList: " + unreadNewsCount);
+                    Log.d(TAG, "parseJSONForNewsList: " + unreadNewsCount);
                 }
             }catch (Exception e) {
                 e.printStackTrace();
