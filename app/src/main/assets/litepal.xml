@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <litepal>
     <dbname value="NewsDatabase"></dbname>
-    <version value="2"></version>
+    <version value="1"></version>
     <list>
         <mapping class="com.java.group19.data.News"></mapping>
-        <mapping class="com.java.group19.data.Keyword"></mapping>
-        <mapping class="com.java.group19.data.Config"></mapping>
     </list>
 </litepal>
