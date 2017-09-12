@@ -175,7 +175,7 @@ public class HttpHelper {
             news.setLastVisitTime(new Date(0));
             news.setIntro(intro);
             thisNewsList.add(news);
-            if (DatabaseHelper.getNews(news.getUniqueId()) != null)
+            if (DatabaseHelper.getNews(news.getUniqueId()) == null)
                 DatabaseHelper.saveNews(news);
             unreadNewsCount ++;
         }
