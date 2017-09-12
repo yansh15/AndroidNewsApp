@@ -162,7 +162,7 @@ public class HttpHelper {
             news.setUniqueId(id);
             news.setClassTag(jsonObject.getString("newsClassTag"));
             news.setAuthor(jsonObject.getString("news_Author"));
-            news.setPictures(new ArrayList<>(Arrays.asList(jsonObject.getString("news_Pictures").split("//s|;"))));
+            news.setPictures(new ArrayList<>(Arrays.asList(jsonObject.getString("news_Pictures").split("\\s|;"))));
             ArrayList<String> pictureList = new ArrayList<>();
             for (String s : news.getPictures()){
                 if (s.contains("."))
