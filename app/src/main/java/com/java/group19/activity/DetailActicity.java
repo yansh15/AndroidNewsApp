@@ -67,7 +67,7 @@ public class DetailActicity extends AppCompatActivity {
         }
         news.setVisitCount(news.getVisitCount() + 1);
         news.setLastVisitTime(new Date());
-        news.save();
+        DatabaseHelper.saveNews(news);
         detailLayout = (DetailLayout) findViewById(R.id.detail_layout);
         detailLayout.setAuthor(news.getAuthor());
         detailLayout.setTitle(news.getTitle());
@@ -138,14 +138,12 @@ public class DetailActicity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (view.getTag().equals("toSetFavorite")) {
-                    News newNews = DatabaseHelper.getNews(news.getUniqueId());
-                    newNews.setLastFavoriteTime(new Date());
-                    newNews.save();
+                    news.setLastFavoriteTime(new Date());
+                    DatabaseHelper.saveNews(news);
                     detailLayout.setFavoriteStatus(true);
                 } else {
-                    News newNews = DatabaseHelper.getNews(news.getUniqueId());
-                    newNews.setLastFavoriteTime(new Date(1));
-                    newNews.save();
+                    news.setLastFavoriteTime(new Date(0));
+                    DatabaseHelper.saveNews(news);
                     detailLayout.setFavoriteStatus(false);
                 }
             }

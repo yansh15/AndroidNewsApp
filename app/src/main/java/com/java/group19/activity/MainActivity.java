@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        DatabaseHelper.init();
         Log.d(TAG, "onCreate: shp init");
         SharedPreferencesHelper.init(this);
         super.onCreate(savedInstanceState);
