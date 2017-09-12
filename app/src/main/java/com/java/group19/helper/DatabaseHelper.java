@@ -46,63 +46,6 @@ public class DatabaseHelper {
         news.save();
     }
 
-    public static synchronized boolean isDarkTheme() {
-        return config.isDarkTheme();
-    }
-
-    public static synchronized void setDarkTheme(boolean darkTheme) {
-        config.setDarkTheme(darkTheme);
-        config.save();
-    }
-
-    public static synchronized boolean isTextMode() {
-        return config.isTextMode();
-    }
-
-    public static synchronized void setTextMode(boolean textMode) {
-        config.setTextMode(textMode);
-        config.save();
-    }
-
-    public static synchronized void addSearchRecord(String record) {
-        config.getSearchRecords().add(record);
-        config.save();
-    }
-
-    public static synchronized List<String> getLatestSearchRecords(String prefix, int count) {
-        List<String> records = config.getSearchRecords();
-        List<String> result = new ArrayList<>();
-        for (int i = 0, j = 0; j < count && i < records.size(); ++i) {
-            String record = records.get(records.size() - 1 - i);
-            if (record.startsWith(prefix)) {
-                result.add(record);
-                ++j;
-            }
-        }
-        return result;
-    }
-
-    public static synchronized boolean addForbiddenWord(String word) {
-        if (config.getForbiddenWords().contains(word)) {
-            return false;
-        } else {
-            config.getForbiddenWords().add(word);
-            config.save();
-            return true;
-        }
-    }
-
-    public static synchronized void removeForbiddenWord(String word) {
-        config.getForbiddenWords().remove(word);
-        config.save();
-    }
-
-    public static synchronized List<String> getAllForbiddenWords() {
-        List<String> result = new ArrayList<>(config.getForbiddenWords());
-        Collections.reverse(result);
-        return result;
-    }
-
     public static synchronized List<News> getLatestAllVisits() {
         return new ArrayList<>(DataSupport.order("lastvisittime desc").find(News.class));
     }

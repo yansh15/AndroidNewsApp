@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -22,10 +23,9 @@ import com.java.group19.component.CategorySelectView;
 import com.java.group19.helper.DatabaseHelper;
 import com.java.group19.helper.HttpHelper;
 import com.java.group19.R;
-import com.java.group19.helper.SearchHelper;
-import com.java.group19.SearchRecordSuggestion;
-import com.java.group19.adapter.CategoryAdapter;
+import com.java.group19.data.SearchRecordSuggestion;
 import com.java.group19.adapter.NewsAdapter;
+import com.java.group19.helper.SharedPreferencesHelper;
 import com.java.group19.listener.OnCategoryChangeListener;
 import com.java.group19.listener.OnGetNewsListener;
 import com.java.group19.data.News;
@@ -52,12 +52,11 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = "MainActivity";
 
-    static {
-        DatabaseHelper.init();
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        DatabaseHelper.init();
+        Log.d(TAG, "onCreate: shp init");
+        SharedPreferencesHelper.init(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         textSpeaker = TextSpeaker.getInstance(this);
@@ -98,6 +97,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        categorySelectView.storeCategoryList();
+        SharedPreferencesHelper.store();
+    }
+
+    @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
         searchView.setTranslationY(verticalOffset);
     }
@@ -105,7 +111,7 @@ public class MainActivity extends AppCompatActivity
     private void setNavigationView(final NavigationView navigationView) {
         navigationView.setCheckedItem(R.id.nav_favorite);
         final SwitchCompat themeSwitch = (SwitchCompat) navigationView.getMenu().getItem(3).getActionView().findViewById(R.id.nav_switch);
-        themeSwitch.setChecked(DatabaseHelper.isDarkTheme());
+        themeSwitch.setChecked(SharedPreferencesHelper.getNightMode());
         themeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -166,14 +172,7 @@ public class MainActivity extends AppCompatActivity
         searchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
             @Override
             public void onSearchTextChanged(String oldQuery, String newQuery) {
-                searchView.showProgress();
-                SearchHelper.findSuggestions(newQuery, 5, new SearchHelper.OnFindSuggestionsListener() {
-                    @Override
-                    public void onResults(List<SearchRecordSuggestion> results) {
-                        searchView.swapSuggestions(results);
-                        searchView.hideProgress();
-                    }
-                });
+                searchView.swapSuggestions(SharedPreferencesHelper.getSearchRecord(newQuery, 5));
             }
         });
         searchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
@@ -185,7 +184,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onSearchAction(String currentQuery) {
                 lastQuery = currentQuery;
-                DatabaseHelper.addSearchRecord(lastQuery);
+                SharedPreferencesHelper.addSearchRecord(lastQuery);
                 Intent intent = new Intent(MainActivity.this, SearchActivity.class);
                 intent.putExtra("query", lastQuery);
                 startActivity(intent);
@@ -194,14 +193,7 @@ public class MainActivity extends AppCompatActivity
         searchView.setOnFocusChangeListener(new FloatingSearchView.OnFocusChangeListener() {
             @Override
             public void onFocus() {
-                searchView.showProgress();
-                SearchHelper.findSuggestions("", 5, new SearchHelper.OnFindSuggestionsListener() {
-                    @Override
-                    public void onResults(List<SearchRecordSuggestion> results) {
-                        searchView.swapSuggestions(results);
-                        searchView.hideProgress();
-                    }
-                });
+                searchView.swapSuggestions(SharedPreferencesHelper.getSearchRecord("", 5));
             }
 
             @Override

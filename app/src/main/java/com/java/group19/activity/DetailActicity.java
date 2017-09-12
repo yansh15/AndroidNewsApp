@@ -25,6 +25,7 @@ import com.java.group19.component.DetailLayout;
 import com.java.group19.helper.DatabaseHelper;
 import com.java.group19.helper.HttpHelper;
 import com.java.group19.R;
+import com.java.group19.helper.SharedPreferencesHelper;
 import com.java.group19.listener.OnFinishSpeakingListener;
 import com.java.group19.listener.OnGetDetailListener;
 import com.java.group19.listener.OnGetImagesListener;
@@ -84,7 +85,7 @@ public class DetailActicity extends AppCompatActivity {
             }
         }
         detailLayout.setContent(spannableContent);
-        if (!DatabaseHelper.isTextMode()) {
+        if (!SharedPreferencesHelper.getTextMode()) {
             List<String> pictures = news.getPictures();
             for (String picture : pictures) {
                 CubeImageView view = new CubeImageView(this);

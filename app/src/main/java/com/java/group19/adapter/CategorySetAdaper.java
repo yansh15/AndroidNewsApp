@@ -11,6 +11,8 @@ import android.widget.TextView;
 import com.java.group19.R;
 import com.java.group19.listener.OnCategorySetListener;
 
+import java.util.List;
+
 /**
  * Created by 阎世宏 on 2017/9/12.
  */
@@ -20,7 +22,7 @@ public class CategorySetAdaper extends RecyclerView.Adapter<CategorySetAdaper.Vi
     private final static String[] categorys = {"推荐", "科技", "教育", "军事", "国内", "社会",
             "文化", "汽车", "国际", "体育", "经济", "健康", "娱乐"};
     private Context context;
-    private boolean[] highlight = {false, false, false, false, false, false, false, false, false, false, false, false};
+    private boolean[] highlight = {false, false, false, false, false, false, false, false, false, false, false, false, false};
     private OnCategorySetListener listener;
 
     static class ViewHolder extends RecyclerView.ViewHolder {
@@ -32,7 +34,10 @@ public class CategorySetAdaper extends RecyclerView.Adapter<CategorySetAdaper.Vi
         }
     }
 
-    public CategorySetAdaper() {}
+    public CategorySetAdaper(List<Integer> list) {
+        for (int i : list)
+            highlight[i] = true;
+    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -44,7 +49,7 @@ public class CategorySetAdaper extends RecyclerView.Adapter<CategorySetAdaper.Vi
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.textView.setText(categorys[position + 1]);
+        holder.textView.setText(categorys[position]);
         holder.textView.setTag(position);
         if (highlight[position])
             holder.textView.setTextColor(holder.textView.getHighlightColor());
@@ -60,12 +65,12 @@ public class CategorySetAdaper extends RecyclerView.Adapter<CategorySetAdaper.Vi
                     highlight[pos] = false;
                     textView.setTextColor(textView.getTextColors());
                     if (listener != null)
-                        listener.onCategorySetListener(pos + 1, false);
+                        listener.onCategorySetListener(pos, false);
                 } else {
                     highlight[pos] = true;
                     textView.setTextColor(textView.getHighlightColor());
                     if (listener != null)
-                        listener.onCategorySetListener(pos + 1, true);
+                        listener.onCategorySetListener(pos, true);
                 }
             }
         });

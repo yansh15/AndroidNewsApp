@@ -272,7 +272,7 @@ public class HttpHelper {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                forbiddenWordList = DatabaseHelper.getAllForbiddenWords();
+                forbiddenWordList = SharedPreferencesHelper.getForbiddenWord();
                 if (category <= 0 || category > 12) {
                     askLatestNews(pageSize, listener);
                     return;
