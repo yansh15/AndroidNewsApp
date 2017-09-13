@@ -38,23 +38,6 @@ public class NewsApp extends LitePalApplication {
         Connector.getDatabase();
         speechHelper = SpeechHelper.getInstance(this);
         imageLoader = ImageLoaderFactory.create(this);
-        imageLoader.setImageLoadHandler(new ImageLoadHandler() {
-            @Override
-            public void onLoading(ImageTask imageTask, CubeImageView cubeImageView) {
-            }
-
-            @Override
-            public void onLoadFinish(ImageTask imageTask, CubeImageView cubeImageView, BitmapDrawable drawable) {
-                cubeImageView.setImageDrawable(drawable);
-            }
-
-            @Override
-            public void onLoadError(ImageTask imageTask, CubeImageView imageView, int errorCode) {
-                if (imageView != null) {
-                    imageView.setImageResource(R.drawable.ic_menu_black);
-                }
-            }
-        });
     }
 
     public SpeechHelper getSpeechHelper() {

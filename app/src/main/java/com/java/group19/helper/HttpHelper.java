@@ -51,7 +51,7 @@ class NewsWithScore implements Comparable<NewsWithScore>{
 
     @Override
     public int compareTo(@NonNull NewsWithScore newsWithScore) {
-        return this.score < newsWithScore.score ? 1 : (this.score > newsWithScore.score ? 1 : 0);
+        return this.score < newsWithScore.score ? 1 : (this.score > newsWithScore.score ? -1 : 0);
     }
 }
 
