@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">NewsApp</string>
+
+    <string name="activity_favorite_label">我的收藏</string>
+    <string name="activity_visited_label">浏览记录</string>
+    <string name="activity_search_label">搜索结果</string>
+
+    <string name="nav_favorite_title">我的收藏</string>
+    <string name="nav_shield_title">屏蔽设置</string>
+    <string name="nav_history_title">浏览记录</string>
+    <string name="nav_night_mode_title">夜间模式</string>
+    <string name="nav_text_mode_title">文本模式</string>
+
+    <string name="category_view_set_title">我的分类</string>
+    <string name="category_view_set_change_title">点击编辑分类</string>
+
+    <string name="forbidden_add_tip">简练的关键词更有效哦~</string>
+    <string name="forbidden_add_button">添加</string>
+    <string name="forbidden_list_delete">移除</string>
+
+    <string name="app_id">59b787e1</string>
+    <string name="iflytek_prefer_name">iflytek_settings</string>
+    <string formatted="false" name="tts_toast_format">缓冲进度为%d%%，播放进度为%d%%</string>
 </resources>
