@@ -23,9 +23,7 @@ public class DetailLayout extends LinearLayout {
     private LinearLayout imageLayout;
     private LinearLayout classTagLayout;
     private TextView source;
-    private ImageView wxContact;
-    private ImageView wxMoment;
-    private ImageView weibo;
+    private ImageView share;
     private ImageView favorite;
     private ImageView startVoice;
     private ImageView stopVoice;
@@ -45,9 +43,7 @@ public class DetailLayout extends LinearLayout {
         classTagLayout = (LinearLayout) findViewById(R.id.detail_classtag_layout);
         classTagLayout.setVisibility(GONE);
         source = (TextView) findViewById(R.id.detail_source);
-        wxContact = (ImageView) findViewById(R.id.weixin_contacts_share);
-        wxMoment = (ImageView) findViewById(R.id.weixin_moment_share);
-        weibo = (ImageView) findViewById(R.id.weibo_share);
+        share = (ImageView) findViewById(R.id.weibo_share);
         favorite = (ImageView) findViewById(R.id.detail_favorite);
         startVoice = (ImageView) findViewById(R.id.detail_voice_start);
         stopVoice = (ImageView) findViewById(R.id.detail_voice_stop);
@@ -106,16 +102,8 @@ public class DetailLayout extends LinearLayout {
         }
     }
 
-    public void setOnClickWxContactListener(View.OnClickListener listener) {
-        wxContact.setOnClickListener(listener);
-    }
-
-    public void setOnClickWxMomentListener(View.OnClickListener listener) {
-        wxMoment.setOnClickListener(listener);
-    }
-
-    public void setOnClickWeiboListener(View.OnClickListener listener) {
-        weibo.setOnClickListener(listener);
+    public void setOnClickShareListener(View.OnClickListener listener) {
+        share.setOnClickListener(listener);
     }
 
     public void setOnClickFavoriteListener(View.OnClickListener listener) {

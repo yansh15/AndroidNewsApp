@@ -30,7 +30,21 @@
             android:icon="@drawable/ic_image_black"
             android:title="@string/nav_text_mode_title"
             app:actionLayout="@layout/nav_switch" />
-
+        <item
+            android:id="@+id/nav_speed"
+            android:icon="@drawable/ic_add_black"
+            android:title="@string/nav_speed_title"
+            app:actionLayout="@layout/nav_seekbar" />
+        <item
+            android:id="@+id/nav_volume"
+            android:icon="@drawable/ic_arrow_back_black"
+            android:title="@string/nav_volume_title"
+            app:actionLayout="@layout/nav_seekbar" />
+        <item
+            android:id="@+id/nav_pitch"
+            android:icon="@drawable/ic_exit_to_app_black"
+            android:title="@string/nav_pitch_title"
+            app:actionLayout="@layout/nav_seekbar" />
     </group>
 
 </menu>

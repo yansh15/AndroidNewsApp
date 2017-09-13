@@ -10,8 +10,11 @@ import android.view.MenuItem;
 
 import com.java.group19.R;
 import com.java.group19.adapter.NewsAdapter;
+import com.java.group19.data.News;
 import com.java.group19.helper.DatabaseHelper;
 import com.java.group19.helper.SharedPreferencesHelper;
+
+import java.util.List;
 
 public class VisitedActivity extends AppCompatActivity {
 
@@ -37,7 +40,18 @@ public class VisitedActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.visited_recycler_view);
         setupRecyclerView();
 
-        adapter.setNewsList(DatabaseHelper.getLatestAllVisits());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final List<News> newsList = DatabaseHelper.getLatestAllVisits();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.addToFirstNewsList(newsList);
+                    }
+                });
+            }
+        }).start();
     }
 
     @Override

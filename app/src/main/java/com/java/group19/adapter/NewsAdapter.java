@@ -71,7 +71,24 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
         return mNewsList.size();
     }
 
-    public void setNewsList(List<News> newsList) {
+    public void addToLastNewsList(List<News> newsList) {
+        int oldSize = mNewsList.size();
+        if (newsList != null) {
+            for (News news : newsList) {
+                mNewsList.add(news);
+            }
+        }
+        //Collections.sort(mNewsList, comparator);
+        notifyItemRangeChanged(oldSize, newsList.size());
+    }
+
+    public void addToFirstNewsList(List<News> newsList) {
+        if (newsList == null) {
+            newsList = new ArrayList<>();
+        }
+        for (News news : mNewsList) {
+            newsList.add(news);
+        }
         mNewsList = newsList;
         //Collections.sort(mNewsList, comparator);
         notifyDataSetChanged();

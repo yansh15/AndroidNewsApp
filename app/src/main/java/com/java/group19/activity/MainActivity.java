@@ -1,4 +1,6 @@
 package com.java.group19.activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.design.widget.AppBarLayout;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -15,7 +17,9 @@ import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
-import android.widget.ImageView;import android.widget.TextView;
+import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
@@ -94,7 +98,7 @@ public class MainActivity extends AppCompatActivity
                     runOnUiThread(new Runnable() {
                                       @Override
                                       public void run() {
-                                          adapter[0].setNewsList(newsList);
+                                          adapter[0].addToFirstNewsList(newsList);
                                       }
                                   }
                     );
@@ -150,6 +154,63 @@ public class MainActivity extends AppCompatActivity
                     menuItem.setIcon(R.drawable.ic_title_black);
                 else
                     menuItem.setIcon(R.drawable.ic_image_black);
+            }
+        });
+        // for SpeechHelper
+        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.iflytek_prefer_name), MODE_PRIVATE);
+        final SharedPreferences.Editor editor = sharedPreferences.edit();
+        final SeekBar speedSeekbar = (SeekBar) navigationView.getMenu().getItem(5).getActionView().findViewById(R.id.nav_seekbar);
+        speedSeekbar.setProgress(Integer.parseInt(sharedPreferences.getString("speed_preference", "50")));
+        speedSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                seekBar.setProgress(i);
+                editor.putString("speed_preference", "" + i);
+                editor.commit();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+        final SeekBar volumeSeekbar = (SeekBar) navigationView.getMenu().getItem(6).getActionView().findViewById(R.id.nav_seekbar);
+        volumeSeekbar.setProgress(Integer.parseInt(sharedPreferences.getString("volume_preference", "50")));
+        volumeSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                seekBar.setProgress(i);
+                editor.putString("volume_preference", "" + i);
+                editor.commit();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+        final SeekBar pitchSeekbar = (SeekBar) navigationView.getMenu().getItem(7).getActionView().findViewById(R.id.nav_seekbar);
+        pitchSeekbar.setProgress(Integer.parseInt(sharedPreferences.getString("pitch_preference", "50")));
+        pitchSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                seekBar.setProgress(i);
+                editor.putString("pitch_preference", "" + i);
+                editor.commit();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -238,6 +299,7 @@ public class MainActivity extends AppCompatActivity
         categorySelectView.setOnCategoryChangeListener(new OnCategoryChangeListener() {
             @Override
             public void onCategoryChange(final int cate) {
+                swipeRefreshLayout.setRefreshing(false);
                 category = cate;
                 Log.d(TAG, "onCategoryChange: cate" + cate);
                 recyclerView.setAdapter(adapter[cate]);
@@ -248,7 +310,7 @@ public class MainActivity extends AppCompatActivity
                             runOnUiThread(new Runnable() {
                                               @Override
                                               public void run() {
-                                                  adapter[cate].setNewsList(newsList);
+                                                  adapter[cate].addToFirstNewsList(newsList);
                                               }
                                           }
                             );
@@ -270,13 +332,14 @@ public class MainActivity extends AppCompatActivity
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() { // 上拉刷新
-                HttpHelper.askLatestNews(10, category, new OnGetNewsListener() {
+                final int cate = category;
+                HttpHelper.askLatestNews(10, cate, new OnGetNewsListener() {
                     @Override
                     public void onFinish(final List<News> newsList) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                adapter[category].setNewsList(newsList);
+                                adapter[cate].addToFirstNewsList(newsList);
                                 swipeRefreshLayout.setRefreshing(false);
                             }
                         });
