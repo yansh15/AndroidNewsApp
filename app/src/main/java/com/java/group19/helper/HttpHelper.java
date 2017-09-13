@@ -204,7 +204,7 @@ public class HttpHelper {
             if (forbiddenWordList.contains(keyword.getWord()))
                 return false;
             keyword.setScore(jsonKeywordObject.getDouble("score"));
-            totalScore += jsonObject.getDouble("score");
+            totalScore += jsonKeywordObject.getDouble("score");
             keywordList.add(keyword);
         }
         Collections.sort(keywordList);
