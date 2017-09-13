@@ -10,7 +10,7 @@
     -->
 
     <style name="LightTheme" parent="Theme.AppCompat.Light.NoActionBar">
-
+        <item name="android:colorPrimaryDark"></item>
     </style>
 
     <style name="DarkTheme" parent="Theme.AppCompat.NoActionBar">
