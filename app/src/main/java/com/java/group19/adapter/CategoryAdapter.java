@@ -11,7 +11,6 @@ import com.java.group19.helper.SharedPreferencesHelper;
 import com.java.group19.listener.OnCategoryChangeListener;
 import com.java.group19.R;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 

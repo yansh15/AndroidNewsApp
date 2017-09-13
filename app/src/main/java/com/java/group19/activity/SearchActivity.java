@@ -8,16 +8,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-import com.java.group19.helper.DatabaseHelper;
 import com.java.group19.R;
 import com.java.group19.adapter.NewsAdapter;
-import com.java.group19.data.News;
 import com.java.group19.listener.OnScrollToBottomListener;
-
-import java.util.Comparator;
-
-import in.srain.cube.image.ImageLoader;
-import in.srain.cube.image.ImageLoaderFactory;
 
 public class SearchActivity extends AppCompatActivity {
 

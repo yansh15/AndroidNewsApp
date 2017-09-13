@@ -1,8 +1,6 @@
 package com.java.group19.component;
 
 import android.content.Context;
-import android.media.Image;
-import android.provider.ContactsContract;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -13,13 +11,7 @@ import android.widget.TextView;
 
 import com.java.group19.R;
 
-import java.util.List;
-
 import in.srain.cube.image.CubeImageView;
-
-/**
- * Created by 阎世宏 on 2017/9/11.
- */
 
 public class DetailLayout extends LinearLayout {
 

@@ -3,7 +3,6 @@ package com.java.group19.helper;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
-import android.widget.TextView;
 
 import com.java.group19.data.SearchRecordSuggestion;
 
