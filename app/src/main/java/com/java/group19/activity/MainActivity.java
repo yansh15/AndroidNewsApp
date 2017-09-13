@@ -156,63 +156,6 @@ public class MainActivity extends AppCompatActivity
                     menuItem.setIcon(R.drawable.ic_image_black);
             }
         });
-        // for SpeechHelper
-        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.iflytek_prefer_name), MODE_PRIVATE);
-        final SharedPreferences.Editor editor = sharedPreferences.edit();
-        final SeekBar speedSeekbar = (SeekBar) navigationView.getMenu().getItem(5).getActionView().findViewById(R.id.nav_seekbar);
-        speedSeekbar.setProgress(Integer.parseInt(sharedPreferences.getString("speed_preference", "50")));
-        speedSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                seekBar.setProgress(i);
-                editor.putString("speed_preference", "" + i);
-                editor.commit();
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
-        final SeekBar volumeSeekbar = (SeekBar) navigationView.getMenu().getItem(6).getActionView().findViewById(R.id.nav_seekbar);
-        volumeSeekbar.setProgress(Integer.parseInt(sharedPreferences.getString("volume_preference", "50")));
-        volumeSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                seekBar.setProgress(i);
-                editor.putString("volume_preference", "" + i);
-                editor.commit();
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
-        final SeekBar pitchSeekbar = (SeekBar) navigationView.getMenu().getItem(7).getActionView().findViewById(R.id.nav_seekbar);
-        pitchSeekbar.setProgress(Integer.parseInt(sharedPreferences.getString("pitch_preference", "50")));
-        pitchSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                seekBar.setProgress(i);
-                editor.putString("pitch_preference", "" + i);
-                editor.commit();
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
