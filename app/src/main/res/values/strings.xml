@@ -10,12 +10,14 @@
     <string name="nav_history_title">浏览记录</string>
     <string name="nav_night_mode_title">夜间模式</string>
     <string name="nav_text_mode_title">文本模式</string>
+    <string name="nav_speed_title">播报语速</string>
+    <string name="nav_volume_title">播报音量</string>
+    <string name="nav_pitch_title">播报音调</string>
 
     <string name="category_view_set_title">我的分类</string>
     <string name="category_view_set_change_title">点击编辑分类</string>
 
-    <string name="forbidden_add_title">添加屏蔽词</string>
-    <string name="forbidden_add_tip">屏蔽词务必简短精炼，例如“小学”</string>
+    <string name="forbidden_add_tip">简练的关键词更有效哦~</string>
     <string name="forbidden_add_button">添加</string>
     <string name="forbidden_list_delete">移除</string>
 

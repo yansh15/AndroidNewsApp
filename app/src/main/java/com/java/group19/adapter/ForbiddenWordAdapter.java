@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.java.group19.R;
@@ -26,12 +27,12 @@ public class ForbiddenWordAdapter extends RecyclerView.Adapter<ForbiddenWordAdap
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView content;
-        TextView delete;
+        ImageView delete;
 
         public ViewHolder(View view) {
             super(view);
             content = (TextView) view.findViewById(R.id.forbidden_word_item_content);
-            delete = (TextView) view.findViewById(R.id.forbiddenword_item_delete);
+            delete = (ImageView) view.findViewById(R.id.forbidden_word_item_delete);
         }
     }
 
