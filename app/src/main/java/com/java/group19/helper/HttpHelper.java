@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 import okhttp3.OkHttpClient;
@@ -126,7 +127,7 @@ public class HttpHelper {
         for (String word : forbiddenWordList)
             scoreMap.put(word, -oo);
         for (NewsWithScore newsWithScore : newsWithScoreArrayList) {
-            double score = 0;
+            double score = Math.random() / 1e100;
             for (int i = 0; i < newsWithScore.getNews().getWords().size(); ++i) {
                 String keyword = newsWithScore.getNews().getWords().get(i);
                 if (scoreMap.containsKey(keyword))
@@ -137,6 +138,7 @@ public class HttpHelper {
         Collections.sort(newsWithScoreArrayList);
         newsList = new ArrayList<>();
         for (NewsWithScore newsWithScore : (ArrayList<NewsWithScore>)subList(newsWithScoreArrayList, 0, Math.min(pageSize, newsWithScoreArrayList.size()))){
+            Log.d(TAG, "askBestRecommendation: " + newsWithScore.getScore());
             newsList.add(newsWithScore.getNews());
             DatabaseHelper.removeNews(newsWithScore.getNews().getUniqueId());
         }
@@ -193,6 +195,7 @@ public class HttpHelper {
 
     private static boolean getKeyword(News news, JSONObject jsonObject) throws Exception{
         JSONArray jsonArray = jsonObject.getJSONArray("Keywords");
+        double totalScore = 0;
         ArrayList<Keyword> keywordList = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); ++i) {
             JSONObject jsonKeywordObject = jsonArray.getJSONObject(i);
@@ -201,6 +204,7 @@ public class HttpHelper {
             if (forbiddenWordList.contains(keyword.getWord()))
                 return false;
             keyword.setScore(jsonKeywordObject.getDouble("score"));
+            totalScore += jsonKeywordObject.getDouble("score");
             keywordList.add(keyword);
         }
         Collections.sort(keywordList);
@@ -208,7 +212,7 @@ public class HttpHelper {
         ArrayList<Double> score = new ArrayList<>();
         for (int i = 0; i < Math.min(KEYWORDMAXIMUMSIZE, keywordList.size()); ++i) {
             words.add(keywordList.get(i).getWord());
-            score.add(keywordList.get(i).getScore());
+            score.add(keywordList.get(i).getScore() / totalScore);
         }
         news.setWords(words);
         news.setScores(score);

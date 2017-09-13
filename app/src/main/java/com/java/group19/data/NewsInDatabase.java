@@ -1,14 +1,21 @@
 package com.java.group19.data;
 
-import java.io.Serializable;
+import org.litepal.annotation.Column;
+import org.litepal.crud.DataSupport;
+
 import java.util.ArrayList;
 import java.util.Date;
 
-public class News implements Serializable {
+/**
+ * Created by strongoier on 17/9/13.
+ */
+
+public class NewsInDatabase extends DataSupport {
+    @Column(nullable = false, unique = true)
     private String uniqueId;
     private String classTag;
     private String author;
-    private ArrayList<String> pictures;
+    private String pictures; // ArrayList<String> pictures;
     private String source;
     private Date time;
     private String title;
@@ -16,9 +23,9 @@ public class News implements Serializable {
     private String intro;
     private String journal;
     private String content;
-    private ArrayList<String> words;
-    private ArrayList<Double> scores;
-    private ArrayList<String> entries;
+    private String words; // ArrayList<String> words;
+    private String scores; // ArrayList<Double> scores;
+    private String entries; // ArrayList<String> entries;
     private Date lastVisitTime;
     private Date lastFavoriteTime;
     private int visitCount;
@@ -47,11 +54,11 @@ public class News implements Serializable {
         this.author = author;
     }
 
-    public ArrayList<String> getPictures() {
+    public String getPictures() {
         return pictures;
     }
 
-    public void setPictures(ArrayList<String> pictures) {
+    public void setPictures(String pictures) {
         this.pictures = pictures;
     }
 
@@ -111,27 +118,27 @@ public class News implements Serializable {
         this.content = content;
     }
 
-    public ArrayList<String> getWords() {
+    public String getWords() {
         return words;
     }
 
-    public void setWords(ArrayList<String> words) {
+    public void setWords(String words) {
         this.words = words;
     }
 
-    public ArrayList<Double> getScores() {
+    public String getScores() {
         return scores;
     }
 
-    public void setScores(ArrayList<Double> scores) {
+    public void setScores(String scores) {
         this.scores = scores;
     }
 
-    public ArrayList<String> getEntries() {
+    public String getEntries() {
         return entries;
     }
 
-    public void setEntries(ArrayList<String> entries) {
+    public void setEntries(String entries) {
         this.entries = entries;
     }
 

@@ -1,5 +1,6 @@
 package com.java.group19.activity;
 
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -53,9 +54,8 @@ public class DetailActicity extends AppCompatActivity {
         if (newNews != null) {
             news = newNews;
         }
-        news.setVisitCount(news.getVisitCount() + 1);
-        news.setLastVisitTime(new Date());
-        DatabaseHelper.saveNews(news);
+        DatabaseHelper.setNewsVisitCount(news.getUniqueId(), news.getVisitCount() + 1);
+        DatabaseHelper.setNewsLastVisitTime(news.getUniqueId(), new Date());
         detailLayout = (DetailLayout) findViewById(R.id.detail_layout);
         detailLayout.setAuthor(news.getAuthor());
         detailLayout.setTitle(news.getTitle());
@@ -126,12 +126,10 @@ public class DetailActicity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (view.getTag().equals("toSetFavorite")) {
-                    news.setLastFavoriteTime(new Date());
-                    DatabaseHelper.saveNews(news);
+                    DatabaseHelper.setNewsLastFavoriteTime(news.getUniqueId(), new Date());
                     detailLayout.setFavoriteStatus(true);
                 } else {
-                    news.setLastFavoriteTime(new Date(0));
-                    DatabaseHelper.saveNews(news);
+                    DatabaseHelper.setNewsLastFavoriteTime(news.getUniqueId(), new Date(0));
                     detailLayout.setFavoriteStatus(false);
                 }
             }

@@ -3,6 +3,6 @@
     <dbname value="NewsDatabase"></dbname>
     <version value="1"></version>
     <list>
-        <mapping class="com.java.group19.data.News"></mapping>
+        <mapping class="com.java.group19.data.NewsInDatabase"></mapping>
     </list>
 </litepal>
