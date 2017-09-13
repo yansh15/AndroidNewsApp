@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import com.java.group19.R;
 import com.java.group19.adapter.ForbiddenWordAdapter;
 import com.java.group19.adapter.NewsAdapter;
+import com.java.group19.helper.SharedPreferencesHelper;
 
 public class ForbiddenActivity extends AppCompatActivity {
 
@@ -23,6 +24,10 @@ public class ForbiddenActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (SharedPreferencesHelper.getNightMode())
+            setTheme(R.style.DarkTheme);
+        else
+            setTheme(R.style.LightTheme);
         setContentView(R.layout.activity_forbidden);
 
         //set toolbar
