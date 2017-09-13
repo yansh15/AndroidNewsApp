@@ -109,6 +109,7 @@ public class MainActivity extends AppCompatActivity
                 }
             });
         }
+        adapter[category].notifyDataSetChanged();
     }
 
     @Override

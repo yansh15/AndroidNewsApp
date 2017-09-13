@@ -6,7 +6,8 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="10dp">
+    android:layout_margin="10dp"
+    android:background="?attr/windowsBackGround">
 
     <in.srain.cube.image.CubeImageView
         android:id="@+id/news_image"
@@ -28,7 +29,8 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:layout_margin="5dp"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:textColor="?attr/textColorPrimary"/>
 
         <LinearLayout
             android:orientation="horizontal"
@@ -40,19 +42,22 @@
                 android:id="@+id/news_author"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                android:textColor="?attr/textColorPrimary"/>
 
             <TextView
                 android:id="@+id/news_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"/>
+                android:layout_marginRight="5dp"
+                android:textColor="?attr/textColorPrimary"/>
 
             <TextView
                 android:id="@+id/news_classtag"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:textColor="?attr/textColorPrimary"/>
 
         </LinearLayout>
     </LinearLayout>
