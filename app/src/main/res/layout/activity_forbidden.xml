@@ -14,27 +14,30 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp">
 
         <EditText
             android:id="@+id/forbidden_add_edit"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="@string/forbidden_add_tip"/>
+            android:hint="@string/forbidden_add_tip" />
 
         <Button
             android:id="@+id/forbidden_add_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/forbidden_add_button"/>
+            android:text="@string/forbidden_add_button" />
 
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/forbidden_word_recycle_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp" />
 
 </LinearLayout>
 

@@ -30,10 +30,6 @@ public class SpeechHelper {
 
     // 语音合成对象
     private SpeechSynthesizer mTts;
-
-    // 默认发音人
-    private String voicer = "xiaoyan";
-
     // 缓冲进度
     private int mPercentForBuffering = 0;
     // 播放进度
@@ -192,7 +188,7 @@ public class SpeechHelper {
         // 设置相应参数
         mTts.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD);
         // 设置在线合成发音人
-        mTts.setParameter(SpeechConstant.VOICE_NAME, voicer);
+        mTts.setParameter(SpeechConstant.VOICE_NAME, mSharedPreferences.getString("voicer_preference", "xiaoyan"));
         // 设置合成语速
         mTts.setParameter(SpeechConstant.SPEED, mSharedPreferences.getString("speed_preference", "50"));
         // 设置合成音调
