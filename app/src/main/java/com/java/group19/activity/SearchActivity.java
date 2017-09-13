@@ -10,6 +10,7 @@ import android.view.MenuItem;
 
 import com.java.group19.R;
 import com.java.group19.adapter.NewsAdapter;
+import com.java.group19.helper.SharedPreferencesHelper;
 import com.java.group19.listener.OnScrollToBottomListener;
 
 public class SearchActivity extends AppCompatActivity {
@@ -21,6 +22,10 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (SharedPreferencesHelper.getNightMode())
+            setTheme(R.style.DarkTheme);
+        else
+            setTheme(R.style.LightTheme);
         setContentView(R.layout.activity_search);
 
         //set toolbar

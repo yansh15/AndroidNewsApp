@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import com.java.group19.R;
 import com.java.group19.adapter.NewsAdapter;
 import com.java.group19.helper.DatabaseHelper;
+import com.java.group19.helper.SharedPreferencesHelper;
 
 public class VisitedActivity extends AppCompatActivity {
 
@@ -21,6 +22,10 @@ public class VisitedActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (SharedPreferencesHelper.getNightMode())
+            setTheme(R.style.DarkTheme);
+        else
+            setTheme(R.style.LightTheme);
         setContentView(R.layout.activity_visited);
 
         //set toolbar
