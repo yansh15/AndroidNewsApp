@@ -57,7 +57,7 @@
                     android:layout_height="match_parent"
                     android:scrollbars="vertical"
                     android:scrollbarStyle="outsideOverlay"
-                    android:background="?attr/windowsBackGround"
+                    android:background="?attr/windowsBackGroundDark"
                     android:fadingEdge="none"/>
 
             </android.support.v4.widget.SwipeRefreshLayout>
@@ -68,6 +68,7 @@
             android:id="@+id/floating_search_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="?attr/windowsBackGround"
             app:floatingSearch_close_search_on_keyboard_dismiss="false"
             app:floatingSearch_dimBackground="false"
             app:floatingSearch_dismissOnOutsideTouch="true"

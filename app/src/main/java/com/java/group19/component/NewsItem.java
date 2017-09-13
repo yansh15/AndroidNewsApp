@@ -19,7 +19,7 @@ import java.util.List;
 import in.srain.cube.image.CubeImageView;
 import in.srain.cube.image.ImageLoader;
 
-public class NewsCardView extends CardView {
+public class NewsItem extends LinearLayout {
 
     private News news;
     private TextView title;
@@ -30,7 +30,7 @@ public class NewsCardView extends CardView {
     private TextView classTag;
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    public NewsCardView(Context context, AttributeSet attrs) {
+    public NewsItem(Context context, AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater.from(context).inflate(R.layout.news_item, this);
         title = (TextView) findViewById(R.id.news_title);

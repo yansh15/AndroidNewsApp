@@ -151,6 +151,7 @@ public class MainActivity extends AppCompatActivity
                     menuItem.setIcon(R.drawable.ic_title_black);
                 else
                     menuItem.setIcon(R.drawable.ic_image_black);
+                recreate();
             }
         });
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
