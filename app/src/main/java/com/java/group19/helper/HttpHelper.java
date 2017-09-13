@@ -269,7 +269,7 @@ public class HttpHelper {
                 newsIDSet = new HashSet<String>();
                 try {
                     for (int i = 1; i <= (pageSize << 1) && newsList.size() < pageSize; ++i) {
-                        String url = rootURL + "latest?pageNo="+i+"&pageSize=" + (pageSize << 1) + "&category=" + category;
+                        url = rootURL + "latest?pageNo="+i+"&pageSize=" + (pageSize << 1) + "&category=" + category;
                         newsList.addAll(parseJSONForNewsList(connectNetworkFromURL(), listener));
                     }
                     listener.onFinish((ArrayList<News>)subList(newsList, 0, pageSize));
