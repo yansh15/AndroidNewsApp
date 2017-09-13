@@ -66,7 +66,10 @@ public class DetailLayout extends LinearLayout {
     }
     
     public void setAuthor(CharSequence charSequence) {
-        author.setText(charSequence);
+        if (charSequence.length() != 0)
+            author.setText(charSequence);
+        else
+            author.setText("佚名");
     }
     
     public CharSequence getDate() {
