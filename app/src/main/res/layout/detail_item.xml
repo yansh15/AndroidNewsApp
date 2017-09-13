@@ -85,25 +85,11 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/weixin_contacts_share"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/wx_contacts"/>
-
-        <ImageView
-            android:id="@+id/weixin_moment_share"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/wx_moment"/>
-
-        <ImageView
             android:id="@+id/weibo_share"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/weibo"/>
+            android:src="@drawable/ic_share_black"/>
 
         <ImageView
             android:id="@+id/detail_favorite"

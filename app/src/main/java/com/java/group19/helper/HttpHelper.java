@@ -82,7 +82,14 @@ public class HttpHelper {
     private static final Pattern pattern = Pattern.compile("(^　*)|(　*$)");
     private static ArrayList<News> searchNewsList;
     private static int pageStartNo;
+    private static int[] categoryCurrentPage;
     private static final int searchPageSize = 20;
+
+    static {
+        categoryCurrentPage = new int[13];
+        for (int i = 0; i < 13; ++i)
+            categoryCurrentPage[i] = 1;
+    }
 
     private static ArrayList subList(ArrayList arrayList, int l, int r) {
         ArrayList newsArrayList = new ArrayList<>();
@@ -293,9 +300,12 @@ public class HttpHelper {
                 ArrayList<News> newsList = new ArrayList<News>();
                 HashSet<String> newsIDSet = new HashSet<String>();
                 try {
-                    for (int i = 1; i <= (pageSize << 1) && newsList.size() < pageSize; ++i) {
+                    for (int i = categoryCurrentPage[category]; newsList.size() < pageSize; ++i) {
                         String url = rootURL + "latest?pageNo="+i+"&pageSize=" + (pageSize << 1) + "&category=" + category;
                         newsList.addAll(parseJSONForNewsList(connectNetworkFromURL(url), listener, newsIDSet, -1));
+                        if (i == (pageSize << 1))
+                            i = 0;
+                        categoryCurrentPage[category] = i + 1;
                     }
                     listener.onFinish((ArrayList<News>)subList(newsList, 0, pageSize));
                 }catch (Exception e) {

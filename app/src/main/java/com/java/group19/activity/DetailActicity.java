@@ -13,6 +13,7 @@ import com.java.group19.NewsApp;
 import com.java.group19.component.DetailLayout;
 import com.java.group19.R;
 import com.java.group19.helper.DatabaseHelper;
+import com.java.group19.helper.ShareHelper;
 import com.java.group19.helper.SharedPreferencesHelper;
 import com.java.group19.helper.SpeechHelper;
 import com.java.group19.listener.OnFinishSpeakingListener;
@@ -134,6 +135,13 @@ public class DetailActicity extends AppCompatActivity {
                     DatabaseHelper.setNewsLastFavoriteTime(news.getUniqueId(), new Date(0));
                     detailLayout.setFavoriteStatus(false);
                 }
+            }
+        });
+
+        detailLayout.setOnClickShareListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ShareHelper.showShare(DetailActicity.this, news);
             }
         });
     }

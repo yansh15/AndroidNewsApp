@@ -49,9 +49,13 @@ public class SearchActivity extends AppCompatActivity {
 
         HttpHelper.askKeywordNews(query, new OnGetNewsListener() {
             @Override
-            public void onFinish(List<News> newsList) {
-                
-                Log.d("SearchActivity", "onFinish: ");
+            public void onFinish(final List<News> newsList) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.addToLastNewsList(newsList);
+                    }
+                });
             }
 
             @Override
@@ -99,9 +103,14 @@ public class SearchActivity extends AppCompatActivity {
 
                 HttpHelper.askMoreKeywordNews(query, new OnGetNewsListener() {
                     @Override
-                    public void onFinish(List<News> newsList) {
-                        Log.d("SearchActivity", "onFinishAgain: ");
-                        noticeLoadingEnd();
+                    public void onFinish(final List<News> newsList) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.addToLastNewsList(newsList);
+                                noticeLoadingEnd();
+                            }
+                        });
                     }
 
                     @Override
