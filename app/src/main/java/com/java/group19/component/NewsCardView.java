@@ -51,7 +51,10 @@ public class NewsCardView extends CardView {
             image.setVisibility(View.VISIBLE);
             image.loadImage(imageLoader, news.getPictures().get(0));
         }
-        author.setText(news.getAuthor());
+        if (news.getAuthor().isEmpty())
+            author.setText("佚名");
+        else
+            author.setText(news.getAuthor());
         date.setText(dateFormat.format(news.getTime()));
         classTag.setText(news.getClassTag());
     }

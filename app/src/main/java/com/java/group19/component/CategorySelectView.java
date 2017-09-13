@@ -22,6 +22,7 @@ public class CategorySelectView extends LinearLayout {
     private Context context;
     private ImageView control;
     private RecyclerView displayView;
+    private View splitView;
     private RecyclerView setView;
     private LinearLayout controlLayout;
 
@@ -36,7 +37,10 @@ public class CategorySelectView extends LinearLayout {
         displayView = (RecyclerView) findViewById(R.id.category_display_view);
         controlLayout = (LinearLayout) findViewById(R.id.category_control_view);
         setView = (RecyclerView) findViewById(R.id.category_set_view);
+        splitView = (View) findViewById(R.id.category_split_view);
+        splitView.setVisibility(GONE);
         controlLayout.setVisibility(GONE);
+
 
         control.setOnClickListener(new OnClickListener() {
             @Override
@@ -46,11 +50,13 @@ public class CategorySelectView extends LinearLayout {
                     control.setImageResource(R.drawable.ic_keyboard_arrow_up);
                     displayAdapter.changeClickListening(true);
                     controlLayout.setVisibility(VISIBLE);
+                    splitView.setVisibility(VISIBLE);
                 } else {
                     control.setTag("collapse");
                     control.setImageResource(R.drawable.ic_add_black);
                     displayAdapter.changeClickListening(false);
                     controlLayout.setVisibility(GONE);
+                    splitView.setVisibility(GONE);
                 }
             }
         });
