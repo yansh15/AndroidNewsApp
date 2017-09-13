@@ -32,17 +32,20 @@ import com.java.group19.listener.OnCategoryChangeListener;
 import com.java.group19.listener.OnGetNewsListener;
 import com.java.group19.data.News;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements AppBarLayout.OnOffsetChangedListener {
 
+    public static int category;
+    private static List<List<News>> newsLists;
+
     private FloatingSearchView searchView;
     private RecyclerView recyclerView;
-    private static NewsAdapter[] adapter;
+    private NewsAdapter adapter;
     private CategorySelectView categorySelectView;
-    public static int category;
     private String lastQuery = "";
     private DrawerLayout mDrawerLayout;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -50,18 +53,9 @@ public class MainActivity extends AppCompatActivity
 
     static {
         category = HttpHelper.ALL;
-        adapter = new NewsAdapter[13];
-        for (int i = 0; i < 13; ++i) {
-            adapter[i] = new NewsAdapter(new Comparator<News>() {
-                @Override
-                public int compare(News news, News t1) {
-                    long diff = news.getTime().getTime() - t1.getTime().getTime();
-                    if (diff > 0) return -1;
-                    if (diff == 0) return 0;
-                    return 1;
-                }
-            });
-        }
+        newsLists = new ArrayList<>();
+        for (int i = 0; i < 13; ++i)
+            newsLists.add(new ArrayList<News>());
     }
 
     @Override
@@ -91,14 +85,16 @@ public class MainActivity extends AppCompatActivity
         setupSwipeRefreshLayout();
 
         //推荐类别第一次获取数据
-        if (adapter[0].isEmpty()) {
+        if (newsLists.get(0).isEmpty()) {
             HttpHelper.askLatestNews(10, 0, new OnGetNewsListener() {
                 @Override
                 public void onFinish(final List<News> newsList) {
+                    newsLists.set(0, newsList);
+                    Log.d(TAG, "onFinish: " + newsList.size());
                     runOnUiThread(new Runnable() {
                                       @Override
                                       public void run() {
-                                          adapter[0].addToFirstNewsList(newsList);
+                                          adapter.addToFirstNewsList(newsLists.get(category));
                                       }
                                   }
                     );
@@ -109,6 +105,7 @@ public class MainActivity extends AppCompatActivity
                 }
             });
         }
+        adapter.addToFirstNewsList(newsLists.get(category));
     }
 
     @Override
@@ -235,7 +232,8 @@ public class MainActivity extends AppCompatActivity
     private void setupRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(adapter[category]);
+        adapter = new NewsAdapter(null);
+        recyclerView.setAdapter(adapter);
 
         categorySelectView.setCurrentCategory(category);
 
@@ -245,15 +243,17 @@ public class MainActivity extends AppCompatActivity
                 swipeRefreshLayout.setRefreshing(false);
                 category = cate;
                 Log.d(TAG, "onCategoryChange: cate" + cate);
-                recyclerView.setAdapter(adapter[cate]);
-                if (adapter[cate].isEmpty()) { // 新类别第一次获取数据
+                if (newsLists.get(cate).isEmpty()) { // 新类别第一次获取数据
+                    adapter.addToFirstNewsList(new ArrayList<News>());
                     HttpHelper.askLatestNews(10, cate, new OnGetNewsListener() {
                         @Override
                         public void onFinish(final List<News> newsList) {
+                            Log.d(TAG, "onFinish: " + newsList.size());
+                            newsLists.set(cate, newsList);
                             runOnUiThread(new Runnable() {
                                               @Override
                                               public void run() {
-                                                  adapter[cate].addToFirstNewsList(newsList);
+                                                  adapter.addToFirstNewsList(newsLists.get(category));
                                               }
                                           }
                             );
@@ -263,6 +263,8 @@ public class MainActivity extends AppCompatActivity
                         public void onError(Exception e) {
                         }
                     });
+                } else {
+                    adapter.addToFirstNewsList(newsLists.get(category));
                 }
             }
         });
@@ -279,10 +281,15 @@ public class MainActivity extends AppCompatActivity
                 HttpHelper.askLatestNews(10, cate, new OnGetNewsListener() {
                     @Override
                     public void onFinish(final List<News> newsList) {
+                        Log.d(TAG, "onFinish: " + newsList.size());
+                        List<News> oldList = newsLists.get(cate);
+                        for (News news : oldList)
+                            newsList.add(news);
+                        newsLists.set(cate, newsList);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                adapter[cate].addToFirstNewsList(newsList);
+                                adapter.addToFirstNewsList(newsLists.get(category));
                                 swipeRefreshLayout.setRefreshing(false);
                             }
                         });

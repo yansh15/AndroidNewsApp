@@ -12,7 +12,7 @@
     <style name="LightTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/light_color_primary</item>
         <item name="colorPrimaryDark">@color/light_color_primary_dark</item>
-        <item name="colorAccent">@color/light_color_accent</item>
+        <item name="colorAccent">@color/light_color_primary</item>
         <item name="windowsBackGround">@color/light_window_back_ground</item>
         <item name="textColorPrimary">@color/light_text_title_color</item>
         <item name="textColorSecondary">@color/light_text_content_color</item>
@@ -21,7 +21,7 @@
     <style name="DarkTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/dark_color_primary</item>
         <item name="colorPrimaryDark">@color/dark_color_primary_dark</item>
-        <item name="colorAccent">@color/dark_color_accent</item>
+        <item name="colorAccent">@color/dark_color_primary</item>
         <item name="windowsBackGround">@color/dark_window_back_ground</item>
         <item name="textColorPrimary">@color/dark_text_title_color</item>
         <item name="textColorSecondary">@color/dark_text_content_color</item>
