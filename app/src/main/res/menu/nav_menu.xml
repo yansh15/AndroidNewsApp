@@ -17,6 +17,10 @@
             android:icon="@drawable/ic_history_black"
             android:title="@string/nav_history_title" />
         <item
+            android:id="@+id/nav_voice"
+            android:icon="@drawable/ic_voice"
+            android:title="@string/nav_voice_title" />
+        <item
             android:id="@+id/nav_theme"
             android:icon="@drawable/ic_wb_sunny_black"
             android:title="@string/nav_night_mode_title"

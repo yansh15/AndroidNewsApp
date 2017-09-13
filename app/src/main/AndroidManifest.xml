@@ -38,7 +38,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.FavoriteActivity"
-            android:label="@string/activity_favorite_label"/>
+        android:label="@string/activity_favorite_label"/>
+        <activity android:name=".activity.VoiceSetActivity"
+            android:label="@string/activity_voice_set_title"/>
         <activity android:name=".activity.SearchActivity"
             android:label="@string/activity_search_label"/>
         <activity android:name=".activity.VisitedActivity"

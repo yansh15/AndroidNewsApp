@@ -4,10 +4,12 @@
     <string name="activity_favorite_label">我的收藏</string>
     <string name="activity_visited_label">浏览记录</string>
     <string name="activity_search_label">搜索结果</string>
+    <string name="activity_voice_set_title">播报设置</string>
 
     <string name="nav_favorite_title">我的收藏</string>
     <string name="nav_shield_title">屏蔽设置</string>
     <string name="nav_history_title">浏览记录</string>
+    <string name="nav_voice_title">播报设置</string>
     <string name="nav_night_mode_title">夜间模式</string>
     <string name="nav_text_mode_title">文本模式</string>
 
