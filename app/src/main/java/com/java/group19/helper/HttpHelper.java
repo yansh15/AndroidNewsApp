@@ -110,7 +110,7 @@ public class HttpHelper {
         return response.body().string();
     }
 
-    private static void askBestRecommendation(final int pageSize, ArrayList<News> newsList) {
+    private static ArrayList<News> askBestRecommendation(final int pageSize, ArrayList<News> newsList) {
         HashMap<String, Double> scoreMap = new HashMap<>();
         ArrayList<NewsWithScore> newsWithScoreArrayList = new ArrayList<>();
         for (News news : newsList)
@@ -144,6 +144,7 @@ public class HttpHelper {
             newsList.add(newsWithScore.getNews());
             DatabaseHelper.removeNews(newsWithScore.getNews().getUniqueId());
         }
+        return newsList;
     }
 
     private static ArrayList<News> parseJSONForNewsList(String jsonData, final OnGetNewsListener listener, HashSet<String> newsIDSet, int unreadNewsCount) throws Exception{
@@ -280,8 +281,7 @@ public class HttpHelper {
                 String url = rootURL + "latest?pageNo="+i+"&pageSize="+(pageSize<<1);
                 newsList.addAll(parseJSONForNewsList(connectNetworkFromURL(url), listener, newsIDSet, unreadNewsCount));
             }
-            askBestRecommendation(pageSize, newsList);
-            listener.onFinish(newsList);
+            listener.onFinish(askBestRecommendation(pageSize, newsList));
         } catch (Exception e) {
             Log.e(TAG, "askLatestNews: ");
             e.printStackTrace();

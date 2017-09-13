@@ -83,14 +83,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     }
 
     public void addToFirstNewsList(List<News> newsList) {
-        if (newsList == null) {
-            newsList = new ArrayList<>();
-        }
-        for (News news : mNewsList) {
-            newsList.add(news);
-        }
         mNewsList = newsList;
-        //Collections.sort(mNewsList, comparator);
         notifyDataSetChanged();
     }
 

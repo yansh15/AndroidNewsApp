@@ -79,7 +79,7 @@ public class DetailActicity extends AppCompatActivity {
         if (!SharedPreferencesHelper.getTextMode()) {
             List<String> pictures = news.getPictures();
             for (String picture : pictures) {
-                CubeImageView view = new CubeImageView(this);
+                CubeImageView view = (CubeImageView) getLayoutInflater().inflate(R.layout.detail_news_picture, detailLayout, false);
                 view.loadImage(((NewsApp) getApplicationContext()).getImageLoader(), picture);
                 detailLayout.addImage(view);
             }

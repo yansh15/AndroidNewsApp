@@ -71,14 +71,13 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        TypedValue textColor = new TypedValue(), hightColor = new TypedValue();
+        TypedValue textColor = new TypedValue();
         context.getTheme().resolveAttribute(R.attr.textColorPrimary, textColor, true);
-        context.getTheme().resolveAttribute(R.attr.colorPrimaryDark, hightColor, true);
         holder.textView.setText(categorys[mList.get(position)]);
         holder.textView.setTag(position);
         Log.d(TAG, "onBindViewHolder: hight" + highLight);
         if (position == highLight) {
-            holder.textView.setTextColor(hightColor.data);
+            holder.textView.setTextColor(holder.textView.getHighlightColor());
         } else {
             holder.textView.setTextColor(textColor.data);
         }
