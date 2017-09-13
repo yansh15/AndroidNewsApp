@@ -283,7 +283,9 @@ public class HttpHelper {
 
     private static void askLatestNews(final int pageSize, final OnGetNewsListener listener) {
         try {
+            Log.d("FUCKHelper before", new Date().toString());
             newsList = (ArrayList<News>) DatabaseHelper.getAllNews();
+            Log.d("FUCKHelper after", new Date().toString());
             unreadNewsCount = 0;
             newsIDSet = new HashSet<String>();
             for (News news : newsList) {
