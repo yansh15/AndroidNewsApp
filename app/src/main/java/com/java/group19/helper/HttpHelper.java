@@ -287,9 +287,7 @@ public class HttpHelper {
 
     private static void askLatestNews(final int pageSize, final OnGetNewsListener listener) {
         try {
-            //Log.d(TAG, "askLatestNews: " +"in");
             newsList = (ArrayList<News>) DatabaseHelper.getAllNews();
-            //Log.d(TAG, "askLatestNews: "+"out");
             unreadNewsCount = 0;
             newsIDSet = new HashSet<String>();
             for (News news : newsList) {
