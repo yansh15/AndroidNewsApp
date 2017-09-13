@@ -17,8 +17,7 @@
     <string name="category_view_set_title">我的分类</string>
     <string name="category_view_set_change_title">点击编辑分类</string>
 
-    <string name="forbidden_add_title">添加屏蔽词</string>
-    <string name="forbidden_add_tip">屏蔽词务必简短精炼，例如“小学”</string>
+    <string name="forbidden_add_tip">简练的关键词更有效哦~</string>
     <string name="forbidden_add_button">添加</string>
     <string name="forbidden_list_delete">移除</string>
 
