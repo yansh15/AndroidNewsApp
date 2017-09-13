@@ -53,6 +53,8 @@ public class DetailActicity extends AppCompatActivity {
         News newNews = DatabaseHelper.getNews(news.getUniqueId());
         if (newNews != null) {
             news = newNews;
+        } else {
+            DatabaseHelper.saveNews(news);
         }
         DatabaseHelper.setNewsVisitCount(news.getUniqueId(), news.getVisitCount() + 1);
         DatabaseHelper.setNewsLastVisitTime(news.getUniqueId(), new Date());

@@ -36,13 +36,29 @@ public class MainActivity extends AppCompatActivity
 
     private FloatingSearchView searchView;
     private RecyclerView recyclerView;
-    private NewsAdapter[] adapter;
+    private static NewsAdapter[] adapter;
     private CategorySelectView categorySelectView;
-    public static int category = HttpHelper.ALL;
+    public static int category;
     private String lastQuery = "";
     private DrawerLayout mDrawerLayout;
     private SwipeRefreshLayout swipeRefreshLayout;
     private static final String TAG = "MainActivity";
+
+    static {
+        category = HttpHelper.ALL;
+        adapter = new NewsAdapter[13];
+        for (int i = 0; i < 13; ++i) {
+            adapter[i] = new NewsAdapter(new Comparator<News>() {
+                @Override
+                public int compare(News news, News t1) {
+                    long diff = news.getTime().getTime() - t1.getTime().getTime();
+                    if (diff > 0) return -1;
+                    if (diff == 0) return 0;
+                    return 1;
+                }
+            });
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,22 +87,24 @@ public class MainActivity extends AppCompatActivity
         setupSwipeRefreshLayout();
 
         //推荐类别第一次获取数据
-        HttpHelper.askLatestNews(10, 0, new OnGetNewsListener() {
-            @Override
-            public void onFinish(final List<News> newsList) {
-                runOnUiThread(new Runnable() {
-                                  @Override
-                                  public void run() {
-                                      adapter[0].setNewsList(newsList);
+        if (adapter[0].isEmpty()) {
+            HttpHelper.askLatestNews(10, 0, new OnGetNewsListener() {
+                @Override
+                public void onFinish(final List<News> newsList) {
+                    runOnUiThread(new Runnable() {
+                                      @Override
+                                      public void run() {
+                                          adapter[0].setNewsList(newsList);
+                                      }
                                   }
-                              }
-                );
-            }
+                    );
+                }
 
-            @Override
-            public void onError(Exception e) {
-            }
-        });
+                @Override
+                public void onError(Exception e) {
+                }
+            });
+        }
     }
 
     @Override
@@ -209,34 +227,24 @@ public class MainActivity extends AppCompatActivity
     private void setupRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new NewsAdapter[13];
-        for (int i = 0; i < 13; ++i) {
-            adapter[i] = new NewsAdapter(new Comparator<News>() {
-                @Override
-                public int compare(News news, News t1) {
-                    long diff = news.getTime().getTime() - t1.getTime().getTime();
-                    if (diff > 0) return -1;
-                    if (diff == 0) return 0;
-                    return 1;
-                }
-            });
-        }
         recyclerView.setAdapter(adapter[category]);
+
+        categorySelectView.setCurrentCategory(category);
 
         categorySelectView.setOnCategoryChangeListener(new OnCategoryChangeListener() {
             @Override
-            public void onCategoryChange(int cate) {
+            public void onCategoryChange(final int cate) {
                 category = cate;
                 Log.d(TAG, "onCategoryChange: cate" + cate);
-                recyclerView.setAdapter(adapter[category]);
-                if (adapter[category].isEmpty()) { // 新类别第一次获取数据
-                    HttpHelper.askLatestNews(10, category, new OnGetNewsListener() {
+                recyclerView.setAdapter(adapter[cate]);
+                if (adapter[cate].isEmpty()) { // 新类别第一次获取数据
+                    HttpHelper.askLatestNews(10, cate, new OnGetNewsListener() {
                         @Override
                         public void onFinish(final List<News> newsList) {
                             runOnUiThread(new Runnable() {
                                               @Override
                                               public void run() {
-                                                  adapter[category].setNewsList(newsList);
+                                                  adapter[cate].setNewsList(newsList);
                                               }
                                           }
                             );

@@ -19,7 +19,7 @@ import java.util.List;
 public class CategorySetAdaper extends RecyclerView.Adapter<CategorySetAdaper.ViewHolder> {
 
     private final static String[] categorys = {"推荐", "科技", "教育", "军事", "国内", "社会",
-            "文化", "汽车", "国际", "体育", "经济", "健康", "娱乐"};
+            "文化", "汽车", "国际", "体育", "财经", "健康", "娱乐"};
     private Context context;
     private boolean[] highlight = {false, false, false, false, false, false, false, false, false, false, false, false, false};
     private OnCategorySetListener listener;

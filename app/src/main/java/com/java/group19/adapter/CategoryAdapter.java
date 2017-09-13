@@ -25,7 +25,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     private static final String TAG = "CategoryAdapter";
 
     private final static String[] categorys = {"推荐", "科技", "教育", "军事", "国内", "社会",
-            "文化", "汽车", "国际", "体育", "经济", "健康", "娱乐"};
+            "文化", "汽车", "国际", "体育", "财经", "健康", "娱乐"};
     private Context context;
     private List<Integer> mList;
     private OnCategoryChangeListener listener;
@@ -119,5 +119,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
     public void storeCategoryList() {
         SharedPreferencesHelper.putCategoryList(mList);
+    }
+
+    public void setCurrentCategory(int cate) {
+        highLight = cate;
     }
 }

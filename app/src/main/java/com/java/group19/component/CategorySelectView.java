@@ -79,4 +79,8 @@ public class CategorySelectView extends LinearLayout {
     public void storeCategoryList() {
         displayAdapter.storeCategoryList();
     }
+
+    public void setCurrentCategory(int cate) {
+        displayAdapter.setCurrentCategory(cate);
+    }
 }

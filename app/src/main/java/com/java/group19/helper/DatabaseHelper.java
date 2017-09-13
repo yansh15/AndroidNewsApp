@@ -82,7 +82,7 @@ public class DatabaseHelper {
         }
         String result = "" + list.get(0);
         for (int i = 1; i < list.size(); ++i) {
-            result = result + list.get(i);
+            result = result + " " + list.get(i);
         }
         return result;
     }
