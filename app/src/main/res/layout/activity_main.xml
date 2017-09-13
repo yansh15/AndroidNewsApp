@@ -31,19 +31,19 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
-                android:background="@color/colorPrimary"/>
+                android:background="?attr/colorPrimary"/>
 
             <com.java.group19.component.CategorySelectView
                 android:id="@+id/category_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
-                android:background="@color/white"/>
+                android:background="?attr/windowsBackGround"/>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/colorPrimary" />
+                android:background="?attr/colorPrimary" />
 
             <android.support.v4.widget.SwipeRefreshLayout
                 android:id="@+id/main_swipe_refresh"
@@ -58,7 +58,7 @@
                     android:layout_height="match_parent"
                     android:scrollbars="vertical"
                     android:scrollbarStyle="outsideOverlay"
-                    android:background="@color/white"
+                    android:background="?attr/windowsBackGround"
                     android:fadingEdge="none"/>
 
             </android.support.v4.widget.SwipeRefreshLayout>

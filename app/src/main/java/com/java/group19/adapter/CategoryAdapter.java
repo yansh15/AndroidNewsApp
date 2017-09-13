@@ -2,6 +2,8 @@ package com.java.group19.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,8 @@ import java.util.List;
  */
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> {
+
+    private static final String TAG = "CategoryAdapter";
 
     private final static String[] categorys = {"推荐", "科技", "教育", "军事", "国内", "社会",
             "文化", "汽车", "国际", "体育", "经济", "健康", "娱乐"};
@@ -45,8 +49,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         clickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d(TAG, "onClick: prev hight" + highLight);
                 TextView textView = (TextView) view;
                 highLight = (Integer) textView.getTag();
+                Log.d(TAG, "onClick: now hight" + highLight);
                 if (listener != null)
                     listener.onCategoryChange(mList.get(highLight));
                 notifyDataSetChanged();
@@ -65,12 +71,16 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        TypedValue textColor = new TypedValue(), hightColor = new TypedValue();
+        context.getTheme().resolveAttribute(R.attr.textColorPrimary, textColor, true);
+        context.getTheme().resolveAttribute(R.attr.colorPrimaryDark, hightColor, true);
         holder.textView.setText(categorys[mList.get(position)]);
         holder.textView.setTag(position);
+        Log.d(TAG, "onBindViewHolder: hight" + highLight);
         if (position == highLight) {
-            holder.textView.setTextColor(holder.textView.getHighlightColor());
+            holder.textView.setTextColor(hightColor.data);
         } else {
-            holder.textView.setTextColor(holder.textView.getTextColors());
+            holder.textView.setTextColor(textColor.data);
         }
         holder.textView.setOnClickListener(cl);
     }
@@ -87,7 +97,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
             notifyDataSetChanged();
         } else {
             mList.remove(Integer.valueOf(cate));
-            if (highLight == cate)
+            if (mList.get(highLight) == cate)
                 highLight = 0;
             notifyDataSetChanged();
         }

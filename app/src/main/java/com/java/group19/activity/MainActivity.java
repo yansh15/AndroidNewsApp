@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -48,6 +49,10 @@ public class MainActivity extends AppCompatActivity
         Log.d(TAG, "onCreate: shp init");
         SharedPreferencesHelper.init(this);
         super.onCreate(savedInstanceState);
+        if (SharedPreferencesHelper.getNightMode())
+            setTheme(R.style.DarkTheme);
+        else
+            setTheme(R.style.LightTheme);
         setContentView(R.layout.activity_main);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -88,6 +93,7 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
         categorySelectView.storeCategoryList();
+        Log.d(TAG, "onDestroy: ");
         SharedPreferencesHelper.store();
     }
 
@@ -104,22 +110,24 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 MenuItem themeItem = navigationView.getMenu().getItem(3);
+                SharedPreferencesHelper.setNightMode(b);
                 if (b) {
                     themeItem.setIcon(R.drawable.ic_brightness_2_black);
-                    //todo night
+
                 } else {
                     themeItem.setIcon(R.drawable.ic_wb_sunny_black);
-                    //todo day
                 }
+                Log.d(TAG, "onCheckedChanged: recreate");
+                recreate();
             }
         });
         final SwitchCompat modeSwitch = (SwitchCompat) navigationView.getMenu().getItem(4).getActionView().findViewById(R.id.nav_switch);
-        modeSwitch.setChecked(false);
+        modeSwitch.setChecked(SharedPreferencesHelper.getTextMode());
         modeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 MenuItem menuItem = navigationView.getMenu().getItem(4);
-                //// TODO: 17/9/10  
+                SharedPreferencesHelper.setTextMode(b);
                 if (b)
                     menuItem.setIcon(R.drawable.ic_title_black);
                 else
@@ -219,6 +227,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onCategoryChange(int cate) {
                 category = cate;
+                Log.d(TAG, "onCategoryChange: cate" + cate);
                 recyclerView.setAdapter(adapter[category]);
                 if (adapter[category].isEmpty()) { // 新类别第一次获取数据
                     HttpHelper.askLatestNews(10, category, new OnGetNewsListener() {
@@ -243,7 +252,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setupSwipeRefreshLayout() {
-        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        TypedValue typedValue = new TypedValue();
+        getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
+        swipeRefreshLayout.setColorSchemeColors(typedValue.data);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() { // 上拉刷新
