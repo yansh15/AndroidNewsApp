@@ -48,9 +48,10 @@ public class CategorySetAdaper extends RecyclerView.Adapter<CategorySetAdaper.Vi
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.textView.setText(categorys[position]);
-        holder.textView.setTag(position);
-        if (highlight[position])
+        int cate = position + 1;
+        holder.textView.setText(categorys[cate]);
+        holder.textView.setTag(cate);
+        if (highlight[cate])
             holder.textView.setTextColor(holder.textView.getHighlightColor());
         else
             holder.textView.setTextColor(holder.textView.getTextColors());
@@ -58,18 +59,18 @@ public class CategorySetAdaper extends RecyclerView.Adapter<CategorySetAdaper.Vi
         holder.textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int pos = (Integer) view.getTag();
+                int cate = (Integer) view.getTag();
                 TextView textView = (TextView) view;
-                if (highlight[pos]) {
-                    highlight[pos] = false;
+                if (highlight[cate]) {
+                    highlight[cate] = false;
                     textView.setTextColor(textView.getTextColors());
                     if (listener != null)
-                        listener.onCategorySetListener(pos, false);
+                        listener.onCategorySetListener(cate, false);
                 } else {
-                    highlight[pos] = true;
+                    highlight[cate] = true;
                     textView.setTextColor(textView.getHighlightColor());
                     if (listener != null)
-                        listener.onCategorySetListener(pos, true);
+                        listener.onCategorySetListener(cate, true);
                 }
             }
         });

@@ -51,7 +51,7 @@ class NewsWithScore implements Comparable<NewsWithScore>{
 
     @Override
     public int compareTo(@NonNull NewsWithScore newsWithScore) {
-        return this.score < newsWithScore.score ? 1 : (this.score > newsWithScore.score ? 1 : 0);
+        return this.score < newsWithScore.score ? 1 : (this.score > newsWithScore.score ? -1 : 0);
     }
 }
 
@@ -136,7 +136,7 @@ public class HttpHelper {
         }
         Collections.sort(newsWithScoreArrayList);
         newsList = new ArrayList<>();
-        for (NewsWithScore newsWithScore : (ArrayList<NewsWithScore>)subList(newsWithScoreArrayList, 0, newsWithScoreArrayList.size())){
+        for (NewsWithScore newsWithScore : (ArrayList<NewsWithScore>)subList(newsWithScoreArrayList, 0, Math.min(pageSize, newsWithScoreArrayList.size()))){
             newsList.add(newsWithScore.getNews());
             DatabaseHelper.removeNews(newsWithScore.getNews().getUniqueId());
         }
@@ -182,7 +182,7 @@ public class HttpHelper {
                 if (DatabaseHelper.getNews(news.getUniqueId()) == null) {
                     DatabaseHelper.saveNews(news);
                     unreadNewsCount++;
-                    //Log.d(TAG, "parseJSONForNewsList: " + unreadNewsCount);
+                    Log.d(TAG, "parseJSONForNewsList: " + unreadNewsCount);
                 }
             }catch (Exception e) {
                 e.printStackTrace();
@@ -269,7 +269,7 @@ public class HttpHelper {
                 newsIDSet = new HashSet<String>();
                 try {
                     for (int i = 1; i <= (pageSize << 1) && newsList.size() < pageSize; ++i) {
-                        String url = rootURL + "latest?pageNo="+i+"&pageSize=" + (pageSize << 1) + "&category=" + category;
+                        url = rootURL + "latest?pageNo="+i+"&pageSize=" + (pageSize << 1) + "&category=" + category;
                         newsList.addAll(parseJSONForNewsList(connectNetworkFromURL(), listener));
                     }
                     listener.onFinish((ArrayList<News>)subList(newsList, 0, pageSize));

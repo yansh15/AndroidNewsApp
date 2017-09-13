@@ -65,9 +65,6 @@ public class DatabaseHelper {
         if (news.getEntries() == null) {
             news.setEntries(new ArrayList<String>());
         }
-        if (news.getPictures() == null) {
-            news.setPictures(new ArrayList<String>());
-        }
         if (news.getTime() == null) {
             news.setTime(new Date(0));
         }
