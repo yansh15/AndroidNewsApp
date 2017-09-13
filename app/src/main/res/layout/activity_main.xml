@@ -37,12 +37,11 @@
                 android:id="@+id/category_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="5dp"
                 android:background="?attr/windowsBackGround"/>
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="2dp"
                 android:background="?attr/colorPrimary" />
 
             <android.support.v4.widget.SwipeRefreshLayout

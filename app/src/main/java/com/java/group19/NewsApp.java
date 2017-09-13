@@ -1,7 +1,5 @@
 package com.java.group19;
 
-import android.graphics.drawable.BitmapDrawable;
-
 import com.iflytek.cloud.SpeechUtility;
 import com.java.group19.helper.SpeechHelper;
 
@@ -14,11 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import in.srain.cube.Cube;
-import in.srain.cube.image.CubeImageView;
 import in.srain.cube.image.ImageLoader;
 import in.srain.cube.image.ImageLoaderFactory;
-import in.srain.cube.image.ImageTask;
-import in.srain.cube.image.iface.ImageLoadHandler;
 
 public class NewsApp extends LitePalApplication {
     private SpeechHelper speechHelper;
@@ -56,9 +51,10 @@ public class NewsApp extends LitePalApplication {
         }
         File file = new File(dir, fileName);
         try {
-            if (!file.exists()) {
-                file.createNewFile();
+            if (file.exists()) {
+                return;
             }
+            file.createNewFile();
             InputStream is = getResources().getAssets().open(fileName);
             FileOutputStream fos = new FileOutputStream(file);
             byte[] buffer = new byte[is.available()];

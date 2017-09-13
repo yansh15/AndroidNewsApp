@@ -69,7 +69,7 @@ public class DatabaseHelper {
     }
 
     public static synchronized List<News> getLatestAllVisits() {
-        return completeList(DataSupport.order("lastvisittime desc").find(NewsInDatabase.class));
+        return completeList(DataSupport.where("lastvisittime > ?", "0").order("lastvisittime desc").find(NewsInDatabase.class));
     }
 
     public static synchronized List<News> getLatestAllFavorites() {
