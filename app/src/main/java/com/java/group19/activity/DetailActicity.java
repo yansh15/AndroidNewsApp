@@ -1,6 +1,5 @@
 package com.java.group19.activity;
 
-import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.SpannableString;

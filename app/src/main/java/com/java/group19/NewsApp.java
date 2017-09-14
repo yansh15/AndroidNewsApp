@@ -2,7 +2,9 @@ package com.java.group19;
 
 import com.iflytek.cloud.SpeechUtility;
 import com.java.group19.helper.SpeechHelper;
+import com.mob.MobApplication;
 
+import org.litepal.LitePal;
 import org.litepal.LitePalApplication;
 import org.litepal.tablemanager.Connector;
 
@@ -15,7 +17,7 @@ import in.srain.cube.Cube;
 import in.srain.cube.image.ImageLoader;
 import in.srain.cube.image.ImageLoaderFactory;
 
-public class NewsApp extends LitePalApplication {
+public class NewsApp extends MobApplication {
     private SpeechHelper speechHelper;
     private ImageLoader imageLoader;
 
@@ -23,6 +25,7 @@ public class NewsApp extends LitePalApplication {
     public void onCreate() {
         // 应用程序入口处调用，避免手机内存过小，杀死后台进程后通过历史intent进入Activity造成SpeechUtility对象为null
         super.onCreate();
+        LitePal.initialize(this);
         Cube.onCreate(this);
         if (!getFilesDir().exists()) {
             getFilesDir().mkdir();

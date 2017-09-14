@@ -13,6 +13,11 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
+    lintOptions{
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -53,4 +58,8 @@ dependencies {
     compile 'in.srain.cube:clog:1.0.2'
     compile 'in.srain.cube:cube-sdk:1.0.44.40-SNAPSHOT@aar'
     compile files('libs/MobCommons-2017.0823.1556.jar')
+    compile files('libs/ShareSDK-SinaWeibo-3.0.2.jar')
+    compile files('libs/ShareSDK-QQ-3.0.2.jar')
+    compile files('libs/ShareSDK-Wechat-3.0.2.jar')
+    compile files('libs/ShareSDK-Wechat-Core-3.0.2.jar')
 }
