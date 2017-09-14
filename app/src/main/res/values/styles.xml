@@ -16,7 +16,7 @@
         <item name="windowsBackGround">@color/light_window_back_ground</item>
         <item name="windowsBackGroundDark">@color/light_window_back_ground_dark</item>
         <item name="textColorPrimary">@color/light_text_title_color</item>
-        <item name="textColorSecondary">@color/light_text_content_color</item>
+        <item name="textColorSecondary">@color/light_text_tip_color</item>
 
     </style>
 

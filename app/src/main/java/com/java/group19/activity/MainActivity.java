@@ -109,6 +109,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         categorySelectView.storeCategoryList();
@@ -265,6 +271,7 @@ public class MainActivity extends AppCompatActivity
                         }
                     });
                 } else {
+                    Log.d(TAG, "onCategoryChange: " + category);
                     adapter.addToFirstNewsList(newsLists.get(category));
                 }
             }
