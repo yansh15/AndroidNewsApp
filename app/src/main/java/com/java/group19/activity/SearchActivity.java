@@ -66,6 +66,13 @@ public class SearchActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        adapter.notifyDataSetChanged();
+    }
+
+
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
 //        return super.onCreateOptionsMenu(menu);
