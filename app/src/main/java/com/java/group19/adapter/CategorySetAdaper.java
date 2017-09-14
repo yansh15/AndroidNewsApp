@@ -1,7 +1,9 @@
 package com.java.group19.adapter;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,13 +50,20 @@ public class CategorySetAdaper extends RecyclerView.Adapter<CategorySetAdaper.Vi
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        TypedArray array = context.getTheme().obtainStyledAttributes(new int[] {
+                R.attr.colorAccent,
+                R.attr.textColorPrimary,
+        });
+        final int highColor = array.getColor(0, 0xFF00FF);
+        final int textColor = array.getColor(1, 0xFF00FF);
+        array.recycle();
         int cate = position + 1;
         holder.textView.setText(categorys[cate]);
         holder.textView.setTag(cate);
         if (highlight[cate])
-            holder.textView.setTextColor(holder.textView.getHighlightColor());
+            holder.textView.setTextColor(highColor);
         else
-            holder.textView.setTextColor(holder.textView.getTextColors());
+            holder.textView.setTextColor(textColor);
 
         holder.textView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,12 +72,12 @@ public class CategorySetAdaper extends RecyclerView.Adapter<CategorySetAdaper.Vi
                 TextView textView = (TextView) view;
                 if (highlight[cate]) {
                     highlight[cate] = false;
-                    textView.setTextColor(textView.getTextColors());
+                    textView.setTextColor(textColor);
                     if (listener != null)
                         listener.onCategorySetListener(cate, false);
                 } else {
                     highlight[cate] = true;
-                    textView.setTextColor(textView.getHighlightColor());
+                    textView.setTextColor(highColor);
                     if (listener != null)
                         listener.onCategorySetListener(cate, true);
                 }

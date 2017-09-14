@@ -1,6 +1,7 @@
 package com.java.group19.component;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import com.java.group19.R;
 import com.java.group19.data.News;
+import com.java.group19.helper.DatabaseHelper;
 import com.java.group19.helper.SharedPreferencesHelper;
 
 import java.text.SimpleDateFormat;
@@ -21,6 +23,7 @@ import in.srain.cube.image.ImageLoader;
 
 public class NewsItem extends LinearLayout {
 
+    private Context context;
     private News news;
     private TextView title;
     private LinearLayout newsItem;
@@ -32,6 +35,7 @@ public class NewsItem extends LinearLayout {
 
     public NewsItem(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.context = context;
         LayoutInflater.from(context).inflate(R.layout.news_item, this);
         title = (TextView) findViewById(R.id.news_title);
         newsItem = (LinearLayout) findViewById(R.id.news_item);
@@ -42,6 +46,12 @@ public class NewsItem extends LinearLayout {
     }
 
     public void setNews(News news, ImageLoader imageLoader) {
+        TypedArray array = context.getTheme().obtainStyledAttributes(new int[] {
+                R.attr.textColorSecondary,
+                R.attr.textColorPrimary,
+        });
+        final int secondColor = array.getColor(0, 0xFF00FF);
+        final int textColor = array.getColor(1, 0xFF00FF);
         this.news = news;
         title.setText(news.getTitle());
         if (SharedPreferencesHelper.getTextMode() || news.getPictures().size() == 0) {
@@ -57,6 +67,18 @@ public class NewsItem extends LinearLayout {
             author.setText(news.getAuthor());
         date.setText(dateFormat.format(news.getTime()));
         classTag.setText(news.getClassTag());
+        News datanews = DatabaseHelper.getNews(news.getUniqueId());
+        if (datanews != null && datanews.getLastVisitTime().getTime() > 0) {
+            title.setTextColor(secondColor);
+            author.setTextColor(secondColor);
+            date.setTextColor(secondColor);
+            classTag.setTextColor(secondColor);
+        } else {
+            title.setTextColor(textColor);
+            author.setTextColor(textColor);
+            date.setTextColor(textColor);
+            classTag.setTextColor(textColor);
+        }
     }
 
     public News getNews() {

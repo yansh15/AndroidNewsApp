@@ -1,9 +1,9 @@
 package com.java.group19.adapter;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +29,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     private Context context;
     private List<Integer> mList;
     private OnCategoryChangeListener listener;
-    private int highLight = 0;
+    private int currentCage = 0;
 
     private View.OnClickListener clickListener;
     private View.OnClickListener cl;
@@ -49,12 +49,12 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         clickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "onClick: prev hight" + highLight);
+                Log.d(TAG, "onClick: prev hight" + currentCage);
                 TextView textView = (TextView) view;
-                highLight = (Integer) textView.getTag();
-                Log.d(TAG, "onClick: now hight" + highLight);
+                currentCage = (Integer) textView.getTag();
+                Log.d(TAG, "onClick: now hight" + currentCage);
                 if (listener != null)
-                    listener.onCategoryChange(mList.get(highLight));
+                    listener.onCategoryChange(currentCage);
                 notifyDataSetChanged();
             }
         };
@@ -71,15 +71,19 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        TypedValue textColor = new TypedValue();
-        context.getTheme().resolveAttribute(R.attr.textColorPrimary, textColor, true);
+        TypedArray array = context.getTheme().obtainStyledAttributes(new int[] {
+                R.attr.colorAccent,
+                R.attr.textColorPrimary,
+        });
+        final int highColor = array.getColor(0, 0xFF00FF);
+        final int textColor = array.getColor(1, 0xFF00FF);
         holder.textView.setText(categorys[mList.get(position)]);
-        holder.textView.setTag(position);
-        Log.d(TAG, "onBindViewHolder: hight" + highLight);
-        if (position == highLight) {
-            holder.textView.setTextColor(holder.textView.getHighlightColor());
+        holder.textView.setTag(mList.get(position));
+        Log.d(TAG, "onBindViewHolder: hight" + currentCage);
+        if (mList.get(position) == currentCage) {
+            holder.textView.setTextColor(highColor);
         } else {
-            holder.textView.setTextColor(textColor.data);
+            holder.textView.setTextColor(textColor);
         }
         holder.textView.setOnClickListener(cl);
     }
@@ -96,8 +100,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
             notifyDataSetChanged();
         } else {
             mList.remove(Integer.valueOf(cate));
-            if (mList.get(highLight) == cate)
-                highLight = 0;
+            if (currentCage == cate)
+                currentCage = 0;
+            listener.onCategoryChange(currentCage);
             notifyDataSetChanged();
         }
     }
@@ -121,6 +126,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     }
 
     public void setCurrentCategory(int cate) {
-        highLight = cate;
+        currentCage = cate;
     }
 }
